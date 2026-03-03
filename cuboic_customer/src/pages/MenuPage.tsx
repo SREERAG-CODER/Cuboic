@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getRestaurant, getCategories, getMenuItems, type Category, type MenuItem } from '../api/menu';
 import { useCart } from '../hooks/useCart';
@@ -9,122 +9,227 @@ import './MenuPage.css';
 // Stable session id per tab
 const SESSION_ID = crypto.randomUUID();
 
+// Category emoji map
+const CAT_ICONS: Record<string, string> = {
+    starters: '🥗',
+    mains: '🍽️',
+    desserts: '🍮',
+    drinks: '🥤',
+    sides: '🍟',
+    specials: '⭐',
+    burgers: '🍔',
+    pizza: '🍕',
+    pasta: '🍝',
+    soups: '🍲',
+};
+
+function getCatIcon(name: string) {
+    const key = name.toLowerCase();
+    for (const [k, v] of Object.entries(CAT_ICONS)) {
+        if (key.includes(k)) return v;
+    }
+    return '🍴';
+}
+
 export function MenuPage() {
     const [params] = useSearchParams();
     const restaurantId = params.get('r') ?? '';
     const tableId = params.get('t') ?? '';
 
-    const [restaurantName, setRestaurantName] = useState('Cuboic');
+    const [restaurantName, setRestaurantName] = useState('Cuboic Kitchen');
     const [categories, setCategories] = useState<Category[]>([]);
-    const [items, setItems] = useState<MenuItem[]>([]);
+    const [allItems, setAllItems] = useState<MenuItem[]>([]);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [cartOpen, setCartOpen] = useState(false);
 
     const cart = useCart();
 
-    // Load restaurant + categories
+    /* load restaurant + categories once */
     useEffect(() => {
         if (!restaurantId) return;
-        Promise.all([getRestaurant(restaurantId), getCategories(restaurantId)]).then(
-            ([rest, cats]) => {
-                setRestaurantName(rest.name);
-                const sorted = cats.sort((a, b) => a.display_order - b.display_order);
-                setCategories(sorted);
-                setActiveCategory(sorted[0]?._id ?? null);
-            },
-        );
+        Promise.all([getRestaurant(restaurantId), getCategories(restaurantId)]).then(([rest, cats]) => {
+            setRestaurantName(rest.name);
+            const sorted = cats.sort((a, b) => a.display_order - b.display_order);
+            setCategories(sorted);
+            setActiveCategory(null); // show all by default
+        });
     }, [restaurantId]);
 
-    // Load menu items when category changes
+    /* load ALL items once, filter client-side */
     useEffect(() => {
         if (!restaurantId) return;
-
         setLoading(true);
-
-        getMenuItems(restaurantId, activeCategory ?? undefined)
-            .then(data => {
-                console.log("MENU ITEMS RESPONSE:", data); // 👈 ADD THIS
-                setItems(data);
-            })
+        getMenuItems(restaurantId, undefined)
+            .then(data => setAllItems(data))
             .finally(() => setLoading(false));
+    }, [restaurantId]);
 
-    }, [restaurantId, activeCategory]);
+    /* filter items for active category */
+    const visibleItems = useMemo(() => {
+        if (!activeCategory) return allItems;
+        return allItems.filter(item => item.category_id === activeCategory);
+    }, [allItems, activeCategory]);
+
+    /* group items by category for "All" view */
+    const grouped = useMemo(() => {
+        if (activeCategory) return null; // show flat list when filtering
+        const map = new Map<string, MenuItem[]>();
+        for (const cat of categories) map.set(cat._id, []);
+        for (const item of allItems) {
+            if (!map.has(item.category_id)) map.set(item.category_id, []);
+            map.get(item.category_id)!.push(item);
+        }
+        return map;
+    }, [allItems, categories, activeCategory]);
+
+    const tableLabel = tableId ? `Table ${tableId.slice(-4).toUpperCase()}` : '';
+
+    /* show QR hint if no params */
+    if (!restaurantId) {
+        return (
+            <div className="menu-error fade-in">
+                <span style={{ fontSize: '4rem' }}>📱</span>
+                <h1 style={{ fontWeight: 800, fontSize: '1.2rem' }}>Scan a table QR code</h1>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                    Ask your server for the QR code to view the menu.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="menu-page">
-            {/* Header */}
-            <header className="menu-header">
-                <div className="container">
-                    <div className="menu-header__inner">
-                        <div>
-                            <p className="menu-header__brand">Cuboic</p>
-                            <h1 className="menu-header__name">{restaurantName}</h1>
-                        </div>
-                        <button
-                            className="cart-fab"
-                            onClick={() => setCartOpen(true)}
-                            aria-label="Open cart"
-                        >
-                            🛒
-                            {cart.count > 0 && <span className="cart-fab__badge">{cart.count}</span>}
-                        </button>
-                    </div>
+            {/* ── Hero ──────────────────────────────── */}
+            <div className="menu-hero">
+                {/* Ambient glows */}
+                <div className="menu-hero__glow" aria-hidden="true">
+                    <div className="glow-orb glow-orb--1" />
+                    <div className="glow-orb glow-orb--2" />
+                    <div className="glow-orb glow-orb--3" />
                 </div>
-            </header>
 
-            {/* Category tabs */}
-            <div className="category-bar">
-                <div className="category-bar__inner">
+                {/* Top-right action area */}
+                <div className="menu-hero__actions">
+                    {tableLabel && (
+                        <div className="table-tag">🪑 {tableLabel}</div>
+                    )}
                     <button
-                        className={`cat-tab ${activeCategory === null ? 'cat-tab--active' : ''}`}
-                        onClick={() => setActiveCategory(null)}
+                        className={`cart-btn ${cart.count > 0 ? 'cart-btn--active' : ''}`}
+                        onClick={() => setCartOpen(true)}
+                        aria-label="Open cart"
                     >
-                        All
+                        🛒
+                        {cart.count > 0 && (
+                            <span className="cart-btn__badge">{cart.count}</span>
+                        )}
                     </button>
-                    {categories.map(c => (
-                        <button
-                            key={c._id}
-                            className={`cat-tab ${activeCategory === c._id ? 'cat-tab--active' : ''}`}
-                            onClick={() => setActiveCategory(c._id)}
-                        >
-                            {c.name}
-                        </button>
-                    ))}
+                </div>
+
+                {/* Hero content */}
+                <div className="menu-hero__content">
+                    <div className="menu-hero__eyebrow">Cuboic · Robot Delivery</div>
+                    <h1 className="menu-hero__title">{restaurantName}</h1>
+                    <div className="menu-hero__badge">Robot is ready to serve</div>
                 </div>
             </div>
 
-            {/* Items */}
+            {/* ── Category pills ──────────────────── */}
+            <div className="category-row">
+                <div className="category-row__inner">
+                    <button
+                        className={`cat-pill ${activeCategory === null ? 'cat-pill--active' : ''}`}
+                        onClick={() => setActiveCategory(null)}
+                    >
+                        ✨ All
+                        <span className="cat-pill__count">{allItems.length}</span>
+                    </button>
+                    {categories.map(c => {
+                        const count = allItems.filter(i => i.category_id === c._id).length;
+                        return (
+                            <button
+                                key={c._id}
+                                className={`cat-pill ${activeCategory === c._id ? 'cat-pill--active' : ''}`}
+                                onClick={() => setActiveCategory(c._id)}
+                            >
+                                {getCatIcon(c.name)} {c.name}
+                                <span className="cat-pill__count">{count}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* ── Items ───────────────────────────── */}
             <main className="container menu-body">
                 {loading ? (
                     <div className="spinner-center"><div className="spinner" /></div>
-                ) : items.length === 0 ? (
+                ) : visibleItems.length === 0 && !grouped ? (
                     <p className="menu-empty">No items in this category.</p>
+
+                ) : grouped ? (
+                    /* Grouped "All" view */
+                    <>
+                        {categories.map(cat => {
+                            const catItems = grouped.get(cat._id) ?? [];
+                            if (catItems.length === 0) return null;
+                            return (
+                                <section key={cat._id} className="menu-section fade-up">
+                                    <div className="section-label">
+                                        <span className="section-label__text">
+                                            {getCatIcon(cat.name)} {cat.name}
+                                        </span>
+                                    </div>
+                                    <div className="item-grid">
+                                        {catItems.map(item => (
+                                            <ItemCard
+                                                key={item._id}
+                                                item={item}
+                                                cartItem={cart.items.find(c => c.item._id === item._id)}
+                                                onAdd={cart.add}
+                                                onRemove={cart.remove}
+                                            />
+                                        ))}
+                                    </div>
+                                </section>
+                            );
+                        })}
+                    </>
                 ) : (
-                    <div className="item-list fade-in">
-                        {items.map(item => (
-                            <ItemCard
-                                key={item._id}
-                                item={item}
-                                cartItem={cart.items.find(c => c.item._id === item._id)}
-                                onAdd={cart.add}
-                                onRemove={cart.remove}
-                            />
-                        ))}
-                    </div>
+                    /* Filtered single-category view */
+                    <section className="menu-section">
+                        <div className="item-grid fade-up">
+                            {visibleItems.map(item => (
+                                <ItemCard
+                                    key={item._id}
+                                    item={item}
+                                    cartItem={cart.items.find(c => c.item._id === item._id)}
+                                    onAdd={cart.add}
+                                    onRemove={cart.remove}
+                                />
+                            ))}
+                        </div>
+                    </section>
                 )}
             </main>
 
-            {/* Cart FAB (mobile sticky) */}
+            {/* ── Floating cart pill ──────────────── */}
             {cart.count > 0 && !cartOpen && (
-                <div className="cart-summary-bar">
-                    <button className="btn btn-primary cart-summary-btn" onClick={() => setCartOpen(true)}>
-                        <span className="cart-summary-btn__count">{cart.count} items</span>
-                        <span>View Cart  ·  ₹{cart.total.toFixed(2)}</span>
+                <div className="cart-float">
+                    <button className="cart-float__btn" onClick={() => setCartOpen(true)}>
+                        <div className="cart-float__left">
+                            <span className="cart-float__count">{cart.count}</span>
+                            <span className="cart-float__label">View Order</span>
+                        </div>
+                        <div className="cart-float__total">
+                            ₹{(cart.total * 1.05).toFixed(2)}
+                            <span className="cart-float__arrow">→</span>
+                        </div>
                     </button>
                 </div>
             )}
 
+            {/* ── Cart bottom sheet ────────────────── */}
             <CartDrawer
                 open={cartOpen}
                 onClose={() => setCartOpen(false)}

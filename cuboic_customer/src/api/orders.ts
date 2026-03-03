@@ -3,7 +3,6 @@ import api from './client';
 export interface OrderItem {
     item_id: string;
     quantity: number;
-    special_instructions?: string;
 }
 
 export interface PlaceOrderPayload {
@@ -13,21 +12,21 @@ export interface PlaceOrderPayload {
     items: OrderItem[];
 }
 
+// Matches the backend Order schema exactly
 export interface Order {
     _id: string;
     restaurant_id: string;
     table_id: string | { _id: string; table_number: number };
-    order_status: 'Received' | 'Preparing' | 'Ready' | 'Assigned' | 'Delivered';
-    payment_status: 'Pending' | 'Paid';
+    /** Backend field name is `status` (not order_status) */
+    status: 'Pending' | 'Confirmed' | 'Preparing' | 'Ready' | 'Assigned' | 'Delivered' | 'Cancelled';
     items: Array<{
         name: string;
         quantity: number;
         unit_price: number;
-        special_instructions?: string;
     }>;
     subtotal: number;
-    tax_amount: number;
-    total_price: number;
+    tax: number;
+    total: number;
     createdAt: string;
 }
 

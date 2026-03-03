@@ -20,19 +20,20 @@ export function OrderTrackerPage() {
             .finally(() => setLoading(false));
     }, [orderId]);
 
-    // Real-time updates via Socket.io
+    // Real-time updates — backend emits 'order:updated' (colon, not dot)
     const socketRef = useSocket(order?.restaurant_id?.toString() ?? null);
     useEffect(() => {
         const socket = socketRef.current;
         if (!socket || !orderId) return;
 
-        const handler = (data: { _id: string; order_status: Order['order_status'] }) => {
+        // Backend emits: { _id, status, ... }
+        const handler = (data: { _id: string; status: Order['status'] }) => {
             if (data._id === orderId || data._id?.toString() === orderId) {
-                setOrder(prev => prev ? { ...prev, order_status: data.order_status } : prev);
+                setOrder(prev => prev ? { ...prev, status: data.status } : prev);
             }
         };
-        socket.on('order.updated', handler);
-        return () => { socket.off('order.updated', handler); };
+        socket.on('order:updated', handler);   // ← fixed: was 'order.updated'
+        return () => { socket.off('order:updated', handler); };
     }, [socketRef, orderId, order?.restaurant_id]);
 
     if (loading) return <div className="tracker-page"><div className="spinner-center"><div className="spinner" /></div></div>;
@@ -44,8 +45,10 @@ export function OrderTrackerPage() {
     );
 
     const tableNumber = typeof order.table_id === 'object'
-        ? (order.table_id as any).table_number
+        ? (order.table_id as { table_number: number }).table_number
         : '—';
+
+    const isCancelled = order.status === 'Cancelled';
 
     return (
         <div className="tracker-page fade-in">
@@ -60,17 +63,23 @@ export function OrderTrackerPage() {
                 {/* Status hero */}
                 <div className="tracker-hero card">
                     <div className="tracker-hero__status-label">
-                        {order.order_status === 'Delivered' ? '🎉 Enjoy your meal!' : '⏳ Tracking your order…'}
+                        {isCancelled
+                            ? '❌ Order Cancelled'
+                            : order.status === 'Delivered'
+                                ? '🎉 Enjoy your meal!'
+                                : '⏳ Tracking your order…'}
                     </div>
-                    <h1 className="tracker-hero__status">{getStatusMessage(order.order_status)}</h1>
+                    <h1 className="tracker-hero__status">{getStatusMessage(order.status)}</h1>
                     <p className="tracker-table">Table {tableNumber}</p>
                 </div>
 
-                {/* Timeline */}
-                <section className="tracker-section card">
-                    <h2 className="tracker-section__title">Order Progress</h2>
-                    <StatusTimeline status={order.order_status} />
-                </section>
+                {/* Timeline — hidden for Cancelled */}
+                {!isCancelled && (
+                    <section className="tracker-section card">
+                        <h2 className="tracker-section__title">Order Progress</h2>
+                        <StatusTimeline status={order.status} />
+                    </section>
+                )}
 
                 {/* Order summary */}
                 <section className="tracker-section card">
@@ -86,9 +95,9 @@ export function OrderTrackerPage() {
                     <hr className="divider" />
                     <div className="order-totals">
                         <div className="order-total-row"><span>Subtotal</span><span>₹{order.subtotal.toFixed(2)}</span></div>
-                        <div className="order-total-row"><span>Tax</span><span>₹{order.tax_amount.toFixed(2)}</span></div>
+                        <div className="order-total-row"><span>Tax (5%)</span><span>₹{order.tax.toFixed(2)}</span></div>
                         <div className="order-total-row order-total-row--grand">
-                            <span>Total</span><span>₹{order.total_price.toFixed(2)}</span>
+                            <span>Total</span><span>₹{order.total.toFixed(2)}</span>
                         </div>
                     </div>
                 </section>
@@ -99,13 +108,16 @@ export function OrderTrackerPage() {
     );
 }
 
-function getStatusMessage(status: Order['order_status']): string {
-    const map: Record<Order['order_status'], string> = {
-        Received: 'Order Received',
+function getStatusMessage(status: Order['status']): string {
+    const map: Record<Order['status'], string> = {
+        Pending: 'Order Received',
+        Confirmed: 'Order Confirmed',
         Preparing: 'Being Prepared',
         Ready: 'Ready to Serve',
         Assigned: 'Robot on the Way',
         Delivered: 'Delivered!',
+        Cancelled: 'Order Cancelled',
     };
     return map[status] ?? status;
 }
+
