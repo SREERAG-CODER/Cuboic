@@ -1,0 +1,240 @@
+﻿Tab 1
+1. Introduction
+1.1 Purpose
+This document describes the functional and non-functional requirements.
+The system enables customers to order food via QR code, allows restaurant staff to manage and assign delivery robots, and provides restaurant owners with a mobile dashboard to monitor operations.
+1.2 Scope
+The system consists of:
+A 
+Customer Web Application
+A 
+Staff Web Dashboard
+A 
+Robot Management Interface
+A 
+Owner Mobile Application
+A Backend API Server with Database
+The system will:
+Allow QR-based food ordering
+Enable order status tracking
+Allow staff to assign robots and cabinets
+Simulate cabinet delivery logic
+Provide operational insights to the owner
+This is an MVP-focused implementation for public deployment.
+2. Overall Description
+2.1 Product Perspective
+The system is a full-stack web and mobile application that interacts with delivery robots through backend simulation.
+High-Level Architecture:
+Customer (Web)
+ â†’ Backend API
+ â†’ Database
+ â†’ Staff Dashboard
+ â†’ Robot Panel
+ â†’ Owner Mobile App
+2.2 Product Functions
+QR-based menu display
+Cart management
+Online payment processing
+Real-time order status updates
+Robot assignment to orders
+Cabinet allocation and control
+Delivery confirmation
+Owner dashboard analytics
+2.3 User Classes and Characteristics
+1. Customer
+Non-technical
+Uses mobile browser
+Scans QR to place order
+2. Staff
+Manages incoming orders
+Assigns robots and cabinets
+3. Owner
+Uses mobile app
+Monitors business metrics
+Manages Robots
+4. Admin (Optional) (Cuboic)
+Manages restaurants and robots
+3. Functional Requirements
+3.1 Customer Web Application
+FR-1: QR Menu Access
+The system shall allow customers to access menu via QR code.
+QR must include restaurant_id and table_id.
+FR-2: View Menu
+System shall display:
+Item name
+Price
+Category
+FR-3: Cart Management
+Add items
+Remove items
+Update quantity
+View total price
+FR-4: Checkout
+Proceed to payment page
+Process payment using payment gateway
+Generate order upon successful payment
+FR-5: Order Status Tracking
+Customer shall view:
+Order Received
+Preparing
+Ready
+Assigned to Robot
+Delivering
+Delivered
+3.2 Staff Web Dashboard
+FR-7: View Orders
+Staff shall view:
+Order ID
+Table number
+Items
+Status
+Assigned robot
+FR-8: Update Order Status
+Staff shall update order stages:
+Received
+Preparing
+Ready
+FR-9: Robot & Cabinet Assignment 
+The system shall allow staff to assign:
+One robot to multiple orders simultaneously.
+One order to one or more cabinets within the same robot.
+Rules:
+A robot may carry up to 3 cabinet assignments at a time.
+Each cabinet (C1, C2, C3) can:
+Serve one table only.
+Contain items from one order.
+A single order may occupy:
+One cabinet (small order)
+Multiple cabinets (large order)
+FR-10: Mark Delivery
+Staff/Robot shall mark order as delivered.
+System shall:
+Free cabinet(s) assigned to the delivered order.
+If no cabinets remain occupied, set robot status to â€œIdleâ€.
+Otherwise, continue delivery to next table in queue.
+FR-11: Multi-Table Delivery Handling
+The system shall:
+Allow robot to carry orders for up to 3 different tables in one trip.
+Track cabinet-to-table mapping.
+Deliver cabinets sequentially based on assignment order.
+3.3 Robot Delivery Logic 
+FR-12: Cabinet Allocation Rules
+When assigning cabinets:
+System shall:
+Display only available cabinets.
+Prevent assigning occupied cabinets.
+Allow selecting multiple cabinets for same order.
+Automatically mark selected cabinets as â€œOccupiedâ€.
+FR-13: Delivery Execution
+Upon delivery:
+Robot arrives at Table X.
+Only cabinets assigned to Table X shall unlock.
+Other cabinets remain locked.
+After confirmation:
+Cabinets are marked as â€œAvailableâ€.
+If no cabinets remain occupied:
+Robot status becomes â€œIdleâ€.
+Else:
+Robot continues to next assigned table.
+FR-14: Multi-Stop Delivery State Management
+Robot states:
+Idle
+Delivering (Multi-stop)
+Delivering (Final Stop)
+Returning (Optional future enhancement)
+System shall maintain:
+Delivery queue per robot.
+Table order sequence.
+Cabinet-table mapping.
+3.4 Robot Management Interface
+FR-15: View Robot List
+System shall display:
+Robot ID
+Status (Idle / Busy)
+Battery %
+Cabinet occupancy
+FR-16: Cabinet Status
+System shall show:
+C1: Available / Occupied
+C2: Available / Occupied
+C3: Available / Occupied
+3.5 Owner Mobile Application
+FR-17: Dashboard Overview
+Owner shall view:
+Total orders today
+Total revenue today
+Total deliveries
+Active robots
+FR-18: Robot Monitoring
+Owner shall view:
+Robot status
+Battery percentage
+4. Non-Functional Requirements
+4.1 Performance Requirements
+System shall support minimum 100 concurrent users.
+Order updates should reflect within 5 seconds.
+4.2 Security Requirements
+Role-based authentication.
+Payment transactions must use secure HTTPS.
+JWT-based authentication for APIs.
+4.3 Usability Requirements
+Mobile-responsive web interface.
+Simple UI for staff and customers.
+Owner dashboard optimized for mobile screens.
+4.4 Reliability Requirements
+System uptime target: 99%.
+Order data shall not be lost during server restart.
+4.5 Scalability
+System shall support addition of multiple restaurants.
+Database shall support horizontal scaling.
+5. System Architecture
+5.1 Technology Stack
+Frontend:
+React / Next.js
+Tailwind CSS
+Mobile:
+React Native
+Backend:
+Node.js + Express
+Database:
+MongoDB
+Real-time Updates:
+Polling or WebSockets
+Deployment:
+Vercel (Frontend)
+Render / Railway (Backend)
+MongoDB Atlas
+7. Constraints
+Time-constrained MVP development
+Robot hardware integration may be simulated
+Payment integration may use test environment
+8. Future Enhancement
+AI route optimization
+Multi-table batch delivery
+Predictive analytics
+Voice assistant robot
+Automatic cabinet temperature control
+9. Acceptance Criteria
+System shall be considered complete when:
+Customer can scan QR and place order.
+Staff can assign robot and cabinet.
+Robot status updates correctly.
+Delivery confirmation works.
+Owner can view dashboard statistics.
+Robot can deliver to multiple tables in one trip.
+One order can occupy multiple cabinets.
+Robot transitions correctly between delivery stops.
+Tab 2
+Customers (QR Web App - Next.js) â”€â”
+Staff Dashboard (Next.js) â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+Owner Mobile App (React Native) â”€â”€â”¤
+                                   â–¼
+                         NestJS Backend (Render)
+                     REST API + Socket.io Gateway
+                                  â–¼
+                         MongoDB Atlas Database
+                                 â–²
+                                  â”‚
+                          Delivery Robots
+                       (WebSocket telemetry)
+Tab 3

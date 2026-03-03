@@ -36,10 +36,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const dns_1 = require("dns");
+(0, dns_1.setDefaultResultOrder)('ipv4first');
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt = __importStar(require("bcryptjs"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
 const MONGO_URI = process.env.MONGODB_URI ?? 'mongodb://localhost:27017/cuboic';
 function generateSecretKey() {
     return `robot-${Math.random().toString(36).substring(2, 12)}`;

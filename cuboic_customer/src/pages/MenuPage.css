@@ -1,137 +1,461 @@
+/* ═══════════════════════════════════════════════════════════
+   MenuPage — Immersive Design
+═══════════════════════════════════════════════════════════ */
+
 .menu-page {
     min-height: 100dvh;
-    padding-bottom: 100px;
+    padding-bottom: 120px;
+    background: var(--bg);
 }
 
-/* Header */
-.menu-header {
+/* ── Hero ────────────────────────────────────────────────── */
+.menu-hero {
+    position: relative;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
     background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    backdrop-filter: blur(12px);
 }
 
-.menu-header__inner {
+/* Animated ambient glow mesh */
+.menu-hero__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: float 6s ease-in-out infinite;
+}
+
+.glow-orb--1 {
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(245, 166, 35, 0.22) 0%, transparent 70%);
+    top: -80px;
+    left: -60px;
+    animation-delay: 0s;
+}
+
+.glow-orb--2 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(245, 166, 35, 0.1) 0%, transparent 70%);
+    top: -40px;
+    right: -40px;
+    animation-delay: -2.5s;
+}
+
+.glow-orb--3 {
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 70%);
+    bottom: 20px;
+    right: 80px;
+    animation-delay: -4s;
+}
+
+/* Grid pattern overlay */
+.menu-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(245, 166, 35, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245, 166, 35, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+}
+
+/* Bottom gradient fade to bg */
+.menu-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--bg));
+    pointer-events: none;
+}
+
+.menu-hero__content {
+    position: relative;
+    z-index: 2;
+    padding: 0 20px 24px;
+    max-width: 640px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.menu-hero__robot {
+    font-size: 2rem;
+    display: inline-block;
+    animation: float 3.5s ease-in-out infinite;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 0 12px rgba(245, 166, 35, 0.5));
+}
+
+.menu-hero__eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 16px 0;
+    gap: 6px;
 }
 
-.menu-header__brand {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    color: var(--accent);
-    text-transform: uppercase;
+.menu-hero__eyebrow::before {
+    content: '';
+    width: 20px;
+    height: 1.5px;
+    background: var(--accent);
+    display: inline-block;
 }
 
-.menu-header__name {
-    font-size: 1.15rem;
+.menu-hero__title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    color: var(--text);
+}
+
+.menu-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 99px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
     font-weight: 700;
 }
 
-/* Cart FAB */
-.cart-fab {
-    position: relative;
-    width: 46px;
-    height: 46px;
+/* Pulsing dot */
+.menu-hero__badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--green);
     border-radius: 50%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    font-size: 1.3rem;
+    box-shadow: 0 0 0 0 var(--green);
+    animation: pulse-dot 1.8s ease-out infinite;
+}
+
+@keyframes pulse-dot {
+    0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+
+    80% {
+        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+/* Cart button in header */
+.menu-hero__actions {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s;
+    transition: all 0.2s;
 }
 
-.cart-fab:hover {
-    background: var(--border);
+.cart-btn:hover {
+    background: rgba(245, 166, 35, 0.15);
+    border-color: rgba(245, 166, 35, 0.4);
 }
 
-.cart-fab__badge {
+.cart-btn--active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+}
+
+.cart-btn__badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -3px;
+    right: -3px;
     background: var(--accent);
-    color: #000;
-    width: 20px;
-    height: 20px;
+    color: #08080f;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 2px solid var(--bg);
 }
 
-/* Category bar */
-.category-bar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+/* Table tag */
+.table-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 99px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* ── Category nav (floating pill row) ───────────────────── */
+.category-row {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    padding: 10px 0;
+    background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+}
+
+.category-row__inner {
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    position: sticky;
-    top: 79px;
-    z-index: 49;
+    max-width: 640px;
+    margin: 0 auto;
 }
 
-.category-bar::-webkit-scrollbar {
+.category-row__inner::-webkit-scrollbar {
     display: none;
 }
 
-.category-bar__inner {
+.cat-pill {
+    flex-shrink: 0;
     display: flex;
-    gap: 4px;
-    padding: 10px 16px;
-    width: max-content;
-}
-
-.cat-tab {
-    padding: 7px 16px;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
     border-radius: 99px;
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--text-muted);
-    background: transparent;
-    border: 1px solid transparent;
-    transition: all 0.15s;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: all 0.18s ease;
     white-space: nowrap;
 }
 
-.cat-tab:hover {
+.cat-pill:hover {
     color: var(--text);
-    background: var(--surface2);
+    border-color: var(--border2);
 }
 
-.cat-tab--active {
+.cat-pill--active {
     background: var(--accent-dim);
     color: var(--accent);
-    border-color: var(--accent);
+    border-color: rgba(245, 166, 35, 0.5);
+    box-shadow: 0 0 16px rgba(245, 166, 35, 0.15);
 }
 
-/* Items */
+.cat-pill__count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-dim);
+    padding: 1px 6px;
+    border-radius: 99px;
+}
+
+.cat-pill--active .cat-pill__count {
+    background: rgba(245, 166, 35, 0.2);
+    color: var(--accent);
+}
+
+/* ── Section title ──────────────────────────────────────── */
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-top: 10px;
+}
+
+.section-label__text {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+}
+
+.section-label::before,
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* ── Menu body ──────────────────────────────────────────── */
 .menu-body {
-    padding-top: 20px;
+    padding-top: 4px;
 }
 
-.item-list {
+.menu-section {
+    margin-bottom: 32px;
+}
+
+.item-grid {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .menu-empty {
     color: var(--text-muted);
     text-align: center;
     padding: 60px 0;
+    font-size: 0.9rem;
 }
 
-/* Error state */
+/* ── Spinner ────────────────────────────────────────────── */
+.spinner-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+}
+
+.spinner {
+    width: 28px;
+    height: 28px;
+    border: 2.5px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Floating cart pill ─────────────────────────────────── */
+.cart-float {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 80;
+    width: calc(100% - 32px);
+    max-width: 600px;
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(80px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+.cart-float__btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 14px 20px;
+    background: var(--accent);
+    color: #08080f;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 32px rgba(245, 166, 35, 0.4), 0 2px 8px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+    font-family: var(--font);
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+}
+
+.cart-float__btn:hover {
+    background: #f7b340;
+    box-shadow: 0 12px 40px rgba(245, 166, 35, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.cart-float__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-float__count {
+    background: rgba(0, 0, 0, 0.15);
+    color: #08080f;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.cart-float__label {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.cart-float__total {
+    font-size: 0.95rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cart-float__arrow {
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+
+.cart-float__btn:hover .cart-float__arrow {
+    transform: translateX(3px);
+}
+
+/* ── Error state ────────────────────────────────────────── */
 .menu-error {
     display: flex;
     flex-direction: column;
@@ -143,50 +467,7 @@
     text-align: center;
 }
 
-.menu-error span {
-    font-size: 3rem;
-}
-
-.menu-error h1 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    max-width: 320px;
-}
-
-.menu-error p {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.menu-error code {
-    background: var(--surface2);
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-/* Sticky cart bar */
-.cart-summary-bar {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 80;
-    width: calc(100% - 32px);
-    max-width: 568px;
-}
-
-.cart-summary-btn {
-    width: 100%;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
-    font-size: 0.95rem;
-}
-
-.cart-summary-btn__count {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 3px 10px;
-    border-radius: 99px;
-    font-size: 0.8rem;
+/* ── Old cart FAB (kept for compat) ─────────────────────── */
+.cart-fab {
+    display: none;
 }

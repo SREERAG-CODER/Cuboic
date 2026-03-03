@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { RobotsService } from './robots.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -11,7 +11,7 @@ export class RobotsController {
     constructor(private readonly robotsService: RobotsService) { }
 
     @Get()
-    findAll(@Param('restaurant_id') restaurantId: string) {
+    findAll(@Query('restaurant_id') restaurantId: string) {
         return this.robotsService.findAll(restaurantId);
     }
 

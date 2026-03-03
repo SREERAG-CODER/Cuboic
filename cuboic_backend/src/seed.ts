@@ -1,8 +1,10 @@
+import { setDefaultResultOrder } from 'dns';
+setDefaultResultOrder('ipv4first');
 import mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 dotenv.config();
-
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
 const MONGO_URI =
     process.env.MONGODB_URI ?? 'mongodb://localhost:27017/cuboic';
 
