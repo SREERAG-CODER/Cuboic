@@ -1,144 +1,168 @@
 /* ═══════════════════════════════════════════════════════════
-   ItemCard — Premium card v2
+   ItemCard — Picture card v3
 ═══════════════════════════════════════════════════════════ */
 
 .item-card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 18px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    position: relative;
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    animation: fadeUp 0.28s ease both;
-}
-
-/* Left accent bar */
-.item-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 20%;
-    bottom: 20%;
-    width: 3px;
-    background: var(--accent);
-    border-radius: 0 2px 2px 0;
-    opacity: 0;
-    transition: opacity 0.2s;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.2s;
+    animation: fadeUp 0.3s ease both;
 }
 
 .item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
     border-color: rgba(245, 166, 35, 0.3);
-    transform: translateX(2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-.item-card:hover::before {
-    opacity: 1;
 }
 
 .item-card--oos {
-    opacity: 0.45;
-    filter: grayscale(0.3);
+    opacity: 0.5;
+    filter: grayscale(0.4);
 }
 
-/* Info */
-.item-card__info {
-    min-width: 0;
+/* ── Image ──────────────────────────────────────────────── */
+.item-card__img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--surface2);
+}
+
+.item-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.item-card:hover .item-card__img {
+    transform: scale(1.06);
+}
+
+/* OOS overlay */
+.item-card__oos-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* Price badge on image */
+.item-card__price-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 1px solid rgba(245, 166, 35, 0.3);
+}
+
+/* ── Body ───────────────────────────────────────────────── */
+.item-card__body {
+    padding: 14px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 4px;
 }
 
 .item-card__name {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    margin-bottom: 3px;
     line-height: 1.3;
     letter-spacing: -0.01em;
+    color: var(--text);
 }
 
 .item-card__desc {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    margin-bottom: 8px;
     line-height: 1.45;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    flex: 1;
 }
 
-.item-card__price {
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-}
-
-.oos-badge {
-    margin-top: 6px;
-}
-
-/* Action */
-.item-card__action {
-    flex-shrink: 0;
+/* ── Footer ─────────────────────────────────────────────── */
+.item-card__footer {
+    margin-top: 10px;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
 }
 
 .add-btn {
-    padding: 8px 16px;
-    font-size: 0.85rem;
+    padding: 7px 16px;
+    font-size: 0.82rem;
     font-weight: 700;
     border-radius: var(--radius-sm);
     background: var(--accent-dim);
     color: var(--accent);
     border: 1px solid rgba(245, 166, 35, 0.3);
-    transition: all 0.18s;
+    transition: all 0.16s;
     font-family: var(--font);
+    cursor: pointer;
+    letter-spacing: 0.01em;
 }
 
 .add-btn:hover {
     background: var(--accent);
     color: #08080f;
     border-color: transparent;
+    box-shadow: 0 4px 14px rgba(245, 166, 35, 0.35);
 }
 
-/* Stagger animation for list */
+/* Qty control (shared from index.css, tightened for card) */
+.item-card__footer .qty-control {
+    border-radius: var(--radius-sm);
+}
+
+/* ── Stagger animation ──────────────────────────────────── */
 .item-grid .item-card:nth-child(1) {
     animation-delay: 0.00s;
 }
 
 .item-grid .item-card:nth-child(2) {
-    animation-delay: 0.04s;
+    animation-delay: 0.05s;
 }
 
 .item-grid .item-card:nth-child(3) {
-    animation-delay: 0.08s;
+    animation-delay: 0.10s;
 }
 
 .item-grid .item-card:nth-child(4) {
-    animation-delay: 0.12s;
+    animation-delay: 0.15s;
 }
 
 .item-grid .item-card:nth-child(5) {
-    animation-delay: 0.16s;
-}
-
-.item-grid .item-card:nth-child(6) {
     animation-delay: 0.20s;
 }
 
-.item-grid .item-card:nth-child(7) {
-    animation-delay: 0.24s;
+.item-grid .item-card:nth-child(6) {
+    animation-delay: 0.25s;
 }
 
-.item-grid .item-card:nth-child(8) {
-    animation-delay: 0.28s;
-}
-
-.item-grid .item-card:nth-child(n+9) {
-    animation-delay: 0.32s;
+.item-grid .item-card:nth-child(n+7) {
+    animation-delay: 0.30s;
 }
