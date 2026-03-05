@@ -4,7 +4,7 @@
 
 .menu-page {
     min-height: 100dvh;
-    padding-bottom: 120px;
+    padding-bottom: 140px;
     background: var(--bg);
 }
 
@@ -337,9 +337,16 @@
 }
 
 .item-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+/* Single column on very narrow screens */
+@media (max-width: 360px) {
+    .item-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .menu-empty {
