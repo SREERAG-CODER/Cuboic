@@ -8,175 +8,233 @@
     background: var(--bg);
 }
 
-/* ── Hero ────────────────────────────────────────────────── */
-.menu-hero {
-    position: relative;
-    height: 220px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    overflow: hidden;
-    background: var(--surface);
+/* ── Sticky Header ───────────────────────────────────────── */
+.menu-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
 }
 
-/* Animated ambient glow mesh */
-.menu-hero__glow {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-}
-
-.glow-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    animation: float 6s ease-in-out infinite;
-}
-
-.glow-orb--1 {
-    width: 260px;
-    height: 260px;
-    background: radial-gradient(circle, rgba(245, 166, 35, 0.22) 0%, transparent 70%);
-    top: -80px;
-    left: -60px;
-    animation-delay: 0s;
-}
-
-.glow-orb--2 {
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(245, 166, 35, 0.1) 0%, transparent 70%);
-    top: -40px;
-    right: -40px;
-    animation-delay: -2.5s;
-}
-
-.glow-orb--3 {
-    width: 160px;
-    height: 160px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 70%);
-    bottom: 20px;
-    right: 80px;
-    animation-delay: -4s;
-}
-
-/* Grid pattern overlay */
-.menu-hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(245, 166, 35, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(245, 166, 35, 0.04) 1px, transparent 1px);
-    background-size: 32px 32px;
-    pointer-events: none;
-}
-
-/* Bottom gradient fade to bg */
-.menu-hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background: linear-gradient(to bottom, transparent, var(--bg));
-    pointer-events: none;
-}
-
-.menu-hero__content {
-    position: relative;
-    z-index: 2;
-    padding: 0 20px 24px;
-    max-width: 640px;
+.menu-header__inner {
+    max-width: 900px;
     margin: 0 auto;
-    width: 100%;
-}
-
-.menu-hero__robot {
-    font-size: 2rem;
-    display: inline-block;
-    animation: float 3.5s ease-in-out infinite;
-    margin-bottom: 6px;
-    filter: drop-shadow(0 0 12px rgba(245, 166, 35, 0.5));
-}
-
-.menu-hero__eyebrow {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 4px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 14px;
 }
 
-.menu-hero__eyebrow::before {
-    content: '';
-    width: 20px;
-    height: 1.5px;
-    background: var(--accent);
-    display: inline-block;
-}
-
-.menu-hero__title {
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1.15;
-    color: var(--text);
-}
-
-.menu-hero__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 8px;
-    background: var(--green-dim);
-    color: var(--green);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    border-radius: 99px;
-    padding: 3px 10px;
-    font-size: 0.72rem;
-    font-weight: 700;
-}
-
-/* Pulsing dot */
-.menu-hero__badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--green);
-    border-radius: 50%;
-    box-shadow: 0 0 0 0 var(--green);
-    animation: pulse-dot 1.8s ease-out infinite;
-}
-
-@keyframes pulse-dot {
-    0% {
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-    }
-
-    80% {
-        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
-    }
-}
-
-/* Cart button in header */
-.menu-hero__actions {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    z-index: 10;
+.menu-header__brand {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
+}
+
+.menu-header__logo {
+    font-size: 1.5rem;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.menu-header__name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.menu-header__sub {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* ── Search Bar ──────────────────────────────────────────── */
+.search-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    padding: 0 36px 0 38px;
+    font-size: 0.88rem;
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--text-dim);
+}
+
+.search-input:focus {
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* hide browser's native clear button */
+.search-input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.search-clear {
+    position: absolute;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    font-size: 10px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.search-clear:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* ── Header right-side actions ───────────────────────────── */
+.menu-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* ── Search results bar ──────────────────────────────────── */
+.search-results-bar {
+    padding: 10px 20px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.search-results-bar strong {
+    color: var(--text);
+}
+
+/* ── Empty state (search / category) ────────────────────── */
+.menu-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.menu-footer {
+    margin-top: 60px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 36px 20px 40px;
+}
+
+.menu-footer__inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.menu-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menu-footer__logo {
+    font-size: 1.6rem;
+    color: var(--accent);
+}
+
+.menu-footer__wordmark {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text);
+}
+
+.menu-footer__tagline {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    max-width: 280px;
+}
+
+.menu-footer__links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.menu-footer__links a {
+    color: var(--accent);
+    font-weight: 600;
+    transition: opacity 0.15s;
+}
+
+.menu-footer__links a:hover {
+    opacity: 0.75;
+}
+
+.menu-footer__dot {
+    color: var(--border2);
+}
+
+.menu-footer__copy {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+}
+
+/* Cart button in header */
+.menu-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .cart-btn {

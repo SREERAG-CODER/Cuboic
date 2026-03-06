@@ -23,7 +23,7 @@ export default function Sidebar() {
             <div className="sidebar-logo">
                 <span className="logo-cube">⬡</span>
                 <span className="logo-text">Cuboic</span>
-                <span className="logo-sub">Admin</span>
+                <span className="logo-sub">Owner</span>
             </div>
 
             <nav className="sidebar-nav">
