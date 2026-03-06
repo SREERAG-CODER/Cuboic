@@ -3,9 +3,10 @@ import { useAuth } from '../context/AuthContext'
 
 const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: '⊞' },
-    { to: '/orders', label: 'Orders', icon: '🧾' },
-    { to: '/deliveries', label: 'Deliveries', icon: '🤖' },
-    { to: '/robots', label: 'Robot Fleet', icon: '⚡' },
+    { to: '/orders', label: 'Orders', icon: '≡' },
+    { to: '/deliveries', label: 'Deliveries', icon: '⬡' },
+    { to: '/menu', label: 'Menu', icon: '≋' },
+    { to: '/robots', label: 'Robot Fleet', icon: '◉' },
 ]
 
 export default function Sidebar() {
@@ -42,7 +43,7 @@ export default function Sidebar() {
                         to="/payments"
                         className={({ isActive }) => `nav-item ${isActive ? 'nav-active' : ''}`}
                     >
-                        <span className="nav-icon">💳</span>
+                        <span className="nav-icon">₹</span>
                         <span className="nav-label">Payments</span>
                     </NavLink>
                 )}

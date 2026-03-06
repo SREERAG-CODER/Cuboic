@@ -53,6 +53,44 @@ let MenuService = class MenuService {
         }
         return this.menuItemModel.find(filter).sort({ display_order: 1 });
     }
+    async getAllForAdmin(restaurantId) {
+        if (!mongoose_2.Types.ObjectId.isValid(restaurantId)) {
+            throw new common_1.BadRequestException(`Invalid restaurant ID: "${restaurantId}"`);
+        }
+        return this.menuItemModel
+            .find({ restaurant_id: new mongoose_2.Types.ObjectId(restaurantId) })
+            .sort({ display_order: 1, name: 1 });
+    }
+    async createItem(dto) {
+        if (!mongoose_2.Types.ObjectId.isValid(dto.restaurant_id)) {
+            throw new common_1.BadRequestException('Invalid restaurant_id');
+        }
+        if (!mongoose_2.Types.ObjectId.isValid(dto.category_id)) {
+            throw new common_1.BadRequestException('Invalid category_id');
+        }
+        const item = new this.menuItemModel({
+            ...dto,
+            restaurant_id: new mongoose_2.Types.ObjectId(dto.restaurant_id),
+            category_id: new mongoose_2.Types.ObjectId(dto.category_id),
+        });
+        return item.save();
+    }
+    async updateItem(id, dto) {
+        if (!mongoose_2.Types.ObjectId.isValid(id)) {
+            throw new common_1.BadRequestException('Invalid item ID');
+        }
+        const update = { ...dto };
+        if (dto.category_id) {
+            if (!mongoose_2.Types.ObjectId.isValid(dto.category_id)) {
+                throw new common_1.BadRequestException('Invalid category_id');
+            }
+            update.category_id = new mongoose_2.Types.ObjectId(dto.category_id);
+        }
+        const updated = await this.menuItemModel.findByIdAndUpdate(id, { $set: update }, { new: true });
+        if (!updated)
+            throw new common_1.NotFoundException('Menu item not found');
+        return updated;
+    }
 };
 exports.MenuService = MenuService;
 exports.MenuService = MenuService = __decorate([

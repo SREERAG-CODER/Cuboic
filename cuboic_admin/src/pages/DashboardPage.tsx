@@ -53,15 +53,15 @@ export default function DashboardPage() {
             label: "Today's Orders",
             value: user?.role === 'Owner' ? summary.order_count : pendingOrders,
             sub: user?.role === 'Owner' ? 'paid today' : 'pending',
-            icon: '🧾',
+            icon: '#',
             accent: 'kpi-blue',
         },
         ...(user?.role === 'Owner'
             ? [{
                 label: "Today's Revenue",
-                value: `$${summary.total_revenue.toFixed(2)}`,
+                value: `₹${summary.total_revenue.toFixed(2)}`,
                 sub: 'before tax',
-                icon: '💰',
+                icon: '₹',
                 accent: 'kpi-green',
             }]
             : []),
@@ -69,14 +69,14 @@ export default function DashboardPage() {
             label: 'Active Deliveries',
             value: activeDeliveries,
             sub: 'in transit',
-            icon: '🤖',
+            icon: '○',
             accent: 'kpi-amber',
         },
         {
             label: 'Robots Online',
             value: robotsOnline,
             sub: 'connected',
-            icon: '⚡',
+            icon: '●',
             accent: 'kpi-purple',
         },
     ]
@@ -102,7 +102,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="dashboard-hint">
-                <span>⚡</span> Real-time updates are active — new orders and delivery changes appear automatically.
+                Real-time updates are active — new orders and delivery changes appear automatically.
             </div>
         </div>
     )

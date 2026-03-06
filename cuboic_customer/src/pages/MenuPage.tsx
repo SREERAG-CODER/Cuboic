@@ -9,27 +9,7 @@ import './MenuPage.css';
 // Stable session id per tab
 const SESSION_ID = crypto.randomUUID();
 
-// Category emoji map
-const CAT_ICONS: Record<string, string> = {
-    starters: '🥗',
-    mains: '🍽️',
-    desserts: '🍮',
-    drinks: '🥤',
-    sides: '🍟',
-    specials: '⭐',
-    burgers: '🍔',
-    pizza: '🍕',
-    pasta: '🍝',
-    soups: '🍲',
-};
 
-function getCatIcon(name: string) {
-    const key = name.toLowerCase();
-    for (const [k, v] of Object.entries(CAT_ICONS)) {
-        if (key.includes(k)) return v;
-    }
-    return '🍴';
-}
 
 export function MenuPage() {
     const [params] = useSearchParams();
@@ -89,7 +69,6 @@ export function MenuPage() {
     if (!restaurantId) {
         return (
             <div className="menu-error fade-in">
-                <span style={{ fontSize: '4rem' }}>📱</span>
                 <h1 style={{ fontWeight: 800, fontSize: '1.2rem' }}>Scan a table QR code</h1>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                     Ask your server for the QR code to view the menu.
@@ -112,14 +91,14 @@ export function MenuPage() {
                 {/* Top-right action area */}
                 <div className="menu-hero__actions">
                     {tableLabel && (
-                        <div className="table-tag">🪑 {tableLabel}</div>
+                        <div className="table-tag">{tableLabel}</div>
                     )}
                     <button
                         className={`cart-btn ${cart.count > 0 ? 'cart-btn--active' : ''}`}
                         onClick={() => setCartOpen(true)}
                         aria-label="Open cart"
                     >
-                        🛒
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
                         {cart.count > 0 && (
                             <span className="cart-btn__badge">{cart.count}</span>
                         )}
@@ -141,7 +120,7 @@ export function MenuPage() {
                         className={`cat-pill ${activeCategory === null ? 'cat-pill--active' : ''}`}
                         onClick={() => setActiveCategory(null)}
                     >
-                        ✨ All
+                        All
                         <span className="cat-pill__count">{allItems.length}</span>
                     </button>
                     {categories.map(c => {
@@ -152,7 +131,7 @@ export function MenuPage() {
                                 className={`cat-pill ${activeCategory === c._id ? 'cat-pill--active' : ''}`}
                                 onClick={() => setActiveCategory(c._id)}
                             >
-                                {getCatIcon(c.name)} {c.name}
+                                {c.name}
                                 <span className="cat-pill__count">{count}</span>
                             </button>
                         );
@@ -177,7 +156,7 @@ export function MenuPage() {
                                 <section key={cat._id} className="menu-section fade-up">
                                     <div className="section-label">
                                         <span className="section-label__text">
-                                            {getCatIcon(cat.name)} {cat.name}
+                                            {cat.name}
                                         </span>
                                     </div>
                                     <div className="item-grid">

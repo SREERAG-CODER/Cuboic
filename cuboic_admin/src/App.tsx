@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import OrdersPage from './pages/OrdersPage'
 import DeliveriesPage from './pages/DeliveriesPage'
+import MenuPage from './pages/MenuPage'
 import RobotsPage from './pages/RobotsPage'
 import PaymentsPage from './pages/PaymentsPage'
 
@@ -26,6 +27,7 @@ export default function App() {
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/orders" element={<OrdersPage />} />
                         <Route path="/deliveries" element={<DeliveriesPage />} />
+                        <Route path="/menu" element={<MenuPage />} />
                         <Route path="/robots" element={<RobotsPage />} />
                         <Route
                             path="/payments"

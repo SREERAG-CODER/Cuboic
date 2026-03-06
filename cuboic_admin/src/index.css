@@ -15,36 +15,36 @@
 }
 
 :root {
-  /* ── Core palette (matches customer) ── */
-  --c-bg: #0f0f13;
-  --c-surface: #18181f;
-  --c-panel: #222230;
-  --c-border: #2e2e3d;
-  --c-border2: rgba(255, 255, 255, 0.12);
+  /* ── Core palette — Light theme ── */
+  --c-bg: #f3f4f6;
+  --c-surface: #ffffff;
+  --c-panel: #f0f0f5;
+  --c-border: #e0e0ea;
+  --c-border2: rgba(0, 0, 0, 0.12);
 
-  /* Accent — customer amber */
-  --c-accent: #f5a623;
-  --c-accent-dark: #c4831a;
-  --c-accent-dim: rgba(245, 166, 35, 0.18);
-  --c-accent-glow: rgba(245, 166, 35, 0.28);
+  /* Accent — amber (slightly deepened for light bg) */
+  --c-accent: #c4751a;
+  --c-accent-dark: #a35e10;
+  --c-accent-dim: rgba(196, 117, 26, 0.1);
+  --c-accent-glow: rgba(196, 117, 26, 0.18);
 
   /* Text */
-  --c-text: #f0eff5;
-  --c-text-2: #8b8aa0;
-  --c-text-3: #5a5974;
+  --c-text: #1a1a2e;
+  --c-text-2: #555570;
+  --c-text-3: #8888a0;
 
   /* Semantic colours */
-  --c-green: #22c55e;
-  --c-red: #ef4444;
-  --c-blue: #60a5fa;
-  --c-purple: #a78bfa;
-  --c-amber: #f5a623;
-  --c-teal: #2dd4bf;
+  --c-green: #16a34a;
+  --c-red: #dc2626;
+  --c-blue: #2563eb;
+  --c-purple: #7c3aed;
+  --c-amber: #c4751a;
+  --c-teal: #0d9488;
   --c-grey: #64748b;
 
-  /* Glow helpers */
-  --c-green-dim: rgba(34, 197, 94, 0.15);
-  --c-red-dim: rgba(239, 68, 68, 0.15);
+  /* Dim helpers */
+  --c-green-dim: rgba(22, 163, 74, 0.1);
+  --c-red-dim: rgba(220, 38, 38, 0.1);
 
   /* Radius */
   --r-sm: 8px;
@@ -108,10 +108,6 @@ input {
   flex: 1;
   overflow-y: auto;
   background: var(--c-bg);
-  /* Subtle amber glow on background, like customer */
-  background-image:
-    radial-gradient(ellipse at 15% 0%, rgba(245, 166, 35, 0.05) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 90%, rgba(245, 166, 35, 0.03) 0%, transparent 55%);
 }
 
 /* ─────────────────────────────────────────────
@@ -329,9 +325,6 @@ input {
   align-items: center;
   justify-content: center;
   background: var(--c-bg);
-  background-image:
-    radial-gradient(ellipse at 30% 20%, rgba(245, 166, 35, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 80%, rgba(245, 166, 35, 0.05) 0%, transparent 60%);
 }
 
 .login-card {
@@ -341,7 +334,7 @@ input {
   padding: 48px 40px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .login-logo {
@@ -472,7 +465,7 @@ input {
 /* Primary — amber exactly like customer */
 .btn-primary {
   background: var(--c-accent);
-  color: #0f0f13;
+  color: #ffffff;
 }
 
 .btn-primary:hover {
@@ -829,7 +822,7 @@ input {
 
 .robot-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .robot-online {
@@ -860,7 +853,7 @@ input {
   height: 9px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
 .dot-green {
@@ -1193,7 +1186,7 @@ input {
   padding: 14px 18px;
   min-width: 260px;
   max-width: 340px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   animation: toast-slide 0.3s ease;
   pointer-events: all;
 }
@@ -1290,12 +1283,12 @@ input {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 166, 35, 0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* ─────────────────────────────────────────────

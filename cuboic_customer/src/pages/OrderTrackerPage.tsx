@@ -1,45 +1,65 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getOrder, type Order } from '../api/orders';
 import { useSocket } from '../hooks/useSocket';
 import { StatusTimeline } from '../components/StatusTimeline';
 import './OrderTrackerPage.css';
 
+const TERMINAL = new Set<Order['status']>(['Delivered', 'Cancelled']);
+
 export function OrderTrackerPage() {
     const { orderId } = useParams<{ orderId: string }>();
     const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-    // Initial fetch
-    useEffect(() => {
+    const fetchOrder = useCallback(() => {
         if (!orderId) return;
-        getOrder(orderId)
-            .then(setOrder)
+        return getOrder(orderId)
+            .then(data => {
+                setOrder(data);
+                setLastUpdated(new Date());
+            })
             .catch(() => setError('Order not found.'))
             .finally(() => setLoading(false));
     }, [orderId]);
 
-    // Real-time updates — backend emits 'order:updated' (colon, not dot)
+    // Initial fetch
+    useEffect(() => { fetchOrder(); }, [fetchOrder]);
+
+    // 10-second polling — stops when order reaches terminal state
+    useEffect(() => {
+        if (!orderId) return;
+        if (order && TERMINAL.has(order.status)) return; // no more polling needed
+
+        const interval = setInterval(() => {
+            fetchOrder();
+        }, 10_000);
+
+        return () => clearInterval(interval);
+    }, [orderId, order?.status, fetchOrder]);
+
+    // Real-time updates via WebSocket — still active for instant pushes
     const socketRef = useSocket(order?.restaurant_id?.toString() ?? null);
     useEffect(() => {
         const socket = socketRef.current;
         if (!socket || !orderId) return;
 
-        // Backend emits: { _id, status, ... }
         const handler = (data: { _id: string; status: Order['status'] }) => {
             if (data._id === orderId || data._id?.toString() === orderId) {
                 setOrder(prev => prev ? { ...prev, status: data.status } : prev);
+                setLastUpdated(new Date());
             }
         };
-        socket.on('order:updated', handler);   // ← fixed: was 'order.updated'
+        socket.on('order:updated', handler);
         return () => { socket.off('order:updated', handler); };
     }, [socketRef, orderId, order?.restaurant_id]);
 
     if (loading) return <div className="tracker-page"><div className="spinner-center"><div className="spinner" /></div></div>;
     if (error || !order) return (
         <div className="tracker-page tracker-error">
-            <p>😕 {error || 'Something went wrong'}</p>
+            <p>{error || 'Something went wrong'}</p>
             <Link to="/" className="btn btn-ghost">Go back</Link>
         </div>
     );
@@ -56,6 +76,11 @@ export function OrderTrackerPage() {
                 <div className="container">
                     <Link to="/" className="tracker-back">← Menu</Link>
                     <p className="tracker-brand">Cuboic</p>
+                    {lastUpdated && (
+                        <span className="tracker-updated">
+                            Updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </span>
+                    )}
                 </div>
             </header>
 
@@ -64,10 +89,10 @@ export function OrderTrackerPage() {
                 <div className="tracker-hero card">
                     <div className="tracker-hero__status-label">
                         {isCancelled
-                            ? '❌ Order Cancelled'
+                            ? 'Order Cancelled'
                             : order.status === 'Delivered'
-                                ? '🎉 Enjoy your meal!'
-                                : '⏳ Tracking your order…'}
+                                ? 'Enjoy your meal!'
+                                : 'Tracking your order…'}
                     </div>
                     <h1 className="tracker-hero__status">{getStatusMessage(order.status)}</h1>
                     <p className="tracker-table">Table {tableNumber}</p>

@@ -49,7 +49,7 @@ export default function RobotsPage() {
             {loading ? (
                 <div className="loading-msg">Loading robots…</div>
             ) : robots.length === 0 ? (
-                <div className="empty-state"><span>🤖</span><p>No robots registered.</p></div>
+                <div className="empty-state"><p>No robots registered.</p></div>
             ) : (
                 <div className="robots-grid">
                     {robots.map((robot) => (

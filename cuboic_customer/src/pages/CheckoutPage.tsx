@@ -115,7 +115,7 @@ export function CheckoutPage() {
                                 onClick={() => setMethod(m)}
                             >
                                 <span className="co-method-icon">
-                                    {m === 'Card' ? '💳' : m === 'UPI' ? '📱' : '💵'}
+                                    {m === 'Card' ? 'Card' : m === 'UPI' ? 'UPI' : 'Cash'}
                                 </span>
                                 <span>{m}</span>
                             </button>
@@ -190,7 +190,7 @@ export function CheckoutPage() {
                     )}
                 </button>
 
-                <p className="co-secure-note">🔒 Secured and encrypted payment</p>
+                <p className="co-secure-note">Secured and encrypted payment</p>
             </main>
         </div>
     );

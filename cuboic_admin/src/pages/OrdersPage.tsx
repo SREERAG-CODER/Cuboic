@@ -80,7 +80,6 @@ export default function OrdersPage() {
                 <div className="loading-msg">Loading orders…</div>
             ) : orders.length === 0 ? (
                 <div className="empty-state">
-                    <span>📋</span>
                     <p>No orders found for the selected filter.</p>
                 </div>
             ) : (
@@ -110,7 +109,7 @@ export default function OrdersPage() {
                                             ))}
                                         </div>
                                     </td>
-                                    <td className="cell-mono">${order.total.toFixed(2)}</td>
+                                    <td className="cell-mono">₹{order.total.toFixed(2)}</td>
                                     <td><StatusBadge status={order.status} /></td>
                                     <td>
                                         <div className="action-btns">

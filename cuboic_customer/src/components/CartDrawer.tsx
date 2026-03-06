@@ -50,11 +50,11 @@ export function CartDrawer({
 
                 {/* Header */}
                 <div className="cart-sheet__header">
-                    <h2 className="cart-sheet__title">Your Order 🛒</h2>
+                    <h2 className="cart-sheet__title">Your Order</h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {tableId && (
                             <div className="cart-sheet__table">
-                                🪑 Table {tableId.slice(-3).toUpperCase()}
+                                Table {tableId.slice(-3).toUpperCase()}
                             </div>
                         )}
                         <button className="cart-close" onClick={onClose} aria-label="Close">✕</button>
@@ -65,7 +65,7 @@ export function CartDrawer({
                 <div className="cart-sheet__body">
                     {items.length === 0 ? (
                         <div className="cart-empty">
-                            <div className="cart-empty__icon">🍽️</div>
+                            <div className="cart-empty__icon">—</div>
                             <p>Your order is empty</p>
                             <p className="cart-empty__sub">Tap + on any item to add it</p>
                         </div>

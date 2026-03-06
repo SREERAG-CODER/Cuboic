@@ -36,6 +36,12 @@
     text-transform: uppercase;
 }
 
+.tracker-updated {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-weight: 500;
+}
+
 .tracker-body {
     padding-top: 24px;
     padding-bottom: 40px;

@@ -51,15 +51,15 @@ export default function PaymentsPage() {
             {summary && (
                 <div className="kpi-grid">
                     <div className="kpi-card kpi-green">
-                        <div className="kpi-icon">💰</div>
+                        <div className="kpi-icon">₹</div>
                         <div className="kpi-body">
-                            <div className="kpi-value">${summary.total_revenue.toFixed(2)}</div>
+                            <div className="kpi-value">₹{summary.total_revenue.toFixed(2)}</div>
                             <div className="kpi-label">Today's Revenue</div>
                             <div className="kpi-sub">paid orders</div>
                         </div>
                     </div>
                     <div className="kpi-card kpi-blue">
-                        <div className="kpi-icon">🧾</div>
+                        <div className="kpi-icon">#</div>
                         <div className="kpi-body">
                             <div className="kpi-value">{summary.order_count}</div>
                             <div className="kpi-label">Today's Orders</div>
@@ -84,14 +84,14 @@ export default function PaymentsPage() {
 
             {payments.length > 0 && (
                 <div className="filter-summary">
-                    Showing {payments.length} payment(s) — Paid total: <strong>${totalFiltered.toFixed(2)}</strong>
+                    Showing {payments.length} payment(s) — Paid total: <strong>₹{totalFiltered.toFixed(2)}</strong>
                 </div>
             )}
 
             {loading ? (
                 <div className="loading-msg">Loading payments…</div>
             ) : payments.length === 0 ? (
-                <div className="empty-state"><span>💳</span><p>No payments found.</p></div>
+                <div className="empty-state"><span>—</span><p>No payments found.</p></div>
             ) : (
                 <div className="table-wrapper">
                     <table className="data-table">
@@ -111,7 +111,7 @@ export default function PaymentsPage() {
                                     <td className="cell-mono">{new Date(p.createdAt).toLocaleString()}</td>
                                     <td className="cell-mono">#{typeof p.order_id === 'string' ? p.order_id.slice(-6).toUpperCase() : '—'}</td>
                                     <td>{p.method}</td>
-                                    <td className="cell-mono">${p.amount.toFixed(2)}</td>
+                                    <td className="cell-mono">₹{p.amount.toFixed(2)}</td>
                                     <td className="cell-mono">{p.transaction_id ?? '—'}</td>
                                     <td><StatusBadge status={p.status} /></td>
                                 </tr>

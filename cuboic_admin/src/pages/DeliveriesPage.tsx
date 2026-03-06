@@ -166,7 +166,7 @@ export default function DeliveriesPage() {
                                     <option value="">Select order…</option>
                                     {readyOrders.map((o) => (
                                         <option key={o._id} value={o._id}>
-                                            {o.items.map((i) => `${i.name}×${i.quantity}`).join(', ')} — ${o.total.toFixed(2)}
+                                            {o.items.map((i) => `${i.name}×${i.quantity}`).join(', ')} — ₹{o.total.toFixed(2)}
                                         </option>
                                     ))}
                                 </select>
