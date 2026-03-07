@@ -1,0 +1,37 @@
+import { RobotsService } from './robots.service';
+export declare class RobotsController {
+    private readonly robotsService;
+    constructor(robotsService: RobotsService);
+    findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        name: string;
+        id: string;
+        restaurantId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    }[]>;
+    findOne(id: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
+        name: string;
+        id: string;
+        restaurantId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+}
