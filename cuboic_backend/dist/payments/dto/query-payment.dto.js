@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueryPaymentDto = void 0;
 const class_validator_1 = require("class-validator");
 class QueryPaymentDto {
-    restaurant_id;
+    restaurantId;
     from;
     to;
 }
@@ -20,7 +20,7 @@ exports.QueryPaymentDto = QueryPaymentDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], QueryPaymentDto.prototype, "restaurant_id", void 0);
+], QueryPaymentDto.prototype, "restaurantId", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),

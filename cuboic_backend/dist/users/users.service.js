@@ -52,17 +52,17 @@ let UsersService = class UsersService {
         this.prisma = prisma;
     }
     async create(dto) {
-        const existing = await this.prisma.user.findUnique({ where: { user_id: dto.user_id } });
+        const existing = await this.prisma.user.findUnique({ where: { user_id: dto.userId } });
         if (existing)
             throw new common_1.ConflictException('User ID already taken');
-        const password_hash = await bcrypt.hash(dto.password, 10);
+        const passwordHash = await bcrypt.hash(dto.password, 10);
         const { password_hash: _, ...user } = await this.prisma.user.create({
             data: {
                 name: dto.name,
-                user_id: dto.user_id,
-                password_hash,
+                user_id: dto.userId,
+                password_hash: passwordHash,
                 role: dto.role ?? 'Staff',
-                restaurantId: dto.restaurant_id ?? null,
+                restaurantId: dto.restaurantId ?? null,
             },
         });
         return user;

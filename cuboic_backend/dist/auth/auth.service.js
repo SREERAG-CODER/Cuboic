@@ -66,18 +66,18 @@ let AuthService = class AuthService {
     login(user) {
         const payload = {
             sub: user.id,
-            user_id: user.user_id,
+            userId: user.userId,
             role: user.role,
-            restaurant_id: user.restaurantId,
+            restaurantId: user.restaurantId,
         };
         return {
             access_token: this.jwtService.sign(payload),
             user: {
                 id: user.id,
                 name: user.name,
-                user_id: user.user_id,
+                userId: user.userId,
                 role: user.role,
-                restaurant_id: user.restaurantId,
+                restaurantId: user.restaurantId,
             },
         };
     }

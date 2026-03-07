@@ -189,11 +189,11 @@ async function seed() {
     );
 
     // ── Users ────────────────────────────────────────────────────────
-    const password_hash = await bcrypt.hash('password123', 10);
+    const passwordHash = await bcrypt.hash('password123', 10);
     await prisma.user.createMany({
         data: [
-            { restaurantId: restaurant.id, name: 'Restaurant Owner', user_id: 'owner01', password_hash, role: 'Owner' },
-            { restaurantId: restaurant.id, name: 'Staff Member', user_id: 'staff01', password_hash, role: 'Staff' },
+            { restaurantId: restaurant.id, name: 'Restaurant Owner', user_id: 'owner01', password_hash: passwordHash, role: 'Owner' },
+            { restaurantId: restaurant.id, name: 'Staff Member', user_id: 'staff01', password_hash: passwordHash, role: 'Staff' },
         ],
     });
 
@@ -211,8 +211,8 @@ async function seed() {
     console.log(`\n🌐 Customer App URL (Table T1):`);
     console.log(`  http://localhost:5173/?r=${restaurant.id}&t=${tables[0].id}`);
     console.log(`\n🔑 Admin Login:`);
-    console.log(`  Owner  →  user_id=owner01   password=password123`);
-    console.log(`  Staff  →  user_id=staff01   password=password123`);
+    console.log(`  Owner  →  userId=owner01   password=password123`);
+    console.log(`  Staff  →  userId=staff01   password=password123`);
     console.log('──────────────────────────────────────────────');
 }
 

@@ -7,9 +7,9 @@ export declare class AuthController {
         user: {
             id: any;
             name: any;
-            user_id: any;
+            userId: any;
             role: any;
-            restaurant_id: any;
+            restaurantId: any;
         };
     };
     me(req: any): any;

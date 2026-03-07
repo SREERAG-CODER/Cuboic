@@ -23,7 +23,7 @@ export class OrdersController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('Staff', 'Owner')
     @Get()
-    findAll(@Query('restaurant_id') restaurantId: string, @Query('status') status?: string) {
+    findAll(@Query('restaurantId') restaurantId: string, @Query('status') status?: string) {
         return this.ordersService.findAll(restaurantId, status);
     }
 

@@ -3,7 +3,7 @@ import { IsString, IsNumber, IsBoolean, IsOptional, IsMongoId, Min } from 'class
 export class UpdateMenuItemDto {
     @IsOptional()
     @IsMongoId()
-    category_id?: string;
+    categoryId?: string;
 
     @IsOptional()
     @IsString()

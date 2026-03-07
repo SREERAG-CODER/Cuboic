@@ -2,10 +2,10 @@ import { IsString, IsNumber, IsBoolean, IsOptional, IsMongoId, Min } from 'class
 
 export class CreateMenuItemDto {
     @IsMongoId()
-    restaurant_id: string;
+    restaurantId: string;
 
     @IsMongoId()
-    category_id: string;
+    categoryId: string;
 
     @IsString()
     name: string;

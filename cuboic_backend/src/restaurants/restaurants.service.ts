@@ -13,7 +13,7 @@ export class RestaurantsService {
         return this.prisma.restaurant.findMany();
     }
 
-    create(data: { name: string; description?: string; logo_url?: string }) {
+    create(data: { name: string; description?: string; logoUrl?: string }) {
         return this.prisma.restaurant.create({ data });
     }
 }

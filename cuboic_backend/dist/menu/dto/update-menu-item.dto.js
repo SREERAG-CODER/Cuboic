@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateMenuItemDto = void 0;
 const class_validator_1 = require("class-validator");
 class UpdateMenuItemDto {
-    category_id;
+    categoryId;
     name;
     description;
     price;
@@ -25,7 +25,7 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsMongoId)(),
     __metadata("design:type", String)
-], UpdateMenuItemDto.prototype, "category_id", void 0);
+], UpdateMenuItemDto.prototype, "categoryId", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),

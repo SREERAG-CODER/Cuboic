@@ -16,7 +16,7 @@ export class OrdersService {
 
     async create(dto: CreateOrderDto) {
         const itemDocs = await this.prisma.menuItem.findMany({
-            where: { id: { in: dto.items.map((i) => i.item_id) } },
+            where: { id: { in: dto.items.map((i) => i.itemId) } },
         });
 
         if (itemDocs.length !== dto.items.length) {
@@ -24,19 +24,19 @@ export class OrdersService {
         }
 
         const orderItems = dto.items.map((i) => {
-            const doc = itemDocs.find((d) => d.id === i.item_id);
-            return { item_id: doc!.id, name: doc!.name, unit_price: doc!.price, quantity: i.quantity };
+            const doc = itemDocs.find((d) => d.id === i.itemId);
+            return { itemId: doc!.id, name: doc!.name, unitPrice: doc!.price, quantity: i.quantity };
         });
 
-        const subtotal = orderItems.reduce((sum, i) => sum + i.unit_price * i.quantity, 0);
+        const subtotal = orderItems.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
         const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
         const total = parseFloat((subtotal + tax).toFixed(2));
 
         const order = await this.prisma.order.create({
             data: {
-                restaurantId: dto.restaurant_id,
-                tableId: dto.table_id,
-                customer_session_id: dto.customer_session_id,
+                restaurantId: dto.restaurantId,
+                tableId: dto.tableId,
+                customer_session_id: dto.customerSessionId,
                 items: orderItems,
                 subtotal,
                 tax,
@@ -44,7 +44,7 @@ export class OrdersService {
             },
         });
 
-        this.eventsGateway.emitToRestaurant(dto.restaurant_id, 'order:new', order);
+        this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
         return order;
     }
 

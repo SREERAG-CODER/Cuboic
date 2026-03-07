@@ -2,13 +2,13 @@ import { IsString, IsOptional } from 'class-validator';
 
 export class QueryMenuDto {
     @IsString()
-    restaurant_id: string;
+    restaurantId: string;
 
     @IsOptional()
     @IsString()
-    table_id?: string;
+    tableId?: string;
 
     @IsOptional()
     @IsString()
-    category_id?: string;
+    categoryId?: string;
 }

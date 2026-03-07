@@ -48,14 +48,14 @@ __decorate([
 ], DeliveriesController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('active'),
-    __param(0, (0, common_1.Query)('restaurant_id')),
+    __param(0, (0, common_1.Query)('restaurantId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DeliveriesController.prototype, "findActive", null);
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('restaurant_id')),
+    __param(0, (0, common_1.Query)('restaurantId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)

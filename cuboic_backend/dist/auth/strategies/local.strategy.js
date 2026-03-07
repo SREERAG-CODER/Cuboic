@@ -17,7 +17,7 @@ const auth_service_1 = require("../auth.service");
 let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy, 'local') {
     authService;
     constructor(authService) {
-        super({ usernameField: 'user_id' });
+        super({ usernameField: 'userId' });
         this.authService = authService;
     }
     async validate(userId, password) {

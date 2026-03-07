@@ -43,8 +43,8 @@ let MenuService = class MenuService {
     createItem(dto) {
         return this.prisma.menuItem.create({
             data: {
-                restaurantId: dto.restaurant_id,
-                categoryId: dto.category_id,
+                restaurantId: dto.restaurantId,
+                categoryId: dto.categoryId,
                 name: dto.name,
                 description: dto.description,
                 price: dto.price,
@@ -61,7 +61,7 @@ let MenuService = class MenuService {
                 ...(dto.name !== undefined && { name: dto.name }),
                 ...(dto.description !== undefined && { description: dto.description }),
                 ...(dto.price !== undefined && { price: dto.price }),
-                ...(dto.category_id !== undefined && { categoryId: dto.category_id }),
+                ...(dto.categoryId !== undefined && { categoryId: dto.categoryId }),
                 ...(dto.image_url !== undefined && { image_url: dto.image_url }),
                 ...(dto.is_available !== undefined && { is_available: dto.is_available }),
                 ...(dto.display_order !== undefined && { display_order: dto.display_order }),

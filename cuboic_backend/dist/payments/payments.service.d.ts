@@ -4,17 +4,17 @@ export declare class PaymentsService {
     constructor(prisma: PrismaService);
     findAll(restaurantId: string, from?: string, to?: string): import("@prisma/client").Prisma.PrismaPromise<({
         order: {
-            id: string;
             restaurantId: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
-            customer_session_id: string;
+            tableId: string;
             items: import("@prisma/client/runtime/library").JsonValue;
             status: import("@prisma/client").$Enums.OrderStatus;
+            customer_session_id: string;
             subtotal: number;
             tax: number;
             total: number;
-            tableId: string;
         };
     } & {
         id: string;

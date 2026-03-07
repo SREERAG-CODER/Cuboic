@@ -14,14 +14,14 @@ export class MenuController {
     // Public — customer-facing (no auth)
     @Get()
     getMenu(@Query() query: QueryMenuDto) {
-        return this.menuService.getMenu(query.restaurant_id, query.table_id, query.category_id);
+        return this.menuService.getMenu(query.restaurantId, query.tableId, query.categoryId);
     }
 
     // Admin — fetch ALL items (including unavailable)
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('Staff', 'Owner')
     @Get('admin')
-    getAdminMenu(@Query('restaurant_id') restaurantId: string) {
+    getAdminMenu(@Query('restaurantId') restaurantId: string) {
         return this.menuService.getAllForAdmin(restaurantId);
     }
 

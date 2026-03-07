@@ -1,12 +1,12 @@
 declare class DeliveryStopDto {
-    order_id: string;
-    table_id: string;
+    orderId: string;
+    tableId: string;
     cabinets: string[];
     sequence: number;
 }
 export declare class CreateDeliveryDto {
-    restaurant_id: string;
-    robot_id: string;
+    restaurantId: string;
+    robotId: string;
     stops: DeliveryStopDto[];
 }
 export {};

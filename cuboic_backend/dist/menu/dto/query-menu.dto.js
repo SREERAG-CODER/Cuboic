@@ -12,23 +12,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueryMenuDto = void 0;
 const class_validator_1 = require("class-validator");
 class QueryMenuDto {
-    restaurant_id;
-    table_id;
-    category_id;
+    restaurantId;
+    tableId;
+    categoryId;
 }
 exports.QueryMenuDto = QueryMenuDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], QueryMenuDto.prototype, "restaurant_id", void 0);
+], QueryMenuDto.prototype, "restaurantId", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], QueryMenuDto.prototype, "table_id", void 0);
+], QueryMenuDto.prototype, "tableId", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], QueryMenuDto.prototype, "category_id", void 0);
+], QueryMenuDto.prototype, "categoryId", void 0);
 //# sourceMappingURL=query-menu.dto.js.map

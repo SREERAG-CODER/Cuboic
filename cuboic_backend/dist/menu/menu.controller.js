@@ -27,7 +27,7 @@ let MenuController = class MenuController {
         this.menuService = menuService;
     }
     getMenu(query) {
-        return this.menuService.getMenu(query.restaurant_id, query.table_id, query.category_id);
+        return this.menuService.getMenu(query.restaurantId, query.tableId, query.categoryId);
     }
     getAdminMenu(restaurantId) {
         return this.menuService.getAllForAdmin(restaurantId);
@@ -51,7 +51,7 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('Staff', 'Owner'),
     (0, common_1.Get)('admin'),
-    __param(0, (0, common_1.Query)('restaurant_id')),
+    __param(0, (0, common_1.Query)('restaurantId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)

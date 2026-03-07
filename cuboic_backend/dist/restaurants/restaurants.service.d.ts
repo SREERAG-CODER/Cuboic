@@ -23,7 +23,7 @@ export declare class RestaurantsService {
     create(data: {
         name: string;
         description?: string;
-        logo_url?: string;
+        logoUrl?: string;
     }): import("@prisma/client").Prisma.Prisma__RestaurantClient<{
         name: string;
         description: string | null;

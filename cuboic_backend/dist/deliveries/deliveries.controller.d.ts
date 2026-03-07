@@ -4,39 +4,39 @@ export declare class DeliveriesController {
     private readonly deliveriesService;
     constructor(deliveriesService: DeliveriesService);
     create(dto: CreateDeliveryDto): Promise<{
-        id: string;
         restaurantId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.DeliveryStatus;
-        stops: import("@prisma/client/runtime/library").JsonValue;
         robotId: string;
+        stops: import("@prisma/client/runtime/library").JsonValue;
     }>;
     findActive(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
-        id: string;
         restaurantId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.DeliveryStatus;
-        stops: import("@prisma/client/runtime/library").JsonValue;
         robotId: string;
+        stops: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
     findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
-        id: string;
         restaurantId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.DeliveryStatus;
-        stops: import("@prisma/client/runtime/library").JsonValue;
         robotId: string;
+        stops: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
     confirmStop(id: string, index: string): Promise<{
-        id: string;
         restaurantId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.DeliveryStatus;
-        stops: import("@prisma/client/runtime/library").JsonValue;
         robotId: string;
+        stops: import("@prisma/client/runtime/library").JsonValue;
     }>;
 }

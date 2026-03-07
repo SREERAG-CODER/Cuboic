@@ -3,9 +3,9 @@ export declare class RobotsController {
     private readonly robotsService;
     constructor(robotsService: RobotsService);
     findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        restaurantId: string;
         name: string;
         id: string;
-        restaurantId: string;
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.RobotStatus;
@@ -19,9 +19,9 @@ export declare class RobotsController {
         cabinets: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
     findOne(id: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
+        restaurantId: string;
         name: string;
         id: string;
-        restaurantId: string;
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.RobotStatus;

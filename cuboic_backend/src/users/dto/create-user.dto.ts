@@ -7,7 +7,7 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    user_id: string;
+    userId: string;
 
     @IsString()
     @IsNotEmpty()
@@ -18,5 +18,5 @@ export class CreateUserDto {
 
     @IsOptional()
     @IsString()
-    restaurant_id?: string;
+    restaurantId?: string;
 }

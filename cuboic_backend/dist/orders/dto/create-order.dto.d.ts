@@ -1,11 +1,11 @@
 declare class OrderItemDto {
-    item_id: string;
+    itemId: string;
     quantity: number;
 }
 export declare class CreateOrderDto {
-    restaurant_id: string;
-    table_id: string;
-    customer_session_id: string;
+    restaurantId: string;
+    tableId: string;
+    customerSessionId: string;
     items: OrderItemDto[];
 }
 export {};

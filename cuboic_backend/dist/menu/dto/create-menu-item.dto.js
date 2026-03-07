@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateMenuItemDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateMenuItemDto {
-    restaurant_id;
-    category_id;
+    restaurantId;
+    categoryId;
     name;
     description;
     price;
@@ -25,11 +25,11 @@ exports.CreateMenuItemDto = CreateMenuItemDto;
 __decorate([
     (0, class_validator_1.IsMongoId)(),
     __metadata("design:type", String)
-], CreateMenuItemDto.prototype, "restaurant_id", void 0);
+], CreateMenuItemDto.prototype, "restaurantId", void 0);
 __decorate([
     (0, class_validator_1.IsMongoId)(),
     __metadata("design:type", String)
-], CreateMenuItemDto.prototype, "category_id", void 0);
+], CreateMenuItemDto.prototype, "categoryId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
