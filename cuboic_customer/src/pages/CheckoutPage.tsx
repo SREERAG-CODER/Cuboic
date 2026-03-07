@@ -61,13 +61,13 @@ export function CheckoutPage() {
 
             // Payment "succeeded" — now create the order
             const order = await placeOrder({
-                restaurant_id: restaurantId,
-                table_id: tableId,
-                customer_session_id: sessionId ?? SESSION_ID,
-                items: items.map(c => ({ item_id: c.item._id, quantity: c.quantity })),
+                restaurantId: restaurantId,
+                tableId: tableId,
+                customer_sessionid: sessionId ?? SESSION_ID,
+                items: items.map(c => ({ itemid: c.item.id, quantity: c.quantity })),
             });
 
-            navigate(`/order/${order._id}`, { replace: true });
+            navigate(`/order/${order.id}`, { replace: true });
         } catch (err: unknown) {
             const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
             setError(msg ?? 'Failed to place order. Please try again.');
@@ -90,7 +90,7 @@ export function CheckoutPage() {
                     <h2 className="co-section-title">Order Summary</h2>
                     <div className="co-items">
                         {items.map(c => (
-                            <div key={c.item._id} className="co-item-row">
+                            <div key={c.item.id} className="co-item-row">
                                 <span className="co-item-name">{c.quantity}× {c.item.name}</span>
                                 <span className="co-item-price">₹{(c.item.price * c.quantity).toFixed(2)}</span>
                             </div>

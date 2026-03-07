@@ -1,0 +1,36 @@
+import { PrismaService } from '../prisma/prisma.service';
+export declare class RestaurantsService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    findById(id: string): import("@prisma/client").Prisma.Prisma__RestaurantClient<{
+        id: string;
+        name: string;
+        description: string | null;
+        logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    findAll(): import("@prisma/client").Prisma.PrismaPromise<{
+        id: string;
+        name: string;
+        description: string | null;
+        logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    create(data: {
+        name: string;
+        description?: string;
+        logo_url?: string;
+    }): import("@prisma/client").Prisma.Prisma__RestaurantClient<{
+        id: string;
+        name: string;
+        description: string | null;
+        logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+}

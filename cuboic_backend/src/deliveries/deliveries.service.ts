@@ -1,66 +1,59 @@
-import {
-    Injectable,
-    NotFoundException,
-    BadRequestException,
-    ConflictException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Delivery, DeliveryDocument } from './schemas/delivery.schema';
-import { Robot, RobotDocument } from '../robots/schemas/robot.schema';
-import { Order, OrderDocument } from '../orders/schemas/order.schema';
+import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { EventsGateway } from '../events/events.gateway';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 
 @Injectable()
 export class DeliveriesService {
     constructor(
-        @InjectModel(Delivery.name) private deliveryModel: Model<DeliveryDocument>,
-        @InjectModel(Robot.name) private robotModel: Model<RobotDocument>,
-        @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+        private prisma: PrismaService,
         private readonly eventsGateway: EventsGateway,
     ) { }
 
     async create(dto: CreateDeliveryDto) {
-        const robot = await this.robotModel.findById(dto.robot_id);
+        const robot = await this.prisma.robot.findUnique({ where: { id: dto.robot_id } });
         if (!robot) throw new NotFoundException('Robot not found');
         if (robot.status !== 'Idle') throw new BadRequestException('Robot is not idle');
 
         const allCabinets = dto.stops.flatMap((s) => s.cabinets);
         const unique = new Set(allCabinets);
-        if (unique.size !== allCabinets.length) {
-            throw new ConflictException('Duplicate cabinet IDs across stops');
-        }
+        if (unique.size !== allCabinets.length) throw new ConflictException('Duplicate cabinet IDs');
 
+        const cabinets = robot.cabinets as Array<{ id: string; status: string }>;
         for (const cabId of allCabinets) {
-            const cab = robot.cabinets.find((c) => c.id === cabId);
+            const cab = cabinets.find((c) => c.id === cabId);
             if (!cab) throw new BadRequestException(`Cabinet ${cabId} not found on robot`);
             if (cab.status === 'Occupied') throw new ConflictException(`Cabinet ${cabId} is occupied`);
         }
 
-        // Update robot status + cabinets
-        robot.status = 'Delivering';
-        for (const cab of robot.cabinets) {
-            if (allCabinets.includes(cab.id)) cab.status = 'Occupied';
-        }
-        await robot.save();
+        // Mark cabinets occupied on robot
+        const updatedCabinets = cabinets.map((cab) => ({
+            ...cab,
+            status: allCabinets.includes(cab.id) ? 'Occupied' : cab.status,
+        }));
+        await this.prisma.robot.update({
+            where: { id: dto.robot_id },
+            data: { status: 'Delivering', cabinets: updatedCabinets },
+        });
 
         // Update orders to Assigned
-        await this.orderModel.updateMany(
-            { _id: { $in: dto.stops.map((s) => new Types.ObjectId(s.order_id)) } },
-            { status: 'Assigned' },
-        );
+        await this.prisma.order.updateMany({
+            where: { id: { in: dto.stops.map((s) => s.order_id) } },
+            data: { status: 'Assigned' },
+        });
 
-        const delivery = await this.deliveryModel.create({
-            restaurant_id: new Types.ObjectId(dto.restaurant_id),
-            robot_id: new Types.ObjectId(dto.robot_id),
-            stops: dto.stops.map((s) => ({
-                order_id: new Types.ObjectId(s.order_id),
-                table_id: new Types.ObjectId(s.table_id),
-                cabinets: s.cabinets,
-                sequence: s.sequence,
-                status: 'Pending',
-            })),
+        const delivery = await this.prisma.delivery.create({
+            data: {
+                restaurantId: dto.restaurant_id,
+                robotId: dto.robot_id,
+                stops: dto.stops.map((s) => ({
+                    order_id: s.order_id,
+                    table_id: s.table_id,
+                    cabinets: s.cabinets,
+                    sequence: s.sequence,
+                    status: 'Pending',
+                })),
+            },
         });
 
         this.eventsGateway.emitToRestaurant(dto.restaurant_id, 'delivery:started', delivery);
@@ -68,51 +61,59 @@ export class DeliveriesService {
     }
 
     findActive(restaurantId: string) {
-        return this.deliveryModel.find({
-            restaurant_id: new Types.ObjectId(restaurantId),
-            status: 'InTransit',
+        return this.prisma.delivery.findMany({
+            where: { restaurantId, status: 'InTransit' },
         });
     }
 
     findAll(restaurantId: string) {
-        return this.deliveryModel
-            .find({ restaurant_id: new Types.ObjectId(restaurantId) })
-            .sort({ createdAt: -1 });
+        return this.prisma.delivery.findMany({
+            where: { restaurantId },
+            orderBy: { createdAt: 'desc' },
+        });
     }
 
     async confirmStop(deliveryId: string, stopIndex: number) {
-        const delivery = await this.deliveryModel.findById(deliveryId);
+        const delivery = await this.prisma.delivery.findUnique({ where: { id: deliveryId } });
         if (!delivery) throw new NotFoundException('Delivery not found');
 
-        const stop = delivery.stops[stopIndex];
+        const stops = delivery.stops as Array<{
+            order_id: string; table_id: string; cabinets: string[];
+            sequence: number; status: string; delivered_at?: string;
+        }>;
+
+        const stop = stops[stopIndex];
         if (!stop) throw new NotFoundException('Stop not found');
         if (stop.status === 'Delivered') throw new BadRequestException('Stop already confirmed');
 
-        stop.status = 'Delivered';
-        stop.delivered_at = new Date();
+        stops[stopIndex] = { ...stop, status: 'Delivered', delivered_at: new Date().toISOString() };
+        await this.prisma.order.update({ where: { id: stop.order_id }, data: { status: 'Delivered' } });
 
-        // Update the order
-        await this.orderModel.findByIdAndUpdate(stop.order_id, { status: 'Delivered' });
-
-        // Free cabinets
-        const robot = await this.robotModel.findById(delivery.robot_id);
+        const robot = await this.prisma.robot.findUnique({ where: { id: delivery.robotId } });
+        let robotUpdate: any = {};
         if (robot) {
-            for (const cab of robot.cabinets) {
-                if (stop.cabinets.includes(cab.id)) cab.status = 'Free';
-            }
-
-            // Check if all stops done
-            const allDone = delivery.stops.every((s) => s.status === 'Delivered');
-            if (allDone) {
-                delivery.status = 'Completed';
-                robot.status = 'Idle';
-            }
-
-            await robot.save();
+            const cabs = robot.cabinets as Array<{ id: string; status: string }>;
+            const updatedCabs = cabs.map((c) => ({
+                ...c,
+                status: stop.cabinets.includes(c.id) ? 'Free' : c.status,
+            }));
+            robotUpdate.cabinets = updatedCabs;
         }
 
-        await delivery.save();
-        this.eventsGateway.emitToRestaurant(delivery.restaurant_id.toString(), 'delivery:updated', delivery);
-        return delivery;
+        const allDone = stops.every((s) => s.status === 'Delivered');
+        const newDeliveryStatus = allDone ? 'Completed' : 'InTransit';
+        if (allDone && robot) robotUpdate.status = 'Idle';
+
+        if (robot && Object.keys(robotUpdate).length > 0) {
+            await this.prisma.robot.update({ where: { id: delivery.robotId }, data: robotUpdate });
+        }
+
+        const updated = await this.prisma.delivery.update({
+            where: { id: deliveryId },
+            data: { stops, status: newDeliveryStatus },
+        });
+
+        this.eventsGateway.emitToRestaurant(delivery.restaurantId, 'delivery:updated', updated);
+        return updated;
     }
 }

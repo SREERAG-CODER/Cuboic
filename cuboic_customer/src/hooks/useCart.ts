@@ -11,9 +11,9 @@ export function useCart() {
 
     const add = useCallback((item: MenuItem) => {
         setItems(prev => {
-            const existing = prev.find(c => c.item._id === item._id);
+            const existing = prev.find(c => c.item.id === item.id);
             if (existing) {
-                return prev.map(c => c.item._id === item._id ? { ...c, quantity: c.quantity + 1 } : c);
+                return prev.map(c => c.item.id === item.id ? { ...c, quantity: c.quantity + 1 } : c);
             }
             return [...prev, { item, quantity: 1 }];
         });
@@ -21,10 +21,10 @@ export function useCart() {
 
     const remove = useCallback((itemId: string) => {
         setItems(prev => {
-            const existing = prev.find(c => c.item._id === itemId);
+            const existing = prev.find(c => c.item.id === itemId);
             if (!existing) return prev;
-            if (existing.quantity === 1) return prev.filter(c => c.item._id !== itemId);
-            return prev.map(c => c.item._id === itemId ? { ...c, quantity: c.quantity - 1 } : c);
+            if (existing.quantity === 1) return prev.filter(c => c.item.id !== itemId);
+            return prev.map(c => c.item.id === itemId ? { ...c, quantity: c.quantity - 1 } : c);
         });
     }, []);
 

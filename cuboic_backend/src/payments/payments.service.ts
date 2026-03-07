@@ -1,20 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Payment, PaymentDocument } from './schemas/payment.schema';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PaymentsService {
-    constructor(@InjectModel(Payment.name) private paymentModel: Model<PaymentDocument>) { }
+    constructor(private prisma: PrismaService) { }
 
     findAll(restaurantId: string, from?: string, to?: string) {
-        const filter: any = { restaurant_id: new Types.ObjectId(restaurantId) };
-        if (from || to) {
-            filter.createdAt = {};
-            if (from) filter.createdAt.$gte = new Date(from);
-            if (to) filter.createdAt.$lte = new Date(to);
-        }
-        return this.paymentModel.find(filter).sort({ createdAt: -1 });
+        return this.prisma.payment.findMany({
+            where: {
+                order: { restaurantId },
+                ...(from || to
+                    ? {
+                        createdAt: {
+                            ...(from ? { gte: new Date(from) } : {}),
+                            ...(to ? { lte: new Date(to) } : {}),
+                        },
+                    }
+                    : {}),
+            },
+            orderBy: { createdAt: 'desc' },
+            include: { order: true },
+        });
     }
 
     async getSummary(restaurantId: string) {
@@ -23,10 +29,12 @@ export class PaymentsService {
         const end = new Date();
         end.setHours(23, 59, 59, 999);
 
-        const todayPayments = await this.paymentModel.find({
-            restaurant_id: new Types.ObjectId(restaurantId),
-            status: 'Paid',
-            createdAt: { $gte: start, $lte: end },
+        const todayPayments = await this.prisma.payment.findMany({
+            where: {
+                order: { restaurantId },
+                status: 'Paid',
+                createdAt: { gte: start, lte: end },
+            },
         });
 
         const total_revenue = todayPayments.reduce((sum, p) => sum + p.amount, 0);

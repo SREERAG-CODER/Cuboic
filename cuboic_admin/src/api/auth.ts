@@ -5,15 +5,15 @@ export interface LoginResponse {
     user: {
         id: string
         name: string
-        user_id: string
+        userid: string
         role: 'Staff' | 'Owner'
-        restaurant_id: string
+        restaurantId: string
     }
 }
 
 export const authApi = {
-    login: (user_id: string, password: string) =>
-        apiClient.post<LoginResponse>('/auth/login', { user_id, password }),
+    login: (userid: string, password: string) =>
+        apiClient.post<LoginResponse>('/auth/login', { userid, password }),
 
     me: () => apiClient.get('/auth/me'),
 }

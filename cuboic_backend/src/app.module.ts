@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { PrismaModule } from './prisma/prisma.module';
 import { MenuModule } from './menu/menu.module';
 import { CategoriesModule } from './categories/categories.module';
 import { OrdersModule } from './orders/orders.module';
@@ -17,7 +17,7 @@ import { RobotRuntimeModule } from './robot-runtime/robot-runtime.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/cuboic'),
+    PrismaModule,
     MenuModule,
     CategoriesModule,
     OrdersModule,

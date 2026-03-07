@@ -1,22 +1,22 @@
 import api from './client';
 
 export interface OrderItem {
-    item_id: string;
+    itemid: string;
     quantity: number;
 }
 
 export interface PlaceOrderPayload {
-    restaurant_id: string;
-    table_id: string;
-    customer_session_id: string;
+    restaurantId: string;
+    tableId: string;
+    customer_sessionid: string;
     items: OrderItem[];
 }
 
 // Matches the backend Order schema exactly
 export interface Order {
-    _id: string;
-    restaurant_id: string;
-    table_id: string | { _id: string; table_number: number };
+    id: string;
+    restaurantId: string;
+    tableId: string | { id: string; table_number: number };
     /** Backend field name is `status` (not order_status) */
     status: 'Pending' | 'Confirmed' | 'Preparing' | 'Ready' | 'Assigned' | 'Delivered' | 'Cancelled';
     items: Array<{

@@ -7,8 +7,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
-import { Types } from 'mongoose';
-
 @Controller('restaurants')
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) { }
@@ -22,10 +20,6 @@ export class RestaurantsController {
   // GET /restaurants/:id
   @Get(':id')
   async getById(@Param('id') id: string) {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new NotFoundException('Invalid restaurant ID');
-    }
-
     const restaurant = await this.restaurantsService.findById(id);
 
     if (!restaurant) {

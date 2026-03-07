@@ -51,12 +51,12 @@ export function MenuPage() {
         const matchingCatIds = new Set(
             categories
                 .filter(c => c.name.toLowerCase().includes(searchLower))
-                .map(c => c._id)
+                .map(c => c.id)
         );
         return allItems.filter(item =>
             item.name.toLowerCase().includes(searchLower) ||
             (item.description ?? '').toLowerCase().includes(searchLower) ||
-            matchingCatIds.has(item.category_id)
+            matchingCatIds.has(item.categoryId)
         );
     }, [allItems, categories, searchLower]);
 
@@ -64,7 +64,7 @@ export function MenuPage() {
     const visibleItems = useMemo(() => {
         if (searchLower) return searchedItems; // search overrides category
         if (!activeCategory) return allItems;
-        return allItems.filter(item => item.category_id === activeCategory);
+        return allItems.filter(item => item.categoryId === activeCategory);
     }, [allItems, searchedItems, activeCategory, searchLower]);
 
     /* group items by category for the "All" grouped view */
@@ -72,10 +72,10 @@ export function MenuPage() {
         if (searchLower) return null; // flat results for search
         if (activeCategory) return null;
         const map = new Map<string, MenuItem[]>();
-        for (const cat of categories) map.set(cat._id, []);
+        for (const cat of categories) map.set(cat.id, []);
         for (const item of allItems) {
-            if (!map.has(item.category_id)) map.set(item.category_id, []);
-            map.get(item.category_id)!.push(item);
+            if (!map.has(item.categoryId)) map.set(item.categoryId, []);
+            map.get(item.categoryId)!.push(item);
         }
         return map;
     }, [allItems, categories, activeCategory, searchLower]);
@@ -161,12 +161,12 @@ export function MenuPage() {
                             <span className="cat-pill__count">{allItems.length}</span>
                         </button>
                         {categories.map(c => {
-                            const count = allItems.filter(i => i.category_id === c._id).length;
+                            const count = allItems.filter(i => i.categoryId === c.id).length;
                             return (
                                 <button
-                                    key={c._id}
-                                    className={`cat-pill ${activeCategory === c._id ? 'cat-pill--active' : ''}`}
-                                    onClick={() => setActiveCategory(c._id)}
+                                    key={c.id}
+                                    className={`cat-pill ${activeCategory === c.id ? 'cat-pill--active' : ''}`}
+                                    onClick={() => setActiveCategory(c.id)}
                                 >
                                     {c.name}
                                     <span className="cat-pill__count">{count}</span>
@@ -199,19 +199,19 @@ export function MenuPage() {
                 ) : grouped ? (
                     <>
                         {categories.map(cat => {
-                            const catItems = grouped.get(cat._id) ?? [];
+                            const catItems = grouped.get(cat.id) ?? [];
                             if (catItems.length === 0) return null;
                             return (
-                                <section key={cat._id} className="menu-section fade-up">
+                                <section key={cat.id} className="menu-section fade-up">
                                     <div className="section-label">
                                         <span className="section-label__text">{cat.name}</span>
                                     </div>
                                     <div className="item-grid">
                                         {catItems.map(item => (
                                             <ItemCard
-                                                key={item._id}
+                                                key={item.id}
                                                 item={item}
-                                                cartItem={cart.items.find(c => c.item._id === item._id)}
+                                                cartItem={cart.items.find(c => c.item.id === item.id)}
                                                 onAdd={cart.add}
                                                 onRemove={cart.remove}
                                             />
@@ -226,9 +226,9 @@ export function MenuPage() {
                         <div className="item-grid fade-up">
                             {visibleItems.map(item => (
                                 <ItemCard
-                                    key={item._id}
+                                    key={item.id}
                                     item={item}
-                                    cartItem={cart.items.find(c => c.item._id === item._id)}
+                                    cartItem={cart.items.find(c => c.item.id === item.id)}
                                     onAdd={cart.add}
                                     onRemove={cart.remove}
                                 />

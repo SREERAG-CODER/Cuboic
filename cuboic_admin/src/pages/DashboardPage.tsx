@@ -17,7 +17,7 @@ export default function DashboardPage() {
     const [pendingOrders, setPendingOrders] = useState(0)
     const [pulse, setPulse] = useState(false)
 
-    const restaurantId = user?.restaurant_id ?? ''
+    const restaurantId = user?.restaurantId ?? ''
 
     const load = async () => {
         try {

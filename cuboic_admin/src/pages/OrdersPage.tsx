@@ -14,8 +14,8 @@ const NEXT_STATUS: Record<string, string> = {
 
 interface OrderItem { name: string; quantity: number; unit_price: number }
 interface Order {
-    _id: string
-    table_id: string | { table_number: string }
+    id: string
+    tableId: string | { table_number: string }
     items: OrderItem[]
     total: number
     status: string
@@ -28,7 +28,7 @@ export default function OrdersPage() {
     const [filterStatus, setFilterStatus] = useState('All')
     const [loading, setLoading] = useState(true)
 
-    const restaurantId = user?.restaurant_id ?? ''
+    const restaurantId = user?.restaurantId ?? ''
 
     const load = useCallback(async () => {
         setLoading(true)
@@ -49,12 +49,12 @@ export default function OrdersPage() {
     const handleAdvance = async (order: Order) => {
         const next = NEXT_STATUS[order.status]
         if (!next) return
-        await ordersApi.updateStatus(order._id, next)
+        await ordersApi.updateStatus(order.id, next)
         load()
     }
 
     const handleCancel = async (order: Order) => {
-        await ordersApi.updateStatus(order._id, 'Cancelled')
+        await ordersApi.updateStatus(order.id, 'Cancelled')
         load()
     }
 
@@ -97,9 +97,9 @@ export default function OrdersPage() {
                         </thead>
                         <tbody>
                             {orders.map((order) => (
-                                <tr key={order._id}>
+                                <tr key={order.id}>
                                     <td className="cell-mono">{new Date(order.createdAt).toLocaleTimeString()}</td>
-                                    <td>{typeof order.table_id === 'string' ? order.table_id.slice(-4) : order.table_id?.table_number ?? '—'}</td>
+                                    <td>{typeof order.tableId === 'string' ? order.tableId.slice(-4) : order.tableId?.table_number ?? '—'}</td>
                                     <td>
                                         <div className="items-list">
                                             {order.items.map((it, i) => (

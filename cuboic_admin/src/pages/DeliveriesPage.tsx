@@ -8,9 +8,9 @@ import { showToast } from '../components/Toast'
 import StatusBadge from '../components/StatusBadge'
 
 interface DeliveryStop {
-    _id?: string
-    order_id: string
-    table_id: string
+    id?: string
+    orderId: string
+    tableId: string
     cabinets: string[]
     sequence: number
     status: string
@@ -18,19 +18,19 @@ interface DeliveryStop {
 }
 
 interface Delivery {
-    _id: string
-    robot_id: string
+    id: string
+    robotId: string
     stops: DeliveryStop[]
     status: string
     createdAt: string
 }
 
-interface Robot { _id: string; name: string; status: string; cabinets: Array<{ id: string; status: string }> }
-interface Order { _id: string; table_id: string; status: string; total: number; items: Array<{ name: string; quantity: number }> }
+interface Robot { id: string; name: string; status: string; cabinets: Array<{ id: string; status: string }> }
+interface Order { id: string; tableId: string; status: string; total: number; items: Array<{ name: string; quantity: number }> }
 
 interface CreateStop {
-    order_id: string
-    table_id: string
+    orderId: string
+    tableId: string
     cabinets: string[]
     sequence: number
 }
@@ -46,10 +46,10 @@ export default function DeliveriesPage() {
 
     // Create delivery form state
     const [selectedRobot, setSelectedRobot] = useState('')
-    const [stops, setStops] = useState<CreateStop[]>([{ order_id: '', table_id: '', cabinets: [], sequence: 1 }])
+    const [stops, setStops] = useState<CreateStop[]>([{ orderId: '', tableId: '', cabinets: [], sequence: 1 }])
     const [creating, setCreating] = useState(false)
 
-    const restaurantId = user?.restaurant_id ?? ''
+    const restaurantId = user?.restaurantId ?? ''
 
     const load = useCallback(async () => {
         try {
@@ -85,7 +85,7 @@ export default function DeliveriesPage() {
     const idleRobots = robots.filter((r) => r.status === 'Idle')
 
     const handleAddStop = () => {
-        setStops((prev) => [...prev, { order_id: '', table_id: '', cabinets: [], sequence: prev.length + 1 }])
+        setStops((prev) => [...prev, { orderId: '', tableId: '', cabinets: [], sequence: prev.length + 1 }])
     }
 
     const handleStopChange = (index: number, field: keyof CreateStop, value: string | string[]) => {
@@ -101,19 +101,19 @@ export default function DeliveriesPage() {
     }
 
     const handleCreateDelivery = async () => {
-        if (!selectedRobot || stops.some((s) => !s.order_id || s.cabinets.length === 0)) {
+        if (!selectedRobot || stops.some((s) => !s.orderId || s.cabinets.length === 0)) {
             showToast('Validation', 'Select a robot, orders, and cabinets for each stop.', 'warning')
             return
         }
         setCreating(true)
         try {
-            const selectedRobotObj = robots.find((r) => r._id === selectedRobot)!
+            const selectedRobotObj = robots.find((r) => r.id === selectedRobot)!
             const payload = {
-                restaurant_id: restaurantId,
-                robot_id: selectedRobot,
+                restaurantId: restaurantId,
+                robotId: selectedRobot,
                 stops: stops.map((s) => ({
-                    order_id: s.order_id,
-                    table_id: readyOrders.find((o) => o._id === s.order_id)?.table_id ?? s.table_id,
+                    orderId: s.orderId,
+                    tableId: readyOrders.find((o) => o.id === s.orderId)?.tableId ?? s.tableId,
                     cabinets: s.cabinets,
                     sequence: s.sequence,
                 })),
@@ -121,7 +121,7 @@ export default function DeliveriesPage() {
             await deliveriesApi.create(payload)
             setShowCreate(false)
             setSelectedRobot('')
-            setStops([{ order_id: '', table_id: '', cabinets: [], sequence: 1 }])
+            setStops([{ orderId: '', tableId: '', cabinets: [], sequence: 1 }])
             load()
         } catch (err: unknown) {
             const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Failed to create delivery'
@@ -129,7 +129,7 @@ export default function DeliveriesPage() {
         } finally { setCreating(false) }
     }
 
-    const selectedRobotObj = robots.find((r) => r._id === selectedRobot)
+    const selectedRobotObj = robots.find((r) => r.id === selectedRobot)
 
     return (
         <div className="page">
@@ -151,7 +151,7 @@ export default function DeliveriesPage() {
                         <select value={selectedRobot} onChange={(e) => setSelectedRobot(e.target.value)}>
                             <option value="">Select idle robot…</option>
                             {idleRobots.map((r) => (
-                                <option key={r._id} value={r._id}>{r.name}</option>
+                                <option key={r.id} value={r.id}>{r.name}</option>
                             ))}
                         </select>
                     </div>
@@ -162,10 +162,10 @@ export default function DeliveriesPage() {
 
                             <div className="form-group">
                                 <label>Order (Ready)</label>
-                                <select value={stop.order_id} onChange={(e) => handleStopChange(si, 'order_id', e.target.value)}>
+                                <select value={stop.orderId} onChange={(e) => handleStopChange(si, 'orderId', e.target.value)}>
                                     <option value="">Select order…</option>
                                     {readyOrders.map((o) => (
-                                        <option key={o._id} value={o._id}>
+                                        <option key={o.id} value={o.id}>
                                             {o.items.map((i) => `${i.name}×${i.quantity}`).join(', ')} — ₹{o.total.toFixed(2)}
                                         </option>
                                     ))}
@@ -213,9 +213,9 @@ export default function DeliveriesPage() {
             ) : (
                 <div className="delivery-list">
                     {(tab === 'active' ? active : history).map((d) => (
-                        <div key={d._id} className="delivery-card">
+                        <div key={d.id} className="delivery-card">
                             <div className="delivery-card-header">
-                                <span className="delivery-id">#{d._id.slice(-6).toUpperCase()}</span>
+                                <span className="delivery-id">#{d.id.slice(-6).toUpperCase()}</span>
                                 <StatusBadge status={d.status} />
                                 <span className="delivery-time">{new Date(d.createdAt).toLocaleString()}</span>
                             </div>
@@ -228,7 +228,7 @@ export default function DeliveriesPage() {
                                             <StatusBadge status={stop.status} />
                                         </div>
                                         {tab === 'active' && stop.status === 'Pending' && user?.role === 'Staff' && (
-                                            <button className="btn btn-sm btn-primary" onClick={() => handleConfirmStop(d._id, si)}>
+                                            <button className="btn btn-sm btn-primary" onClick={() => handleConfirmStop(d.id, si)}>
                                                 Confirm Delivery
                                             </button>
                                         )}

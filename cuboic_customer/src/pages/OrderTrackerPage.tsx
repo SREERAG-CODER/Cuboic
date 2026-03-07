@@ -41,20 +41,20 @@ export function OrderTrackerPage() {
     }, [orderId, order?.status, fetchOrder]);
 
     // Real-time updates via WebSocket — still active for instant pushes
-    const socketRef = useSocket(order?.restaurant_id?.toString() ?? null);
+    const socketRef = useSocket(order?.restaurantId?.toString() ?? null);
     useEffect(() => {
         const socket = socketRef.current;
         if (!socket || !orderId) return;
 
-        const handler = (data: { _id: string; status: Order['status'] }) => {
-            if (data._id === orderId || data._id?.toString() === orderId) {
+        const handler = (data: { id: string; status: Order['status'] }) => {
+            if (data.id === orderId || data.id?.toString() === orderId) {
                 setOrder(prev => prev ? { ...prev, status: data.status } : prev);
                 setLastUpdated(new Date());
             }
         };
         socket.on('order:updated', handler);
         return () => { socket.off('order:updated', handler); };
-    }, [socketRef, orderId, order?.restaurant_id]);
+    }, [socketRef, orderId, order?.restaurantId]);
 
     if (loading) return <div className="tracker-page"><div className="spinner-center"><div className="spinner" /></div></div>;
     if (error || !order) return (
@@ -64,8 +64,8 @@ export function OrderTrackerPage() {
         </div>
     );
 
-    const tableNumber = typeof order.table_id === 'object'
-        ? (order.table_id as { table_number: number }).table_number
+    const tableNumber = typeof order.tableId === 'object'
+        ? (order.tableId as { table_number: number }).table_number
         : '—';
 
     const isCancelled = order.status === 'Cancelled';
@@ -127,7 +127,7 @@ export function OrderTrackerPage() {
                     </div>
                 </section>
 
-                <p className="tracker-note">Order ID: <code>{order._id}</code></p>
+                <p className="tracker-note">Order ID: <code>{order.id}</code></p>
             </main>
         </div>
     );

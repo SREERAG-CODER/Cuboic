@@ -71,13 +71,13 @@ export function CartDrawer({
                         </div>
                     ) : (
                         items.map(c => (
-                            <div key={c.item._id} className="cart-row fade-in">
+                            <div key={c.item.id} className="cart-row fade-in">
                                 <div className="cart-row__info">
                                     <p className="cart-row__name">{c.item.name}</p>
                                     <p className="cart-row__price">₹{(c.item.price * c.quantity).toFixed(2)}</p>
                                 </div>
                                 <div className="qty-control">
-                                    <button className="qty-btn" onClick={() => onRemove(c.item._id)}>−</button>
+                                    <button className="qty-btn" onClick={() => onRemove(c.item.id)}>−</button>
                                     <span className="qty-value">{c.quantity}</span>
                                     <button className="qty-btn" onClick={() => onAdd(c.item)}>+</button>
                                 </div>

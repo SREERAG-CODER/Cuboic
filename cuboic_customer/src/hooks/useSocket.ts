@@ -13,7 +13,7 @@ export function useSocket(restaurantId: string | null) {
         socketRef.current = socket;
 
         socket.on('connect', () => {
-            socket.emit('join', { restaurant_id: restaurantId });
+            socket.emit('join', { restaurantId: restaurantId });
         });
 
         return () => {

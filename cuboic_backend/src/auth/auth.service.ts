@@ -20,19 +20,19 @@ export class AuthService {
 
     login(user: any) {
         const payload = {
-            sub: user._id,
+            sub: user.id,          // changed from _id to id (Prisma uses .id)
             user_id: user.user_id,
             role: user.role,
-            restaurant_id: user.restaurant_id,
+            restaurant_id: user.restaurantId,
         };
         return {
             access_token: this.jwtService.sign(payload),
             user: {
-                id: user._id,
+                id: user.id,
                 name: user.name,
                 user_id: user.user_id,
                 role: user.role,
-                restaurant_id: user.restaurant_id,
+                restaurant_id: user.restaurantId,
             },
         };
     }

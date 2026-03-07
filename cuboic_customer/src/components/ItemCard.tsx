@@ -51,7 +51,7 @@ export function ItemCard({ item, cartItem, onAdd, onRemove }: Props) {
                             </button>
                         ) : (
                             <div className="qty-control">
-                                <button className="qty-btn" onClick={() => onRemove(item._id)}>−</button>
+                                <button className="qty-btn" onClick={() => onRemove(item.id)}>−</button>
                                 <span className="qty-value">{qty}</span>
                                 <button className="qty-btn" onClick={() => onAdd(item)}>+</button>
                             </div>

@@ -1,45 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { RobotTelemetry, RobotTelemetryDocument } from './schemas/robot-telemetry.schema';
+import { PrismaService } from '../prisma/prisma.service';
+import { RobotStatus } from '@prisma/client';
 
 @Injectable()
 export class TelemetryService {
-    constructor(
-        @InjectModel(RobotTelemetry.name)
-        private telemetryModel: Model<RobotTelemetryDocument>,
-    ) { }
+    constructor(private prisma: PrismaService) { }
 
     getLatest(robotId: string) {
-        return this.telemetryModel
-            .findOne({ robot_id: new Types.ObjectId(robotId) })
-            .sort({ recorded_at: -1 });
+        return this.prisma.robotTelemetry.findFirst({
+            where: { robotId },
+            orderBy: { createdAt: 'desc' },
+        });
     }
 
     getHistory(robotId: string, limit = 50) {
-        return this.telemetryModel
-            .find({ robot_id: new Types.ObjectId(robotId) })
-            .sort({ recorded_at: -1 })
-            .limit(limit);
+        return this.prisma.robotTelemetry.findMany({
+            where: { robotId },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+        });
     }
+
     async recordTelemetry(data: {
         robotId: string;
         battery: number;
         location: { x: number; y: number };
         status?: string;
-        speed?: number;
     }) {
-        return this.telemetryModel.create({
-            robot_id: data.robotId,
-            battery_level: data.battery,
-            position: {
-                x: data.location.x,
-                y: data.location.y,
-                z: 0,
+        return this.prisma.robotTelemetry.create({
+            data: {
+                robotId: data.robotId,
+                battery: data.battery,
+                location: data.location,
+                status: (data.status ?? 'Idle') as RobotStatus,
             },
-            status: data.status ?? 'Idle',
-            speed: data.speed ?? 0,
-            recorded_at: new Date(),
         });
     }
 }
