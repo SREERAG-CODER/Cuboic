@@ -21,6 +21,7 @@ export function MenuPage() {
     const [loading, setLoading] = useState(true);
     const [cartOpen, setCartOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [tableLabel, setTableLabel] = useState<string>('');
 
     const cart = useCart();
 
@@ -32,8 +33,15 @@ export function MenuPage() {
             const sorted = cats.sort((a, b) => a.display_order - b.display_order);
             setCategories(sorted);
             setActiveCategory(null);
+
+            if (tableId && rest.tables) {
+                const tbl = rest.tables.find(t => t.id === tableId);
+                setTableLabel(tbl ? `Table ${tbl.table_number}` : `Table ${tableId.slice(-4).toUpperCase()}`);
+            } else if (tableId) {
+                setTableLabel(`Table ${tableId.slice(-4).toUpperCase()}`);
+            }
         });
-    }, [restaurantId]);
+    }, [restaurantId, tableId]);
 
     /* load ALL items once */
     useEffect(() => {
@@ -80,7 +88,7 @@ export function MenuPage() {
         return map;
     }, [allItems, categories, activeCategory, searchLower]);
 
-    const tableLabel = tableId ? `Table ${tableId.slice(-4).toUpperCase()}` : '';
+    // const tableLabel = tableId ? `Table ${tableId.slice(-4).toUpperCase()}` : '';
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
