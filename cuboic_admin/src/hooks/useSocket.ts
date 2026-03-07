@@ -13,7 +13,7 @@ export function useSocket(restaurantId: string | undefined, handlers: Record<str
         if (!restaurantId) return
 
         if (!sharedSocket || !sharedSocket.connected) {
-            sharedSocket = io(SOCKET_URL, { transports: ['websocket'] })
+            sharedSocket = io(SOCKET_URL)
         }
 
         const socket = sharedSocket
