@@ -81,7 +81,7 @@ export function CheckoutPage() {
             <header className="checkout-header">
                 <div className="container">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <Link to="/" className="checkout-back">← Menu</Link>
+                        <Link to={`/?r=${restaurantId}&t=${tableId}`} className="checkout-back">← Menu</Link>
                         {tableLabel && <div className="table-tag" style={{ margin: 0, padding: '4px 8px', fontSize: '0.75rem', borderRadius: '4px', background: 'var(--surface2)', color: 'var(--text-muted)', fontWeight: 600 }}>{tableLabel}</div>}
                     </div>
                     <p className="checkout-brand">Cuboic</p>

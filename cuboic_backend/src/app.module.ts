@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { RobotRuntimeModule } from './robot-runtime/robot-runtime.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { RobotRuntimeModule } from './robot-runtime/robot-runtime.module';
     EventsModule,
     RestaurantsModule,
     RobotRuntimeModule,
+    HealthModule,
   ],
 })
 export class AppModule { }

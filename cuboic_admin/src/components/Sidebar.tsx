@@ -1,6 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+interface SidebarProps {
+    isOpen?: boolean;
+    onClose?: () => void;
+}
+
 const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: '⊞' },
     { to: '/orders', label: 'Orders', icon: '≡' },
@@ -9,7 +14,7 @@ const navItems = [
     { to: '/robots', label: 'Robot Fleet', icon: '◉' },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
 
@@ -19,11 +24,12 @@ export default function Sidebar() {
     }
 
     return (
-        <aside className="sidebar">
+        <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-logo">
                 <span className="logo-cube">⬡</span>
                 <span className="logo-text">Cuboic</span>
                 <span className="logo-sub">Owner</span>
+                <button className="mobile-close-btn" onClick={onClose} aria-label="Close menu">×</button>
             </div>
 
             <nav className="sidebar-nav">
@@ -31,6 +37,7 @@ export default function Sidebar() {
                     <NavLink
                         key={item.to}
                         to={item.to}
+                        onClick={onClose}
                         className={({ isActive }) => `nav-item ${isActive ? 'nav-active' : ''}`}
                     >
                         <span className="nav-icon">{item.icon}</span>
@@ -41,6 +48,7 @@ export default function Sidebar() {
                 {user?.role === 'Owner' && (
                     <NavLink
                         to="/payments"
+                        onClick={onClose}
                         className={({ isActive }) => `nav-item ${isActive ? 'nav-active' : ''}`}
                     >
                         <span className="nav-icon">₹</span>

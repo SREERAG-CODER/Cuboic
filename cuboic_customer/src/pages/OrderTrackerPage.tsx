@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getOrder, type Order } from '../api/orders';
+import { getRestaurant } from '../api/menu';
 import { useSocket } from '../hooks/useSocket';
 import { StatusTimeline } from '../components/StatusTimeline';
 import './OrderTrackerPage.css';
@@ -13,6 +14,7 @@ export function OrderTrackerPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+    const [tableLabel, setTableLabel] = useState<string>('—');
 
     const fetchOrder = useCallback(() => {
         if (!orderId) return;
@@ -20,6 +22,27 @@ export function OrderTrackerPage() {
             .then(data => {
                 setOrder(data);
                 setLastUpdated(new Date());
+
+                // Robust table number resolution (FR-5 / Bugfix)
+                let tNum: string | number | undefined = data.table?.table_number;
+                if (!tNum && typeof data.tableId === 'object' && 'table_number' in data.tableId) {
+                    tNum = data.tableId.table_number;
+                }
+
+                if (tNum) {
+                    setTableLabel(String(tNum));
+                } else if (data.restaurantId) {
+                    const tid = typeof data.tableId === 'string' ? data.tableId : data.tableId.id;
+                    getRestaurant(data.restaurantId)
+                        .then(r => {
+                            const t = r.tables?.find(tb => tb.id === tid);
+                            setTableLabel(t ? String(t.table_number) : tid.slice(-4).toUpperCase());
+                        })
+                        .catch(() => setTableLabel(tid.slice(-4).toUpperCase()));
+                } else {
+                    const tid = typeof data.tableId === 'string' ? data.tableId : data.tableId.id;
+                    setTableLabel(tid.slice(-4).toUpperCase());
+                }
             })
             .catch(() => setError('Order not found.'))
             .finally(() => setLoading(false));
@@ -64,9 +87,7 @@ export function OrderTrackerPage() {
         </div>
     );
 
-    const tableNumber = typeof order.tableId === 'object'
-        ? (order.tableId as { table_number: number }).table_number
-        : '—';
+    // `tableLabel` manages the resolved state
 
     const isCancelled = order.status === 'Cancelled';
 
@@ -74,7 +95,7 @@ export function OrderTrackerPage() {
         <div className="tracker-page fade-in">
             <header className="tracker-header">
                 <div className="container">
-                    <Link to="/" className="tracker-back">← Menu</Link>
+                    <Link to={`/?r=${order.restaurantId}&t=${typeof order.tableId === 'string' ? order.tableId : order.tableId.id}`} className="tracker-back">← Menu</Link>
                     <p className="tracker-brand">Cuboic</p>
                     {lastUpdated && (
                         <span className="tracker-updated">
@@ -95,7 +116,7 @@ export function OrderTrackerPage() {
                                 : 'Tracking your order…'}
                     </div>
                     <h1 className="tracker-hero__status">{getStatusMessage(order.status)}</h1>
-                    <p className="tracker-table">Table {tableNumber}</p>
+                    <p className="tracker-table">Table {tableLabel}</p>
                 </div>
 
                 {/* Timeline — hidden for Cancelled */}
@@ -113,7 +134,7 @@ export function OrderTrackerPage() {
                         {order.items.map((item, i) => (
                             <div key={i} className="order-item">
                                 <span className="order-item__name">{item.quantity}× {item.name}</span>
-                                <span className="order-item__price">₹{(item.unit_price * item.quantity).toFixed(2)}</span>
+                                <span className="order-item__price">₹{((item.unit_price ?? item.unitPrice ?? 0) * item.quantity).toFixed(2)}</span>
                             </div>
                         ))}
                     </div>

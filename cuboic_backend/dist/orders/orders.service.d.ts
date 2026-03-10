@@ -19,7 +19,16 @@ export declare class OrdersService {
         tax: number;
         total: number;
     }>;
-    findOne(id: string): import("@prisma/client").Prisma.Prisma__OrderClient<{
+    findOne(id: string): import("@prisma/client").Prisma.Prisma__OrderClient<({
+        table: {
+            restaurantId: string;
+            id: string;
+            table_number: string;
+            is_active: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    } & {
         restaurantId: string;
         id: string;
         createdAt: Date;
@@ -31,8 +40,17 @@ export declare class OrdersService {
         subtotal: number;
         tax: number;
         total: number;
-    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    findAll(restaurantId: string, status?: string): import("@prisma/client").Prisma.PrismaPromise<{
+    }) | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    findAll(restaurantId: string, status?: string): import("@prisma/client").Prisma.PrismaPromise<({
+        table: {
+            restaurantId: string;
+            id: string;
+            table_number: string;
+            is_active: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    } & {
         restaurantId: string;
         id: string;
         createdAt: Date;
@@ -44,7 +62,7 @@ export declare class OrdersService {
         subtotal: number;
         tax: number;
         total: number;
-    }[]>;
+    })[]>;
     updateStatus(id: string, dto: UpdateOrderStatusDto): Promise<{
         restaurantId: string;
         id: string;

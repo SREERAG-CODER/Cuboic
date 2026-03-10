@@ -5,6 +5,7 @@ import { useCart } from '../hooks/useCart';
 import { ItemCard } from '../components/ItemCard';
 import { CartDrawer } from '../components/CartDrawer';
 import { SearchOverlay } from '../components/SearchOverlay';
+import { SkeletonLoader } from '../components/SkeletonLoader';
 import './MenuPage.css';
 
 // Stable session id per tab
@@ -27,6 +28,30 @@ export function MenuPage() {
 
     const cart = useCart();
 
+    interface FlyingItem {
+        id: number;
+        x: number;
+        y: number;
+        image: string;
+    }
+    const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
+
+    const handleAdd = (item: MenuItem, e?: React.MouseEvent) => {
+        cart.add(item);
+        if (e) {
+            const { clientX, clientY } = e;
+            const flyId = Date.now() + Math.random();
+            setFlyingItems(prev => [...prev, {
+                id: flyId,
+                x: clientX,
+                y: clientY,
+                image: item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=480&h=320&fit=crop&auto=format&q=80'
+            }]);
+            setTimeout(() => {
+                setFlyingItems(prev => prev.filter(f => f.id !== flyId));
+            }, 800);
+        }
+    };
     /* load restaurant + categories once */
     useEffect(() => {
         if (!restaurantId) return;
@@ -90,7 +115,51 @@ export function MenuPage() {
         return map;
     }, [allItems, categories, activeCategory, searchLower]);
 
-    // const tableLabel = tableId ? `Table ${tableId.slice(-4).toUpperCase()}` : '';
+    const [isManualScroll, setIsManualScroll] = useState(false);
+
+    /* Intersection Observer for Auto-Scroll Tracking */
+    useEffect(() => {
+        if (!grouped || isManualScroll || searchLower) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            const visible = entries.filter((e) => e.isIntersecting);
+            if (visible.length > 0) {
+                // Get the top-most visible section
+                const topVisible = visible.reduce((prev, current) =>
+                    (prev.boundingClientRect.top < current.boundingClientRect.top) ? prev : current
+                );
+                const catId = topVisible.target.id.replace('cat-', '');
+                setActiveCategory(catId);
+            }
+        }, {
+            rootMargin: '-120px 0px -60% 0px',
+            threshold: 0
+        });
+
+        const sections = document.querySelectorAll('.menu-section[id^="cat-"]');
+        sections.forEach((s) => observer.observe(s));
+
+        return () => observer.disconnect();
+    }, [grouped, isManualScroll, searchLower]);
+
+    const scrollToCategory = (catId: string | null) => {
+        setActiveCategory(catId);
+        if (!catId) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        const el = document.getElementById(`cat-${catId}`);
+        if (el) {
+            setIsManualScroll(true);
+            const yOffset = -100; // Account for sticky headers
+            const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+
+            // Re-enable observer after scrolling finishes
+            setTimeout(() => setIsManualScroll(false), 800);
+        }
+    };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -157,7 +226,7 @@ export function MenuPage() {
                     <div className="category-row__inner">
                         <button
                             className={`cat-pill ${activeCategory === null ? 'cat-pill--active' : ''}`}
-                            onClick={() => setActiveCategory(null)}
+                            onClick={() => scrollToCategory(null)}
                         >
                             All
                             <span className="cat-pill__count">{allItems.length}</span>
@@ -168,7 +237,7 @@ export function MenuPage() {
                                 <button
                                     key={c.id}
                                     className={`cat-pill ${activeCategory === c.id ? 'cat-pill--active' : ''}`}
-                                    onClick={() => setActiveCategory(c.id)}
+                                    onClick={() => scrollToCategory(c.id)}
                                 >
                                     {c.name}
                                     <span className="cat-pill__count">{count}</span>
@@ -192,7 +261,7 @@ export function MenuPage() {
             {/* ── Items ──────────────────────────────────────────── */}
             <main className="container menu-body">
                 {loading ? (
-                    <div className="spinner-center"><div className="spinner" /></div>
+                    <SkeletonLoader count={8} />
                 ) : visibleItems.length === 0 && !grouped ? (
                     <div className="menu-empty">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
@@ -204,7 +273,7 @@ export function MenuPage() {
                             const catItems = grouped.get(cat.id) ?? [];
                             if (catItems.length === 0) return null;
                             return (
-                                <section key={cat.id} className="menu-section fade-up">
+                                <section key={cat.id} id={`cat-${cat.id}`} className="menu-section fade-up">
                                     <div className="section-label">
                                         <span className="section-label__text">{cat.name}</span>
                                     </div>
@@ -214,7 +283,7 @@ export function MenuPage() {
                                                 key={item.id}
                                                 item={item}
                                                 cartItem={cart.items.find(c => c.item.id === item.id)}
-                                                onAdd={cart.add}
+                                                onAdd={handleAdd}
                                                 onRemove={cart.remove}
                                             />
                                         ))}
@@ -231,7 +300,7 @@ export function MenuPage() {
                                     key={item.id}
                                     item={item}
                                     cartItem={cart.items.find(c => c.item.id === item.id)}
-                                    onAdd={cart.add}
+                                    onAdd={handleAdd}
                                     onRemove={cart.remove}
                                 />
                             ))}
@@ -252,6 +321,28 @@ export function MenuPage() {
                 onAdd={cart.add}
                 onRemove={cart.remove}
             />
+
+            {/* ── Flying Ghost Items ─────────────────────────────── */}
+            {flyingItems.map(f => (
+                <img
+                    key={f.id}
+                    src={f.image}
+                    className="flying-ghost"
+                    style={{ '--start-x': `${f.x}px`, '--start-y': `${f.y}px` } as React.CSSProperties}
+                    alt=""
+                />
+            ))}
+
+            {/* ── Flying Ghost Items ─────────────────────────────── */}
+            {flyingItems.map(f => (
+                <img
+                    key={f.id}
+                    src={f.image}
+                    className="flying-ghost"
+                    style={{ '--start-x': `${f.x}px`, '--start-y': `${f.y}px` } as React.CSSProperties}
+                    alt=""
+                />
+            ))}
 
             {/* ── Footer ─────────────────────────────────────────── */}
             <footer className="menu-footer">

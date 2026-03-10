@@ -17,12 +17,14 @@ export interface Order {
     id: string;
     restaurantId: string;
     tableId: string | { id: string; table_number: number };
+    table?: { id: string; table_number: number };
     /** Backend field name is `status` (not order_status) */
     status: 'Pending' | 'Confirmed' | 'Preparing' | 'Ready' | 'Assigned' | 'Delivered' | 'Cancelled';
     items: Array<{
         name: string;
         quantity: number;
-        unit_price: number;
+        unit_price?: number;
+        unitPrice?: number;
     }>;
     subtotal: number;
     tax: number;

@@ -13,10 +13,11 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.85);
+    /* Glassmorphism */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
 }
 
@@ -224,7 +225,11 @@
     top: 0;
     z-index: 40;
     padding: 10px 0;
-    background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+    background: rgba(255, 255, 255, 0.85);
+    /* Glassmorphism */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .category-row__inner {
@@ -459,6 +464,37 @@
 /* ── Old cart FAB (kept for compat) ─────────────────────── */
 .cart-fab {
     display: none;
+}
+
+/* ── Fly-to-cart Animation ────────────────────────────────── */
+.flying-ghost {
+    position: fixed;
+    top: var(--start-y);
+    left: var(--start-x);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid white;
+    animation: flyToCart 0.7s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+}
+
+@keyframes flyToCart {
+    0% {
+        transform: scale(1) translate(-50%, -50%);
+        opacity: 1;
+    }
+
+    100% {
+        /* Approximate center of the sticky cart pill */
+        top: calc(100vh - 50px);
+        left: 50%;
+        transform: scale(0.2) translate(-50%, -50%);
+        opacity: 0;
+    }
 }
 
 /* ── Mobile layout fixes for Header ─────────────────────── */

@@ -52,7 +52,10 @@ let OrdersService = class OrdersService {
         return order;
     }
     findOne(id) {
-        return this.prisma.order.findUnique({ where: { id } });
+        return this.prisma.order.findUnique({
+            where: { id },
+            include: { table: true },
+        });
     }
     findAll(restaurantId, status) {
         return this.prisma.order.findMany({
@@ -60,6 +63,7 @@ let OrdersService = class OrdersService {
                 restaurantId,
                 ...(status ? { status: status } : {}),
             },
+            include: { table: true },
             orderBy: { createdAt: 'desc' },
         });
     }

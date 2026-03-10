@@ -1,15 +1,46 @@
-import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
-import * as dotenv from 'dotenv';
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const bcrypt = __importStar(require("bcryptjs"));
+const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-
-const prisma = new PrismaClient();
-
+const prisma = new client_1.PrismaClient();
 function generateSecretKey() {
     return `robot-${Math.random().toString(36).substring(2, 12)}`;
 }
-
-// ── Real food image URLs ──────────────────────────────────────────────────
 const IMG = {
     vadai: 'https://www.yummytummyaarthi.com/wp-content/uploads/2022/08/medu-vada-1.jpeg',
     idli: 'https://vaya.in/recipes/wp-content/uploads/2018/02/Idli-and-Sambar-1.jpg',
@@ -46,11 +77,8 @@ const IMG = {
     filterCoffee: 'https://www.sharmispassions.com/wp-content/uploads/2012/01/filter-coffee-recipe8.jpg',
     panakam: 'https://www.cookclickndevour.com/wp-content/uploads/2018/03/Panakam-Recipe.jpg',
 };
-
 async function seed() {
     console.log('🔗 Connecting to PostgreSQL...');
-
-    // ── Clear existing data ──────────────────────────────────────────
     await prisma.robotTelemetry.deleteMany({});
     await prisma.delivery.deleteMany({});
     await prisma.payment.deleteMany({});
@@ -62,8 +90,6 @@ async function seed() {
     await prisma.user.deleteMany({});
     await prisma.restaurant.deleteMany({});
     console.log('🗑️  Cleared existing data');
-
-    // ── Restaurant ───────────────────────────────────────────────────
     const restaurant = await prisma.restaurant.create({
         data: {
             name: 'Cuboic Kitchen',
@@ -72,45 +98,29 @@ async function seed() {
             is_active: true,
         },
     });
-
-    // ── Tables — 12 total ────────────────────────────────────────────
-    const tables = await Promise.all(
-        Array.from({ length: 12 }, (_, i) =>
-            prisma.table.create({
-                data: {
-                    restaurantId: restaurant.id,
-                    table_number: `T${i + 1}`,
-                    is_active: true,
-                },
-            })
-        )
-    );
-
-    // ── Categories — 5 ──────────────────────────────────────────────
+    const tables = await Promise.all(Array.from({ length: 12 }, (_, i) => prisma.table.create({
+        data: {
+            restaurantId: restaurant.id,
+            table_number: `T${i + 1}`,
+            is_active: true,
+        },
+    })));
     const catNames = ['Starters', 'Mains', 'Sides', 'Desserts', 'Drinks'];
-    const categories = await Promise.all(
-        catNames.map((name, i) =>
-            prisma.category.create({
-                data: {
-                    restaurantId: restaurant.id,
-                    name,
-                    display_order: i,
-                    is_active: true,
-                },
-            })
-        )
-    );
-
-    // ── Menu Items — 34 South Indian dishes ─────────────────────────
+    const categories = await Promise.all(catNames.map((name, i) => prisma.category.create({
+        data: {
+            restaurantId: restaurant.id,
+            name,
+            display_order: i,
+            is_active: true,
+        },
+    })));
     const menuItemsData = [
-        // Starters (cat 0)
         { name: 'Medu Vadai', description: 'Crispy urad dal doughnuts, served with sambar & coconut chutney', price: 80, cat: 0, image: IMG.vadai },
         { name: 'Idli Sambar', description: 'Three steamed rice cakes with aromatic sambar & three chutneys', price: 70, cat: 0, image: IMG.idli },
         { name: 'Mysore Bonda', description: 'Fluffy deep-fried urad dal balls with ginger & curry leaves', price: 80, cat: 0, image: IMG.bondaBajji },
         { name: 'Masala Papadum', description: 'Roasted papadums with raw mango, onion & green chilli topping', price: 60, cat: 0, image: IMG.papadum },
         { name: 'Rasam', description: 'Thin tangy tomato-tamarind pepper broth — the South Indian soul', price: 60, cat: 0, image: IMG.rasam },
         { name: 'Filter Coffee Shots', description: 'Two small tumblers of traditional Mysore filter decoction', price: 70, cat: 0, image: IMG.filterShots },
-        // Mains (cat 1)
         { name: 'Masala Dosa', description: 'Crispy rice-lentil crepe folded over spiced potato & onion filling', price: 130, cat: 1, image: IMG.dosa },
         { name: 'Ghee Roast Dosa', description: 'Paper-thin dosa finished with generous ghee, served with chutneys', price: 150, cat: 1, image: IMG.gheeRoastDosa },
         { name: 'Onion Uttapam', description: 'Thick soft pancake topped with caramelised onion & tomato', price: 120, cat: 1, image: IMG.uttapam },
@@ -122,20 +132,17 @@ async function seed() {
         { name: 'Pesara Pappu Dal', description: 'Andhra-style green moong dal tempered with dry red chilli & ghee', price: 160, cat: 1, image: IMG.palakDal },
         { name: 'Kothu Parotta', description: 'Shredded layered parotta stir-fried with egg, onion & spiced gravy', price: 210, cat: 1, image: IMG.kothuParotta },
         { name: 'Andhra Veg Thali', description: '7-item unlimited thali — rice, dal, sambar, rasam, 2 curries, curd', price: 220, cat: 1, image: IMG.thaliPlate },
-        // Sides (cat 2)
         { name: 'Coconut Rice', description: 'Steamed rice tossed with freshly grated coconut & mustard seeds', price: 110, cat: 2, image: IMG.coconutRice },
         { name: 'Appam', description: 'Lacy fermented rice hoppers, best paired with stew or curry', price: 100, cat: 2, image: IMG.appam },
         { name: 'Beans Poriyal', description: 'Green beans stir-fried with coconut, mustard seeds & curry leaves', price: 90, cat: 2, image: IMG.poriyal },
         { name: 'Chutney Trio', description: 'Coconut, tomato & mint-coriander chutneys with fresh curry leaf oil', price: 60, cat: 2, image: IMG.chutneySet },
         { name: 'Pickle & Raita', description: 'House mango pickle with chilled cucumber raita', price: 70, cat: 2, image: IMG.pickleRaita },
-        // Desserts (cat 3)
         { name: 'Semiya Payasam', description: 'Vermicelli simmered in milk, cardamom, cashews & golden raisins', price: 100, cat: 3, image: IMG.payasam },
         { name: 'Carrot Halwa', description: 'Slow-cooked grated carrot in ghee, milk & khoya, topped with pistachios', price: 120, cat: 3, image: IMG.halwa },
         { name: 'Kesari Bath', description: 'Semolina sweet with saffron, ghee & cardamom — a Bangalore classic', price: 90, cat: 3, image: IMG.kesariBath },
         { name: 'Tender Coconut Ice Cream', description: 'Hand-churned tender coconut sorbet — light & tropical', price: 110, cat: 3, image: IMG.iceCream },
         { name: 'Mysore Pak', description: 'Melt-in-the-mouth gram flour & ghee fudge from the royal kitchens', price: 80, cat: 3, image: IMG.mysurePak },
         { name: 'Banana Sheera', description: 'Ripe banana & semolina pudding with jaggery and cardamom', price: 90, cat: 3, image: IMG.banana },
-        // Drinks (cat 4)
         { name: 'Spiced Buttermilk', description: 'Chilled churned curd with ginger, green chilli, coriander & mustard', price: 60, cat: 4, image: IMG.buttermilk },
         { name: 'Masala Chai', description: 'Kadak tea brewed with cardamom, ginger, cinnamon & jaggery', price: 60, cat: 4, image: IMG.masalaChai },
         { name: 'Mango Lassi', description: 'Thick Alphonso mango blended with full-fat curd & a hint of saffron', price: 100, cat: 4, image: IMG.mangoLassi },
@@ -143,7 +150,6 @@ async function seed() {
         { name: 'Filter Coffee', description: 'Classic South Indian filter decoction with full-cream milk & froth', price: 70, cat: 4, image: IMG.filterCoffee },
         { name: 'Panakam', description: 'Temple-style cold drink of jaggery, ginger, cardamom & pepper', price: 60, cat: 4, image: IMG.panakam },
     ];
-
     for (let i = 0; i < menuItemsData.length; i++) {
         const item = menuItemsData[i];
         await prisma.menuItem.create({
@@ -159,38 +165,29 @@ async function seed() {
             },
         });
     }
-
-    // ── Robots — 4 total ─────────────────────────────────────────────
     const robotConfigs = [
         { name: 'CuboBot-1', battery: 100, location: { x: 0, y: 0 } },
         { name: 'CuboBot-2', battery: 87, location: { x: 2, y: 1 } },
         { name: 'CuboBot-3', battery: 72, location: { x: 4, y: 0 } },
         { name: 'CuboBot-4', battery: 55, location: { x: 1, y: 3 } },
     ];
-
-    const robots = await Promise.all(
-        robotConfigs.map((r) =>
-            prisma.robot.create({
-                data: {
-                    restaurantId: restaurant.id,
-                    name: r.name,
-                    secretKey: generateSecretKey(),
-                    status: 'Idle',
-                    mode: 'Automatic',
-                    isOnline: false,
-                    battery: r.battery,
-                    location: r.location,
-                    cabinets: [
-                        { id: 'C1', status: 'Free' },
-                        { id: 'C2', status: 'Free' },
-                        { id: 'C3', status: 'Free' },
-                    ],
-                },
-            })
-        )
-    );
-
-    // ── Users ────────────────────────────────────────────────────────
+    const robots = await Promise.all(robotConfigs.map((r) => prisma.robot.create({
+        data: {
+            restaurantId: restaurant.id,
+            name: r.name,
+            secretKey: generateSecretKey(),
+            status: 'Idle',
+            mode: 'Automatic',
+            isOnline: false,
+            battery: r.battery,
+            location: r.location,
+            cabinets: [
+                { id: 'C1', status: 'Free' },
+                { id: 'C2', status: 'Free' },
+                { id: 'C3', status: 'Free' },
+            ],
+        },
+    })));
     const passwordHash = await bcrypt.hash('password123', 10);
     await prisma.user.createMany({
         data: [
@@ -198,8 +195,6 @@ async function seed() {
             { restaurantId: restaurant.id, name: 'Staff Member', user_id: 'staff01', password_hash: passwordHash, role: 'Staff' },
         ],
     });
-
-    // ── Summary ──────────────────────────────────────────────────────
     console.log('\n🎉 Seed complete!\n');
     console.log('──────────────────────────────────────────────');
     console.log(`Restaurant ID : ${restaurant.id}`);
@@ -217,10 +212,10 @@ async function seed() {
     console.log(`  Staff  →  userId=staff01   password=password123`);
     console.log('──────────────────────────────────────────────');
 }
-
 seed()
     .catch((err) => {
-        console.error('❌ Seed failed:', err);
-        process.exit(1);
-    })
+    console.error('❌ Seed failed:', err);
+    process.exit(1);
+})
     .finally(() => prisma.$disconnect());
+//# sourceMappingURL=seed.js.map

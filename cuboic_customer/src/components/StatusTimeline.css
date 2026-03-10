@@ -39,10 +39,26 @@
     background: var(--accent);
     border-color: var(--accent);
     box-shadow: 0 0 0 4px var(--accent-dim);
+    color: white;
+    /* Make the active SVG white */
 }
 
-.timeline__step.active .dot-icon {
+/* Glowing pulse ring */
+.timeline__step.active .timeline__dot::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    animation: pulse-ring 2s infinite cubic-bezier(0.2, 1, 0.3, 1);
+    z-index: -1;
+}
+
+.timeline__step.active .dot-icon,
+.timeline__step.done .dot-icon {
     filter: none;
+    display: flex;
+    /* ensures SVG centers perfectly */
 }
 
 .dot-num {
@@ -83,4 +99,21 @@
 .timeline__step.active .timeline__label {
     color: var(--accent);
     font-weight: 700;
+}
+
+/* Wheel animation */
+.robot-wheel {
+    transform-origin: center;
+    animation: wheel-spin 1s linear infinite;
+}
+
+/* Only animate wheels if it belongs to the 'active' step */
+.timeline__step:not(.active) .robot-wheel {
+    animation: none;
+}
+
+@keyframes wheel-spin {
+    100% {
+        transform: rotate(360deg);
+    }
 }

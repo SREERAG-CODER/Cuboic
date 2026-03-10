@@ -51,7 +51,10 @@ export class OrdersService {
     }
 
     findOne(id: string) {
-        return this.prisma.order.findUnique({ where: { id } });
+        return this.prisma.order.findUnique({
+            where: { id },
+            include: { table: true },
+        });
     }
 
     findAll(restaurantId: string, status?: string) {
@@ -60,6 +63,7 @@ export class OrdersService {
                 restaurantId,
                 ...(status ? { status: status as OrderStatus } : {}),
             },
+            include: { table: true },
             orderBy: { createdAt: 'desc' },
         });
     }
