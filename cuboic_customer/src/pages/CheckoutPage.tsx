@@ -98,8 +98,9 @@ export function CheckoutPage() {
                             <div key={c.item.id} className="bento-item">
                                 <img src={c.item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'} alt={c.item.name} className="bento-item-img" />
                                 <div className="bento-item-info">
-                                    <div className="bento-item-qty">{c.quantity}×</div>
-                                    <div className="bento-item-name">{c.item.name}</div>
+                                    <div className="bento-item-name">
+                                        {c.item.name} <span className="bento-item-qty-inline">x{c.quantity}</span>
+                                    </div>
                                 </div>
                                 <div className="bento-item-price">₹{((Number(c.item.price) || 0) * (Number(c.quantity) || 1)).toFixed(2)}</div>
                             </div>
