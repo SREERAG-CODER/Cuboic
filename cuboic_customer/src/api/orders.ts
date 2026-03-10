@@ -40,3 +40,6 @@ export const getOrder = (id: string) =>
 
 export const updateOrderTable = (id: string, tableId: string) =>
     api.patch<Order>(`/orders/${id}/table`, { tableId }).then(r => r.data);
+
+export const cancelOrder = (id: string) =>
+    api.patch<Order>(`/orders/${id}/cancel`).then(r => r.data);

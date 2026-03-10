@@ -88,6 +88,23 @@ export class OrdersService {
         return order;
     }
 
+    async cancelOrder(id: string) {
+        const existing = await this.prisma.order.findUnique({ where: { id } });
+        if (!existing) throw new NotFoundException('Order not found');
+
+        const cancellableStates = ['Pending', 'Confirmed', 'Preparing'];
+        if (!cancellableStates.includes(existing.status)) {
+            throw new BadRequestException(`Order cannot be cancelled in state: ${existing.status}`);
+        }
+
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: { status: 'Cancelled' },
+        });
+        this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
+        return order;
+    }
+
     async confirmDelivery(id: string) {
         const order = await this.prisma.order.update({
             where: { id },

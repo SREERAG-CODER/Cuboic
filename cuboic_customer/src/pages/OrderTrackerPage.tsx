@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getOrder, type Order } from '../api/orders';
+import { getOrder, cancelOrder, type Order } from '../api/orders';
 import { getRestaurant } from '../api/menu';
 import { useSocket } from '../hooks/useSocket';
 import { StatusTimeline } from '../components/StatusTimeline';
+import { ConfirmCancelModal } from '../components/ConfirmCancelModal';
 import './OrderTrackerPage.css';
 
 const TERMINAL = new Set<Order['status']>(['Delivered', 'Cancelled']);
@@ -15,6 +16,8 @@ export function OrderTrackerPage() {
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [tableLabel, setTableLabel] = useState<string>('—');
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [cancelling, setCancelling] = useState(false);
 
     const fetchOrder = useCallback(() => {
         if (!orderId) return;
@@ -90,6 +93,23 @@ export function OrderTrackerPage() {
     // `tableLabel` manages the resolved state
 
     const isCancelled = order.status === 'Cancelled';
+    const canCancel = ['Pending', 'Confirmed', 'Preparing'].includes(order.status);
+
+    const handleCancel = async () => {
+        if (!orderId) return;
+        setCancelling(true);
+        try {
+            const updated = await cancelOrder(orderId);
+            setOrder(updated);
+            setCancelModalOpen(false);
+        } catch (err) {
+            console.error('Failed to cancel order:', err);
+            // Optionally, we could show an error toast here. For now, just close.
+            setCancelModalOpen(false);
+        } finally {
+            setCancelling(false);
+        }
+    };
 
     return (
         <div className="tracker-page fade-in">
@@ -149,7 +169,26 @@ export function OrderTrackerPage() {
                 </section>
 
                 <p className="tracker-note">Order ID: <code>{order.id}</code></p>
+
+                {canCancel && (
+                    <div style={{ marginTop: '24px', textAlign: 'center' }}>
+                        <button
+                            className="btn btn-outline"
+                            style={{ borderColor: 'var(--danger, #dc3545)', color: 'var(--danger, #dc3545)', width: '100%' }}
+                            onClick={() => setCancelModalOpen(true)}
+                        >
+                            Cancel Order
+                        </button>
+                    </div>
+                )}
             </main>
+
+            <ConfirmCancelModal
+                open={cancelModalOpen}
+                onClose={() => setCancelModalOpen(false)}
+                onConfirm={handleCancel}
+                loading={cancelling}
+            />
         </div>
     );
 }
