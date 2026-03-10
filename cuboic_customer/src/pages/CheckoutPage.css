@@ -251,10 +251,7 @@
     box-shadow: 0 8px 16px var(--accent-dim), inset 0 2px 4px rgba(255, 255, 255, 0.3);
 }
 
-.co-method-btn--active .co-method-icon {
-    filter: brightness(100);
-    /* force bright icon if needed */
-}
+
 
 .co-method-icon {
     font-size: 1.5rem;
@@ -297,6 +294,8 @@
     outline: none;
     transition: all 0.2s;
     font-family: monospace;
+    width: 100%;
+    box-sizing: border-box;
     /* Gives cc info a nice structured look */
 }
 
