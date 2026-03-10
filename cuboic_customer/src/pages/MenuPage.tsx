@@ -5,6 +5,7 @@ import { useCart } from '../hooks/useCart';
 import { ItemCard } from '../components/ItemCard';
 import { CartDrawer } from '../components/CartDrawer';
 import { OrdersDrawer, type ActiveOrderSession } from '../components/OrdersDrawer';
+import { TableSelectorModal } from '../components/TableSelectorModal';
 import { SearchOverlay } from '../components/SearchOverlay';
 import { SkeletonLoader } from '../components/SkeletonLoader';
 import './MenuPage.css';
@@ -13,7 +14,7 @@ import './MenuPage.css';
 const SESSION_ID = crypto.randomUUID();
 
 export function MenuPage() {
-    const [params] = useSearchParams();
+    const [params, setParams] = useSearchParams();
     const restaurantId = params.get('r') ?? '';
     const tableId = params.get('t') ?? '';
 
@@ -24,9 +25,11 @@ export function MenuPage() {
     const [loading, setLoading] = useState(true);
     const [cartOpen, setCartOpen] = useState(false);
     const [ordersOpen, setOrdersOpen] = useState(false);
+    const [tablesOpen, setTablesOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [tableLabel, setTableLabel] = useState<string>('');
+    const [availableTables, setAvailableTables] = useState<Array<{ id: string; table_number: number }>>([]);
     const [activeOrders, setActiveOrders] = useState<ActiveOrderSession[]>([]);
 
     const cart = useCart();
@@ -39,6 +42,17 @@ export function MenuPage() {
             console.error('Failed to parse active orders', e);
         }
     }, []);
+
+    const handleTableSelect = (newTableId: string) => {
+        setParams(prev => {
+            const next = new URLSearchParams(prev);
+            next.set('t', newTableId);
+            return next;
+        });
+        // Clear cart if swapping table
+        cart.clear();
+        setTablesOpen(false);
+    };
 
     interface FlyingItem {
         id: number;
@@ -72,6 +86,10 @@ export function MenuPage() {
             const sorted = cats.sort((a, b) => a.display_order - b.display_order);
             setCategories(sorted);
             setActiveCategory(null);
+
+            if (rest.tables) {
+                setAvailableTables(rest.tables);
+            }
 
             if (tableId && rest.tables) {
                 const tbl = rest.tables.find(t => t.id === tableId);
@@ -186,7 +204,18 @@ export function MenuPage() {
 
                     {/* Table tag */}
                     <div className="menu-header__actions">
-                        {tableLabel && <div className="table-tag">{tableLabel}</div>}
+                        {tableLabel && (
+                            <button
+                                className="table-tag"
+                                onClick={() => setTablesOpen(true)}
+                                style={{ cursor: 'pointer', border: 'none', fontFamily: 'inherit' }}
+                            >
+                                {tableLabel}
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px' }}>
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
                 </div>
             </header>
@@ -389,6 +418,15 @@ export function MenuPage() {
                 orders={activeOrders}
                 restaurantId={restaurantId}
                 tableId={tableId}
+            />
+
+            {/* ── Table selector modal ───────────────────────────── */}
+            <TableSelectorModal
+                open={tablesOpen}
+                onClose={() => setTablesOpen(false)}
+                tables={availableTables}
+                currentTableId={tableId}
+                onSelect={handleTableSelect}
             />
         </div>
     );
