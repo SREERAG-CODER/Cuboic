@@ -83,18 +83,14 @@
 
 @media (min-width: 768px) {
     .checkout-bento {
-        grid-template-columns: 3fr 2fr;
+        display: flex;
+        flex-direction: column;
+        max-width: 680px;
+        margin: 0 auto;
     }
 
-    .bento-tile--main {
-        grid-column: span 1;
-        grid-row: span 2;
-    }
-
-    .bento-totals,
-    .bento-payment,
     .bento-action {
-        grid-column: span 1;
+        margin-top: 24px;
     }
 }
 
@@ -195,13 +191,14 @@
 
 /* Payment methods with Glassmorphism */
 .co-methods {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    width: 100%;
     gap: 10px;
     margin-bottom: 20px;
 }
 
 .co-method-btn {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
