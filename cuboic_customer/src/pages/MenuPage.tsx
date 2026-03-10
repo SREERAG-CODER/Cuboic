@@ -340,7 +340,12 @@ export function MenuPage() {
             {activeOrders.length > 0 && !cartOpen && !ordersOpen && (
                 <div className="track-float" style={{ bottom: cart.count > 0 ? '88px' : '24px' }}>
                     <button className="track-float__btn" onClick={() => setOrdersOpen(true)}>
-                        <span className="track-float__icon">📍</span>
+                        <span className="track-float__icon" style={{ display: 'flex', alignItems: 'center' }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="m11.5 7.5 5 2.5-1.5 1.5-2.5 5-1.5-1.5-.5-5z" />
+                            </svg>
+                        </span>
                         <span>Track {activeOrders.length} Order{activeOrders.length > 1 ? 's' : ''}</span>
                     </button>
                 </div>

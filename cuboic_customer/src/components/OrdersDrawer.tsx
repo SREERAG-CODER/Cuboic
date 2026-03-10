@@ -43,7 +43,12 @@ export function OrdersDrawer({
                 <div className="cart-sheet__body">
                     {sortedOrders.length === 0 ? (
                         <div className="cart-empty">
-                            <div className="cart-empty__icon">🕒</div>
+                            <div className="cart-empty__icon" style={{ marginBottom: '8px' }}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </div>
                             <p>No active orders</p>
                         </div>
                     ) : (
