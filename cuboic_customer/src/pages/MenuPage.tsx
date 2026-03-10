@@ -195,7 +195,7 @@ export function MenuPage() {
                 <div className="menu-header__inner">
                     {/* Brand */}
                     <div className="menu-header__brand">
-                        <span className="menu-header__logo">⬡</span>
+                        <img src="/logo1.png" className="menu-header__logo" alt="Cuboic" />
                         <div>
                             <div className="menu-header__name">{restaurantName}</div>
                             <div className="menu-header__sub">Cuboic</div>
@@ -348,7 +348,7 @@ export function MenuPage() {
             <footer className="menu-footer">
                 <div className="menu-footer__inner">
                     <div className="menu-footer__brand">
-                        <span className="menu-footer__logo">⬡</span>
+                        <img src="/logo1.png" className="menu-footer__logo" alt="Cuboic Logo" />
                         <span className="menu-footer__wordmark">Cuboic</span>
                     </div>
                     <p className="menu-footer__tagline">

@@ -9,7 +9,7 @@ interface SidebarProps {
 const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: '⊞' },
     { to: '/orders', label: 'Orders', icon: '≡' },
-    { to: '/deliveries', label: 'Deliveries', icon: '⬡' },
+    { to: '/deliveries', label: 'Deliveries', icon: '📦' },
     { to: '/menu', label: 'Menu', icon: '≋' },
     { to: '/robots', label: 'Robot Fleet', icon: '◉' },
 ]
@@ -26,7 +26,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     return (
         <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-logo">
-                <span className="logo-cube">⬡</span>
+                <img src="/logo1.png" className="logo-cube" alt="Cuboic Logo" />
                 <span className="logo-text">Cuboic</span>
                 <span className="logo-sub">Owner</span>
                 <button className="mobile-close-btn" onClick={onClose} aria-label="Close menu">×</button>

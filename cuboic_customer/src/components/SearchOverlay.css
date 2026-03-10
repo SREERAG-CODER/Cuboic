@@ -30,12 +30,17 @@
 
 /* Header */
 .search-overlay__header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.search-overlay__header-inner {
+    max-width: 900px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
 }
 
 .search-overlay__back {
@@ -102,9 +107,13 @@
 .search-overlay__body {
     flex: 1;
     overflow-y: auto;
-    padding: 24px 16px 120px;
-    /* bottom padding for cart */
     -webkit-overflow-scrolling: touch;
+}
+
+.search-overlay__body-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 120px;
 }
 
 /* Suggestions */

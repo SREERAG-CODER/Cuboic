@@ -33,14 +33,16 @@
 .menu-header__brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
     flex-shrink: 0;
 }
 
 .menu-header__logo {
-    font-size: 1.5rem;
-    color: var(--accent);
-    line-height: 1;
+    height: 64px;
+    width: auto;
+    object-fit: contain;
+    margin-right: -12px;
+    filter: drop-shadow(0 0 6px rgba(196, 117, 26, 0.4));
 }
 
 .menu-header__name {
@@ -152,12 +154,14 @@
 .menu-footer__brand {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0;
 }
 
 .menu-footer__logo {
-    font-size: 1.6rem;
-    color: var(--accent);
+    height: 72px;
+    width: auto;
+    object-fit: contain;
+    margin-right: -12px;
 }
 
 .menu-footer__wordmark {
