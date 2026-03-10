@@ -181,7 +181,7 @@ export function CheckoutPage() {
 
                     {method === 'Cash' && (
                         <p className="co-method-hint fade-in">
-                            Have exact change ready for the robot.
+                            Please pay at the end of your meal.
                         </p>
                     )}
                 </section>
