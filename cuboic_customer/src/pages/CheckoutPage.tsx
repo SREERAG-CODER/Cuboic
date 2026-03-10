@@ -88,29 +88,37 @@ export function CheckoutPage() {
                 </div>
             </header>
 
-            <main className="container checkout-body">
-                {/* Order Summary */}
-                <section className="co-card">
-                    <h2 className="co-section-title">Order Summary</h2>
-                    <div className="co-items">
+            <main className="container checkout-bento">
+                {/* ── Order Summary Tile (Large) ── */}
+                <section className="bento-tile bento-tile--main fade-up">
+                    <h2 className="bento-title">Your Order</h2>
+
+                    <div className="bento-items-grid">
                         {items.map(c => (
-                            <div key={c.item.id} className="co-item-row">
-                                <span className="co-item-name">{c.quantity}× {c.item.name}</span>
-                                <span className="co-item-price">₹{((Number(c.item.price) || 0) * (Number(c.quantity) || 1)).toFixed(2)}</span>
+                            <div key={c.item.id} className="bento-item">
+                                <img src={c.item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'} alt={c.item.name} className="bento-item-img" />
+                                <div className="bento-item-info">
+                                    <div className="bento-item-qty">{c.quantity}×</div>
+                                    <div className="bento-item-name">{c.item.name}</div>
+                                </div>
+                                <div className="bento-item-price">₹{((Number(c.item.price) || 0) * (Number(c.quantity) || 1)).toFixed(2)}</div>
                             </div>
                         ))}
                     </div>
-                    <hr className="divider" />
-                    <div className="co-totals">
-                        <div className="co-total-row"><span>Subtotal</span><span>₹{total.toFixed(2)}</span></div>
-                        <div className="co-total-row"><span>Tax (5%)</span><span>₹{taxAmount.toFixed(2)}</span></div>
-                        <div className="co-total-row co-total-grand"><span>Total</span><span>₹{grandTotal.toFixed(2)}</span></div>
-                    </div>
                 </section>
 
-                {/* Payment Method */}
-                <section className="co-card">
-                    <h2 className="co-section-title">Payment Method</h2>
+                {/* ── Totals Tile ── */}
+                <section className="bento-tile bento-totals fade-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="co-total-row"><span>Subtotal</span><span>₹{total.toFixed(2)}</span></div>
+                    <div className="co-total-row"><span>Tax (5%)</span><span>₹{taxAmount.toFixed(2)}</span></div>
+                    <hr className="divider" style={{ margin: '12px 0' }} />
+                    <div className="co-total-row co-total-grand"><span>Total</span><span>₹{grandTotal.toFixed(2)}</span></div>
+                </section>
+
+                {/* ── Payment Method Tile ── */}
+                <section className="bento-tile bento-payment fade-up" style={{ animationDelay: '0.2s' }}>
+                    <h2 className="bento-title">Payment Method</h2>
+
                     <div className="co-methods">
                         {(['Card', 'UPI', 'Cash'] as PaymentMethod[]).map(m => (
                             <button
@@ -119,14 +127,14 @@ export function CheckoutPage() {
                                 onClick={() => setMethod(m)}
                             >
                                 <span className="co-method-icon">
-                                    {m === 'Card' ? 'Card' : m === 'UPI' ? 'UPI' : 'Cash'}
+                                    {m === 'Card' ? '💳' : m === 'UPI' ? '📱' : '💵'}
                                 </span>
                                 <span>{m}</span>
                             </button>
                         ))}
                     </div>
 
-                    {/* Card details — only shown when Card is selected */}
+                    {/* Card fields */}
                     {method === 'Card' && (
                         <div className="co-card-fields fade-in">
                             <div className="co-field">
@@ -166,35 +174,37 @@ export function CheckoutPage() {
 
                     {method === 'UPI' && (
                         <p className="co-method-hint fade-in">
-                            You'll be redirected to your UPI app after confirming.
+                            Redirecting to your UPI app soon.
                         </p>
                     )}
 
                     {method === 'Cash' && (
                         <p className="co-method-hint fade-in">
-                            Please have exact change ready when the robot arrives.
+                            Have exact change ready for the robot.
                         </p>
                     )}
                 </section>
 
-                {error && <div className="co-error">{error}</div>}
+                {/* ── Checkout Action Tile ── */}
+                <section className="bento-action fade-up" style={{ animationDelay: '0.3s' }}>
+                    {error && <div className="co-error">{error}</div>}
 
-                <button
-                    className="btn btn-primary co-pay-btn"
-                    onClick={handlePay}
-                    disabled={processing}
-                >
-                    {processing ? (
-                        <span className="co-processing">
-                            <span className="co-spinner" />
-                            Processing payment…
-                        </span>
-                    ) : (
-                        `Pay ₹${grandTotal.toFixed(2)}`
-                    )}
-                </button>
-
-                <p className="co-secure-note">Secured and encrypted payment</p>
+                    <button
+                        className="btn btn-primary co-pay-btn bento-pay-btn"
+                        onClick={handlePay}
+                        disabled={processing}
+                    >
+                        {processing ? (
+                            <span className="co-processing">
+                                <span className="co-spinner" />
+                                Processing…
+                            </span>
+                        ) : (
+                            `Pay ₹${grandTotal.toFixed(2)}`
+                        )}
+                    </button>
+                    <p className="co-secure-note">Secured & encrypted</p>
+                </section>
             </main>
         </div>
     );
