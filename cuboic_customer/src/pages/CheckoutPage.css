@@ -41,7 +41,8 @@
 /* Body Layout – Bento Grid */
 .checkout-bento {
     flex: 1;
-    padding-top: 24px;
+    margin-top: 60px;
+    padding-top: 20px;
     padding-bottom: 40px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -82,17 +83,37 @@
 }
 
 @media (min-width: 768px) {
+    .checkout-page .container {
+        max-width: 1440px;
+        padding: 0 40px;
+    }
+
     .checkout-bento {
-        display: flex;
-        flex-direction: column;
-        max-width: 680px;
-        margin: 0 auto;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "items totals"
+            "payment action";
+    }
+
+    .bento-tile--main {
+        grid-area: items;
+    }
+
+    .bento-totals {
+        grid-area: totals;
+    }
+
+    .bento-payment {
+        grid-area: payment;
     }
 
     .bento-action {
-        margin-top: 24px;
+        grid-area: action;
+        align-self: start;
+        margin-top: 1rem;
     }
 }
+
 
 /* Titles */
 .bento-title {
