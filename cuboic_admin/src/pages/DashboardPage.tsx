@@ -12,9 +12,9 @@ interface Summary { order_count: number; total_revenue: number }
 export default function DashboardPage() {
     const { user } = useAuth()
     const [summary, setSummary] = useState<Summary>({ order_count: 0, total_revenue: 0 })
+    const [orderSummary, setOrderSummary] = useState({ pending: 0, preparing: 0, completed: 0 })
     const [activeDeliveries, setActiveDeliveries] = useState(0)
     const [robotsOnline, setRobotsOnline] = useState(0)
-    const [pendingOrders, setPendingOrders] = useState(0)
     const [pulse, setPulse] = useState(false)
 
     const restaurantId = user?.restaurantId ?? ''
@@ -34,14 +34,17 @@ export default function DashboardPage() {
 
         // Load core operational data
         try {
-            const [deliveriesRes, robotsRes, ordersRes] = await Promise.all([
+            const [deliveriesRes, robotsRes, orderSummaryRes] = await Promise.all([
                 deliveriesApi.findActive(restaurantId),
                 robotsApi.findAll(restaurantId),
-                ordersApi.findAll(restaurantId, 'Pending'),
+                ordersApi.getSummary(restaurantId),
             ]);
             setActiveDeliveries(deliveriesRes.data.length);
             setRobotsOnline((robotsRes.data as Array<{ isOnline: boolean }>).filter((r) => r.isOnline).length);
-            setPendingOrders((ordersRes.data as Array<unknown>).length);
+            
+            if (orderSummaryRes?.data) {
+                setOrderSummary(orderSummaryRes.data);
+            }
         } catch (err) {
             console.error('Failed to load operational data:', err);
         }
@@ -62,22 +65,45 @@ export default function DashboardPage() {
     })
 
     const kpis = [
+        ...(user?.role === 'Owner'
+            ? [
+                  {
+                      label: "Today's Orders",
+                      value: summary.order_count,
+                      sub: 'paid today',
+                      icon: '#',
+                      accent: 'kpi-blue',
+                  },
+                  {
+                      label: "Today's Revenue",
+                      value: `₹${summary.total_revenue.toFixed(2)}`,
+                      sub: 'before tax',
+                      icon: '₹',
+                      accent: 'kpi-green',
+                  },
+              ]
+            : []),
         {
-            label: "Today's Orders",
-            value: user?.role === 'Owner' ? summary.order_count : pendingOrders,
-            sub: user?.role === 'Owner' ? 'paid today' : 'pending',
-            icon: '#',
+            label: 'Pending Orders',
+            value: orderSummary.pending,
+            sub: 'action needed',
+            icon: '⏱',
+            accent: 'kpi-amber',
+        },
+        {
+            label: 'Preparing Orders',
+            value: orderSummary.preparing,
+            sub: 'in kitchen',
+            icon: '🔥',
             accent: 'kpi-blue',
         },
-        ...(user?.role === 'Owner'
-            ? [{
-                label: "Today's Revenue",
-                value: `₹${summary.total_revenue.toFixed(2)}`,
-                sub: 'before tax',
-                icon: '₹',
-                accent: 'kpi-green',
-            }]
-            : []),
+        {
+            label: 'Completed Today',
+            value: orderSummary.completed,
+            sub: 'delivered',
+            icon: '✓',
+            accent: 'kpi-green',
+        },
         {
             label: 'Active Deliveries',
             value: activeDeliveries,

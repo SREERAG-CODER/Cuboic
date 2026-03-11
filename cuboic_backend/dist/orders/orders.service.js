@@ -42,11 +42,21 @@ let OrdersService = class OrdersService {
                 restaurantId: dto.restaurantId,
                 tableId: dto.tableId,
                 customer_session_id: dto.customerSessionId,
+                notes: dto.notes,
                 items: orderItems,
                 subtotal,
                 tax,
                 total,
+                payment: {
+                    create: {
+                        amount: total,
+                        method: 'Gateway',
+                        status: 'Paid',
+                        transaction_id: `txn_${Date.now()}`
+                    }
+                }
             },
+            include: { payment: true }
         });
         this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
         return order;
@@ -67,6 +77,29 @@ let OrdersService = class OrdersService {
             orderBy: { createdAt: 'desc' },
         });
     }
+    async getSummary(restaurantId) {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+        const todayOrders = await this.prisma.order.findMany({
+            where: {
+                restaurantId,
+                createdAt: { gte: start, lte: end },
+            },
+            select: { status: true },
+        });
+        const summary = todayOrders.reduce((acc, order) => {
+            if (order.status === 'Pending')
+                acc.pending++;
+            if (order.status === 'Preparing')
+                acc.preparing++;
+            if (order.status === 'Delivered')
+                acc.completed++;
+            return acc;
+        }, { pending: 0, preparing: 0, completed: 0 });
+        return summary;
+    }
     async updateStatus(id, dto) {
         const order = await this.prisma.order.update({
             where: { id },
@@ -74,6 +107,31 @@ let OrdersService = class OrdersService {
         });
         if (!order)
             throw new common_1.NotFoundException('Order not found');
+        this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
+        return order;
+    }
+    async updateTable(id, tableId) {
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: { tableId },
+        });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found');
+        this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
+        return order;
+    }
+    async cancelOrder(id) {
+        const existing = await this.prisma.order.findUnique({ where: { id } });
+        if (!existing)
+            throw new common_1.NotFoundException('Order not found');
+        const cancellableStates = ['Pending', 'Confirmed', 'Preparing'];
+        if (!cancellableStates.includes(existing.status)) {
+            throw new common_1.BadRequestException(`Order cannot be cancelled in state: ${existing.status}`);
+        }
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: { status: 'Cancelled' },
+        });
         this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
         return order;
     }

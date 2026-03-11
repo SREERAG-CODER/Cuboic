@@ -28,6 +28,9 @@ let OrdersController = class OrdersController {
     create(dto) {
         return this.ordersService.create(dto);
     }
+    getSummary(restaurantId) {
+        return this.ordersService.getSummary(restaurantId);
+    }
     findOne(id) {
         return this.ordersService.findOne(id);
     }
@@ -36,6 +39,12 @@ let OrdersController = class OrdersController {
     }
     updateStatus(id, dto) {
         return this.ordersService.updateStatus(id, dto);
+    }
+    updateTable(id, tableId) {
+        return this.ordersService.updateTable(id, tableId);
+    }
+    cancelOrder(id) {
+        return this.ordersService.cancelOrder(id);
     }
     confirmDelivery(id) {
         return this.ordersService.confirmDelivery(id);
@@ -49,6 +58,15 @@ __decorate([
     __metadata("design:paramtypes", [create_order_dto_1.CreateOrderDto]),
     __metadata("design:returntype", void 0)
 ], OrdersController.prototype, "create", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('Staff', 'Owner'),
+    (0, common_1.Get)('summary'),
+    __param(0, (0, common_1.Query)('restaurantId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "getSummary", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -76,6 +94,21 @@ __decorate([
     __metadata("design:paramtypes", [String, update_order_status_dto_1.UpdateOrderStatusDto]),
     __metadata("design:returntype", void 0)
 ], OrdersController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.Patch)(':id/table'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('tableId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "updateTable", null);
+__decorate([
+    (0, common_1.Patch)(':id/cancel'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "cancelOrder", null);
 __decorate([
     (0, common_1.Patch)(':id/confirm'),
     __param(0, (0, common_1.Param)('id')),

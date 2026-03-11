@@ -78,6 +78,34 @@ export class OrdersService {
         });
     }
 
+    async getSummary(restaurantId: string) {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        const todayOrders = await this.prisma.order.findMany({
+            where: {
+                restaurantId,
+                createdAt: { gte: start, lte: end },
+            },
+            select: { status: true },
+        });
+
+        // Tally up counts by state
+        const summary = todayOrders.reduce(
+            (acc, order) => {
+                if (order.status === 'Pending') acc.pending++;
+                if (order.status === 'Preparing') acc.preparing++;
+                if (order.status === 'Delivered') acc.completed++;
+                return acc;
+            },
+            { pending: 0, preparing: 0, completed: 0 }
+        );
+
+        return summary;
+    }
+
     async updateStatus(id: string, dto: UpdateOrderStatusDto) {
         const order = await this.prisma.order.update({
             where: { id },
