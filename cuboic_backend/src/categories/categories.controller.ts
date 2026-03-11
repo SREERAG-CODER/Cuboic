@@ -6,7 +6,7 @@ export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) { }
 
     @Get()
-    findAll(@Query('restaurant_id') restaurantId: string) {
+    findAll(@Query('restaurantId') restaurantId: string) {
         return this.categoriesService.findAll(restaurantId);
     }
 }

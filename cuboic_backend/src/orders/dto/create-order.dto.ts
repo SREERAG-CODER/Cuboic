@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 class OrderItemDto {
     @IsString()
     @IsNotEmpty()
-    item_id: string;
+    itemId: string;
 
     @IsInt()
     @Min(1)
@@ -14,15 +14,15 @@ class OrderItemDto {
 export class CreateOrderDto {
     @IsString()
     @IsNotEmpty()
-    restaurant_id: string;
+    restaurantId: string;
 
     @IsString()
     @IsNotEmpty()
-    table_id: string;
+    tableId: string;
 
     @IsString()
     @IsNotEmpty()
-    customer_session_id: string;
+    customerSessionId: string;
 
     @IsArray()
     @ValidateNested({ each: true })

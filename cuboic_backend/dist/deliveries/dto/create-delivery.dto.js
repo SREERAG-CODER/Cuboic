@@ -13,8 +13,8 @@ exports.CreateDeliveryDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class DeliveryStopDto {
-    order_id;
-    table_id;
+    orderId;
+    tableId;
     cabinets;
     sequence;
 }
@@ -22,12 +22,12 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], DeliveryStopDto.prototype, "order_id", void 0);
+], DeliveryStopDto.prototype, "orderId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], DeliveryStopDto.prototype, "table_id", void 0);
+], DeliveryStopDto.prototype, "tableId", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsString)({ each: true }),
@@ -40,8 +40,8 @@ __decorate([
     __metadata("design:type", Number)
 ], DeliveryStopDto.prototype, "sequence", void 0);
 class CreateDeliveryDto {
-    restaurant_id;
-    robot_id;
+    restaurantId;
+    robotId;
     stops;
 }
 exports.CreateDeliveryDto = CreateDeliveryDto;
@@ -49,12 +49,12 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateDeliveryDto.prototype, "restaurant_id", void 0);
+], CreateDeliveryDto.prototype, "restaurantId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateDeliveryDto.prototype, "robot_id", void 0);
+], CreateDeliveryDto.prototype, "robotId", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

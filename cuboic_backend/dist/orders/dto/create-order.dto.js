@@ -13,23 +13,23 @@ exports.CreateOrderDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class OrderItemDto {
-    item_id;
+    itemId;
     quantity;
 }
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], OrderItemDto.prototype, "item_id", void 0);
+], OrderItemDto.prototype, "itemId", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
 ], OrderItemDto.prototype, "quantity", void 0);
 class CreateOrderDto {
-    restaurant_id;
-    table_id;
-    customer_session_id;
+    restaurantId;
+    tableId;
+    customerSessionId;
     items;
 }
 exports.CreateOrderDto = CreateOrderDto;
@@ -37,17 +37,17 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateOrderDto.prototype, "restaurant_id", void 0);
+], CreateOrderDto.prototype, "restaurantId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateOrderDto.prototype, "table_id", void 0);
+], CreateOrderDto.prototype, "tableId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateOrderDto.prototype, "customer_session_id", void 0);
+], CreateOrderDto.prototype, "customerSessionId", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

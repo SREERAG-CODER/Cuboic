@@ -6,9 +6,9 @@ export declare class JwtStrategy extends JwtStrategy_base {
     constructor();
     validate(payload: any): {
         sub: any;
-        user_id: any;
+        userId: any;
         role: any;
-        restaurant_id: any;
+        restaurantId: any;
     };
 }
 export {};

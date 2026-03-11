@@ -1,8 +1,8 @@
 import { apiClient } from './client'
 
 export const robotsApi = {
-    findAll: (restaurant_id: string) =>
-        apiClient.get('/robots', { params: { restaurant_id } }),
+    findAll: (restaurantId: string) =>
+        apiClient.get('/robots', { params: { restaurantId } }),
 
     findOne: (id: string) => apiClient.get(`/robots/${id}`),
 }

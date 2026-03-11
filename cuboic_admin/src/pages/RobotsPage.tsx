@@ -4,7 +4,7 @@ import { robotsApi } from '../api/robots'
 import RobotCard from '../components/RobotCard'
 
 interface Robot {
-    _id: string
+    id: string
     name: string
     status: string
     isOnline: boolean
@@ -21,11 +21,11 @@ export default function RobotsPage() {
 
     const load = useCallback(async () => {
         try {
-            const res = await robotsApi.findAll(user?.restaurant_id ?? '')
+            const res = await robotsApi.findAll(user?.restaurantId ?? '')
             setRobots(res.data)
         } catch { /* ignore */ }
         finally { setLoading(false) }
-    }, [user?.restaurant_id])
+    }, [user?.restaurantId])
 
     useEffect(() => {
         load()
@@ -53,7 +53,7 @@ export default function RobotsPage() {
             ) : (
                 <div className="robots-grid">
                     {robots.map((robot) => (
-                        <RobotCard key={robot._id} robot={robot} />
+                        <RobotCard key={robot.id} robot={robot} />
                     ))}
                 </div>
             )}

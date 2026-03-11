@@ -8,20 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TelemetryModule = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const robot_telemetry_schema_1 = require("./schemas/robot-telemetry.schema");
-const telemetry_service_1 = require("./telemetry.service");
 const telemetry_controller_1 = require("./telemetry.controller");
+const telemetry_service_1 = require("./telemetry.service");
 let TelemetryModule = class TelemetryModule {
 };
 exports.TelemetryModule = TelemetryModule;
 exports.TelemetryModule = TelemetryModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            mongoose_1.MongooseModule.forFeature([
-                { name: robot_telemetry_schema_1.RobotTelemetry.name, schema: robot_telemetry_schema_1.RobotTelemetrySchema },
-            ]),
-        ],
         controllers: [telemetry_controller_1.TelemetryController],
         providers: [telemetry_service_1.TelemetryService],
         exports: [telemetry_service_1.TelemetryService],

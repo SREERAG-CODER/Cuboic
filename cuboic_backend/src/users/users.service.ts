@@ -1,38 +1,41 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import { User, UserDocument } from './schemas/user.schema';
+import { UserRole } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
+    constructor(private prisma: PrismaService) { }
 
     async create(dto: CreateUserDto) {
-        const existing = await this.userModel.findOne({ user_id: dto.user_id });
+        const existing = await this.prisma.user.findUnique({ where: { user_id: dto.userId } });
         if (existing) throw new ConflictException('User ID already taken');
 
-        const password_hash = await bcrypt.hash(dto.password, 10);
-        const user = await this.userModel.create({
-            name: dto.name,
-            user_id: dto.user_id,
-            password_hash,
-            role: dto.role,
-            restaurant_id: dto.restaurant_id ? new Types.ObjectId(dto.restaurant_id) : undefined,
+        const passwordHash = await bcrypt.hash(dto.password, 10);
+        const { password_hash: _, ...user } = await this.prisma.user.create({
+            data: {
+                name: dto.name,
+                user_id: dto.userId,
+                password_hash: passwordHash,
+                role: (dto.role as UserRole) ?? 'Staff',
+                restaurantId: dto.restaurantId ?? null,
+            },
         });
-
-        const { password_hash: _, ...result } = (user as any).toObject();
-        return result;
+        return user;
     }
 
     findAll(restaurantId: string) {
-        return this.userModel
-            .find({ restaurant_id: new Types.ObjectId(restaurantId) })
-            .select('-password_hash');
+        return this.prisma.user.findMany({
+            where: { restaurantId },
+            select: {
+                id: true, name: true, user_id: true, role: true,
+                is_active: true, restaurantId: true, createdAt: true,
+            },
+        });
     }
 
-    async findByUserId(userId: string): Promise<UserDocument | null> {
-        return this.userModel.findOne({ user_id: userId });
+    async findByUserId(userId: string) {
+        return this.prisma.user.findUnique({ where: { user_id: userId } });
     }
 }

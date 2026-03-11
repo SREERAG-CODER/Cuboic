@@ -4,11 +4,11 @@ import { Type } from 'class-transformer';
 class DeliveryStopDto {
     @IsString()
     @IsNotEmpty()
-    order_id: string;
+    orderId: string;
 
     @IsString()
     @IsNotEmpty()
-    table_id: string;
+    tableId: string;
 
     @IsArray()
     @IsString({ each: true })
@@ -23,11 +23,11 @@ class DeliveryStopDto {
 export class CreateDeliveryDto {
     @IsString()
     @IsNotEmpty()
-    restaurant_id: string;
+    restaurantId: string;
 
     @IsString()
     @IsNotEmpty()
-    robot_id: string;
+    robotId: string;
 
     @IsArray()
     @ValidateNested({ each: true })

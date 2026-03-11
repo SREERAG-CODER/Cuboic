@@ -60,7 +60,7 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('Staff', 'Owner'),
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('restaurant_id')),
+    __param(0, (0, common_1.Query)('restaurantId')),
     __param(1, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),

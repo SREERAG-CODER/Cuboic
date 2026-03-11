@@ -24,9 +24,9 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
     validate(payload) {
         return {
             sub: payload.sub,
-            user_id: payload.user_id,
+            userId: payload.userId,
             role: payload.role,
-            restaurant_id: payload.restaurant_id,
+            restaurantId: payload.restaurantId,
         };
     }
 };

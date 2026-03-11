@@ -23,7 +23,7 @@ export class OrdersController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('Staff', 'Owner')
     @Get()
-    findAll(@Query('restaurant_id') restaurantId: string, @Query('status') status?: string) {
+    findAll(@Query('restaurantId') restaurantId: string, @Query('status') status?: string) {
         return this.ordersService.findAll(restaurantId, status);
     }
 
@@ -32,6 +32,16 @@ export class OrdersController {
     @Patch(':id/status')
     updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto) {
         return this.ordersService.updateStatus(id, dto);
+    }
+
+    @Patch(':id/table')
+    updateTable(@Param('id') id: string, @Body('tableId') tableId: string) {
+        return this.ordersService.updateTable(id, tableId);
+    }
+
+    @Patch(':id/cancel')
+    cancelOrder(@Param('id') id: string) {
+        return this.ordersService.cancelOrder(id);
     }
 
     @Patch(':id/confirm')

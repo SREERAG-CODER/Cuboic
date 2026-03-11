@@ -4,12 +4,12 @@ import { paymentsApi } from '../api/payments'
 import StatusBadge from '../components/StatusBadge'
 
 interface Payment {
-    _id: string
-    order_id: string
+    id: string
+    orderId: string
     amount: number
     method: string
     status: string
-    transaction_id?: string
+    transactionid?: string
     createdAt: string
 }
 
@@ -23,7 +23,7 @@ export default function PaymentsPage() {
     const [to, setTo] = useState('')
     const [loading, setLoading] = useState(true)
 
-    const restaurantId = user?.restaurant_id ?? ''
+    const restaurantId = user?.restaurantId ?? ''
 
     const load = async () => {
         setLoading(true)
@@ -107,12 +107,12 @@ export default function PaymentsPage() {
                         </thead>
                         <tbody>
                             {payments.map((p) => (
-                                <tr key={p._id}>
+                                <tr key={p.id}>
                                     <td className="cell-mono">{new Date(p.createdAt).toLocaleString()}</td>
-                                    <td className="cell-mono">#{typeof p.order_id === 'string' ? p.order_id.slice(-6).toUpperCase() : '—'}</td>
+                                    <td className="cell-mono">#{typeof p.orderId === 'string' ? p.orderId.slice(-6).toUpperCase() : '—'}</td>
                                     <td>{p.method}</td>
                                     <td className="cell-mono">₹{p.amount.toFixed(2)}</td>
-                                    <td className="cell-mono">{p.transaction_id ?? '—'}</td>
+                                    <td className="cell-mono">{p.transactionid ?? '—'}</td>
                                     <td><StatusBadge status={p.status} /></td>
                                 </tr>
                             ))}

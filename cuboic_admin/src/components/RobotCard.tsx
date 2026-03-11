@@ -6,7 +6,7 @@ interface Cabinet {
 }
 
 interface Robot {
-    _id: string
+    id: string
     name: string
     status: string
     isOnline: boolean

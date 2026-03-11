@@ -1,40 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Robot, RobotDocument } from './schemas/robot.schema';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class RobotsService {
-    constructor(@InjectModel(Robot.name) private robotModel: Model<RobotDocument>) { }
+    constructor(private prisma: PrismaService) { }
 
     findAll(restaurantId: string) {
-        return this.robotModel.find({ restaurant_id: new Types.ObjectId(restaurantId) });
+        return this.prisma.robot.findMany({ where: { restaurantId } });
     }
 
     findOne(id: string) {
-        return this.robotModel.findById(id);
-    }
-    async markOnline(robotId: string) {
-        return this.robotModel.findByIdAndUpdate(robotId, {
-            isOnline: true,
-            lastSeen: new Date(),
-        });
+        return this.prisma.robot.findUnique({ where: { id } });
     }
 
-    async markOffline(robotId: string) {
-        return this.robotModel.findByIdAndUpdate(robotId, {
-            isOnline: false,
-        });
-    }
-
-    async updateTelemetry(robotId: string, telemetry: any) {
-        return this.robotModel.findByIdAndUpdate(robotId, {
-            battery: telemetry.battery,
-            location: telemetry.location,
-            lastSeen: new Date(),
-        });
-    }
     async findByIdWithSecret(robotId: string) {
-        return this.robotModel.findById(robotId).select('+secretKey');
+        return this.prisma.robot.findUnique({ where: { id: robotId } });
+    }
+
+    markOnline(robotId: string) {
+        return this.prisma.robot.update({
+            where: { id: robotId },
+            data: { isOnline: true, lastSeen: new Date() },
+        });
+    }
+
+    markOffline(robotId: string) {
+        return this.prisma.robot.update({
+            where: { id: robotId },
+            data: { isOnline: false },
+        });
+    }
+
+    updateTelemetry(robotId: string, telemetry: any) {
+        return this.prisma.robot.update({
+            where: { id: robotId },
+            data: {
+                battery: telemetry.battery,
+                location: telemetry.location,
+                lastSeen: new Date(),
+            },
+        });
     }
 }

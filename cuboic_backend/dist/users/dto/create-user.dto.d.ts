@@ -1,7 +1,7 @@
 export declare class CreateUserDto {
     name: string;
-    user_id: string;
+    userId: string;
     password: string;
     role: string;
-    restaurant_id?: string;
+    restaurantId?: string;
 }

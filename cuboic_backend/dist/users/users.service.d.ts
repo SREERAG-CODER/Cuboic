@@ -1,22 +1,36 @@
-import { Model, Types } from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 export declare class UsersService {
-    private userModel;
-    constructor(userModel: Model<UserDocument>);
-    create(dto: CreateUserDto): Promise<any>;
-    findAll(restaurantId: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, UserDocument, {}, import("mongoose").DefaultSchemaOptions> & User & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    private prisma;
+    constructor(prisma: PrismaService);
+    create(dto: CreateUserDto): Promise<{
+        restaurantId: string | null;
+        name: string;
         id: string;
-    })[], import("mongoose").Document<unknown, {}, UserDocument, {}, import("mongoose").DefaultSchemaOptions> & User & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        role: import("@prisma/client").$Enums.UserRole;
+        user_id: string;
+    }>;
+    findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        restaurantId: string | null;
+        name: string;
         id: string;
-    }, {}, UserDocument, "find", {}>;
-    findByUserId(userId: string): Promise<UserDocument | null>;
+        is_active: boolean;
+        createdAt: Date;
+        role: import("@prisma/client").$Enums.UserRole;
+        user_id: string;
+    }[]>;
+    findByUserId(userId: string): Promise<{
+        restaurantId: string | null;
+        name: string;
+        id: string;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        role: import("@prisma/client").$Enums.UserRole;
+        user_id: string;
+        password_hash: string;
+    } | null>;
 }

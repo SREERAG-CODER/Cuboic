@@ -1,9 +1,9 @@
 import { apiClient } from './client'
 
 export interface AdminMenuItem {
-    _id: string
-    restaurant_id: string
-    category_id: string
+    id: string
+    restaurantId: string
+    categoryId: string
     name: string
     description?: string
     price: number
@@ -13,14 +13,14 @@ export interface AdminMenuItem {
 }
 
 export interface Category {
-    _id: string
+    id: string
     name: string
     display_order: number
 }
 
 export interface CreateMenuItemPayload {
-    restaurant_id: string
-    category_id: string
+    restaurantId: string
+    categoryId: string
     name: string
     description?: string
     price: number
@@ -30,7 +30,7 @@ export interface CreateMenuItemPayload {
 }
 
 export interface UpdateMenuItemPayload {
-    category_id?: string
+    categoryId?: string
     name?: string
     description?: string
     price?: number
@@ -42,11 +42,11 @@ export interface UpdateMenuItemPayload {
 export const menuApi = {
     /** Fetch ALL items (including unavailable) — admin only */
     getAll: (restaurantId: string) =>
-        apiClient.get<AdminMenuItem[]>('/menu/admin', { params: { restaurant_id: restaurantId } }),
+        apiClient.get<AdminMenuItem[]>('/menu/admin', { params: { restaurantId: restaurantId } }),
 
     /** Fetch categories for this restaurant */
     getCategories: (restaurantId: string) =>
-        apiClient.get<Category[]>('/categories', { params: { restaurant_id: restaurantId } }),
+        apiClient.get<Category[]>('/categories', { params: { restaurantId: restaurantId } }),
 
     /** Create a new menu item */
     createItem: (payload: CreateMenuItemPayload) =>

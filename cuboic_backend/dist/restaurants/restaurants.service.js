@@ -8,35 +8,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestaurantsService = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const restaurant_schema_1 = require("./schemas/restaurant.schema");
+const prisma_service_1 = require("../prisma/prisma.service");
 let RestaurantsService = class RestaurantsService {
-    restaurantModel;
-    constructor(restaurantModel) {
-        this.restaurantModel = restaurantModel;
+    prisma;
+    constructor(prisma) {
+        this.prisma = prisma;
     }
-    async findById(id) {
-        return this.restaurantModel.findById(id).exec();
+    findById(id) {
+        return this.prisma.restaurant.findUnique({ where: { id }, include: { tables: true } });
     }
-    async findAll() {
-        return this.restaurantModel.find().exec();
+    findAll() {
+        return this.prisma.restaurant.findMany();
     }
-    async create(data) {
-        const created = new this.restaurantModel(data);
-        return created.save();
+    create(data) {
+        return this.prisma.restaurant.create({ data });
     }
 };
 exports.RestaurantsService = RestaurantsService;
 exports.RestaurantsService = RestaurantsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(restaurant_schema_1.Restaurant.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], RestaurantsService);
 //# sourceMappingURL=restaurants.service.js.map

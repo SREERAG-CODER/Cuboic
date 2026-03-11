@@ -1,0 +1,210 @@
+/* ─────────────────────────────────────────────
+   SearchOverlay styles — Cuboic Customer
+─────────────────────────────────────────────── */
+
+.search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: so-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes so-slide-up {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Header */
+.search-overlay__header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.search-overlay__header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+}
+
+.search-overlay__back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--text);
+    transition: background 0.15s;
+    margin-left: -8px;
+}
+
+.search-overlay__back:active {
+    background: var(--surface2);
+}
+
+.search-overlay__input-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+    height: 44px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.search-overlay__input-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+.search-overlay__input {
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.search-overlay__input::placeholder {
+    color: var(--text-dim);
+}
+
+.search-overlay__clear {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Body */
+.search-overlay__body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.search-overlay__body-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 120px;
+}
+
+/* Suggestions */
+.search-sug-section {
+    margin-bottom: 32px;
+}
+
+.search-sug-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    letter-spacing: 0.2px;
+}
+
+/* Chips */
+.search-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.search-chip svg {
+    color: var(--accent);
+}
+
+.search-chip:active {
+    background: var(--surface2);
+    transform: scale(0.97);
+}
+
+/* Cuisine Grid */
+.cuisine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+}
+
+.cuisine-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    aspect-ratio: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.15s;
+}
+
+.cuisine-card__icon {
+    font-size: 1.8rem;
+}
+
+.cuisine-card__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.cuisine-card:active {
+    background: var(--surface2);
+    transform: scale(0.95);
+}
+
+/* Empty State */
+.search-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.search-empty__sub {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 8px;
+    font-weight: 400;
+}

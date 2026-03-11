@@ -2,7 +2,7 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class QueryPaymentDto {
     @IsString()
-    restaurant_id: string;
+    restaurantId: string;
 
     @IsOptional()
     @IsString()

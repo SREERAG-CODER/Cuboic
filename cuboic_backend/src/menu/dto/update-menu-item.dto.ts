@@ -1,9 +1,9 @@
-import { IsString, IsNumber, IsBoolean, IsOptional, IsMongoId, Min } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsOptional, Min } from 'class-validator';
 
 export class UpdateMenuItemDto {
     @IsOptional()
-    @IsMongoId()
-    category_id?: string;
+    @IsString()
+    categoryId?: string;
 
     @IsOptional()
     @IsString()

@@ -1,19 +1,14 @@
-import { Model, Types } from 'mongoose';
-import { Category, CategoryDocument } from './schemas/category.schema';
+import { PrismaService } from '../prisma/prisma.service';
 export declare class CategoriesService {
-    private categoryModel;
-    constructor(categoryModel: Model<CategoryDocument>);
-    findAll(restaurantId: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, CategoryDocument, {}, import("mongoose").DefaultSchemaOptions> & Category & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    private prisma;
+    constructor(prisma: PrismaService);
+    findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        restaurantId: string;
+        name: string;
+        display_order: number;
         id: string;
-    })[], import("mongoose").Document<unknown, {}, CategoryDocument, {}, import("mongoose").DefaultSchemaOptions> & Category & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, CategoryDocument, "find", {}>;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
 }

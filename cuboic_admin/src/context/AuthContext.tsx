@@ -4,15 +4,15 @@ import { authApi } from '../api/auth'
 interface User {
     id: string
     name: string
-    user_id: string
+    userid: string
     role: 'Staff' | 'Owner'
-    restaurant_id: string
+    restaurantId: string
 }
 
 interface AuthContextValue {
     user: User | null
     token: string | null
-    login: (user_id: string, password: string) => Promise<void>
+    login: (userId: string, password: string) => Promise<void>
     logout: () => void
     isLoading: boolean
 }
@@ -36,8 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false)
     }, [])
 
-    const login = async (user_id: string, password: string) => {
-        const res = await authApi.login(user_id, password)
+    const login = async (userId: string, password: string) => {
+        const res = await authApi.login(userId, password)
         const { access_token, user } = res.data
         localStorage.setItem('cuboic_admin_token', access_token)
         localStorage.setItem('cuboic_admin_user', JSON.stringify(user))

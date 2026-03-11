@@ -5,7 +5,7 @@ import './ItemCard.css';
 interface Props {
     item: MenuItem;
     cartItem?: CartItem;
-    onAdd: (item: MenuItem) => void;
+    onAdd: (item: MenuItem, e?: React.MouseEvent) => void;
     onRemove: (id: string) => void;
 }
 
@@ -32,7 +32,7 @@ export function ItemCard({ item, cartItem, onAdd, onRemove }: Props) {
                     <div className="item-card__oos-overlay">Out of Stock</div>
                 )}
                 {/* Price badge on image */}
-                <div className="item-card__price-badge">₹{item.price.toFixed(2)}</div>
+                <div className="item-card__price-badge">₹{(Number(item.price) || 0).toFixed(2)}</div>
             </div>
 
             {/* Body */}
@@ -46,14 +46,14 @@ export function ItemCard({ item, cartItem, onAdd, onRemove }: Props) {
                 <div className="item-card__footer">
                     {item.is_available ? (
                         qty === 0 ? (
-                            <button className="add-btn" onClick={() => onAdd(item)}>
+                            <button className="add-btn" onClick={(e) => onAdd(item, e)}>
                                 + Add
                             </button>
                         ) : (
                             <div className="qty-control">
-                                <button className="qty-btn" onClick={() => onRemove(item._id)}>−</button>
+                                <button className="qty-btn" onClick={() => onRemove(item.id)}>−</button>
                                 <span className="qty-value">{qty}</span>
-                                <button className="qty-btn" onClick={() => onAdd(item)}>+</button>
+                                <button className="qty-btn" onClick={(e) => onAdd(item, e)}>+</button>
                             </div>
                         )
                     ) : null}

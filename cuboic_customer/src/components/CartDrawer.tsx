@@ -9,6 +9,7 @@ interface CartDrawerProps {
     total: number;
     restaurantId: string;
     tableId: string;
+    tableLabel?: string;
     sessionId: string;
     onAdd: (item: any) => void;
     onRemove: (itemId: string) => void;
@@ -22,6 +23,7 @@ export function CartDrawer({
     total,
     restaurantId,
     tableId,
+    tableLabel,
     sessionId,
     onAdd,
     onRemove,
@@ -37,7 +39,7 @@ export function CartDrawer({
         if (items.length === 0) return;
         onClose();
         navigate('/checkout', {
-            state: { items, total, restaurantId, tableId, sessionId },
+            state: { items, total, restaurantId, tableId, tableLabel, sessionId },
         });
     };
 
@@ -54,7 +56,7 @@ export function CartDrawer({
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {tableId && (
                             <div className="cart-sheet__table">
-                                Table {tableId.slice(-3).toUpperCase()}
+                                {tableLabel || `Table ${tableId.slice(-3).toUpperCase()}`}
                             </div>
                         )}
                         <button className="cart-close" onClick={onClose} aria-label="Close">✕</button>
@@ -71,13 +73,13 @@ export function CartDrawer({
                         </div>
                     ) : (
                         items.map(c => (
-                            <div key={c.item._id} className="cart-row fade-in">
+                            <div key={c.item.id} className="cart-row fade-in">
                                 <div className="cart-row__info">
                                     <p className="cart-row__name">{c.item.name}</p>
-                                    <p className="cart-row__price">₹{(c.item.price * c.quantity).toFixed(2)}</p>
+                                    <p className="cart-row__price">₹{((Number(c.item.price) || 0) * (Number(c.quantity) || 1)).toFixed(2)}</p>
                                 </div>
                                 <div className="qty-control">
-                                    <button className="qty-btn" onClick={() => onRemove(c.item._id)}>−</button>
+                                    <button className="qty-btn" onClick={() => onRemove(c.item.id)}>−</button>
                                     <span className="qty-value">{c.quantity}</span>
                                     <button className="qty-btn" onClick={() => onAdd(c.item)}>+</button>
                                 </div>

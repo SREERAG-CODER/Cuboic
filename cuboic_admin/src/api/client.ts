@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'https://cuboic.onrender.com'
 
 export const apiClient = axios.create({
     baseURL: BASE_URL,

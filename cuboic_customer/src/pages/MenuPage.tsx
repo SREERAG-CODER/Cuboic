@@ -1,29 +1,106 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getRestaurant, getCategories, getMenuItems, type Category, type MenuItem } from '../api/menu';
+import { updateOrderTable } from '../api/orders';
 import { useCart } from '../hooks/useCart';
 import { ItemCard } from '../components/ItemCard';
 import { CartDrawer } from '../components/CartDrawer';
+import { OrdersDrawer, type ActiveOrderSession } from '../components/OrdersDrawer';
+import { TableSelectorModal } from '../components/TableSelectorModal';
+import { ConfirmTableMoveModal } from '../components/ConfirmTableMoveModal';
+import { SearchOverlay } from '../components/SearchOverlay';
+import { SkeletonLoader } from '../components/SkeletonLoader';
 import './MenuPage.css';
 
 // Stable session id per tab
 const SESSION_ID = crypto.randomUUID();
 
 export function MenuPage() {
-    const [params] = useSearchParams();
+    const [params, setParams] = useSearchParams();
     const restaurantId = params.get('r') ?? '';
     const tableId = params.get('t') ?? '';
 
-    const [restaurantName, setRestaurantName] = useState('Cuboic Kitchen');
+    const [restaurantName, setRestaurantName] = useState('Food Guru');
     const [categories, setCategories] = useState<Category[]>([]);
     const [allItems, setAllItems] = useState<MenuItem[]>([]);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [cartOpen, setCartOpen] = useState(false);
+    const [ordersOpen, setOrdersOpen] = useState(false);
+    const [tablesOpen, setTablesOpen] = useState(false);
+    const [pendingTableMove, setPendingTableMove] = useState<{ id: string; number: string } | null>(null);
+    const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [tableLabel, setTableLabel] = useState<string>('');
+    const [availableTables, setAvailableTables] = useState<Array<{ id: string; table_number: number }>>([]);
+    const [activeOrders, setActiveOrders] = useState<ActiveOrderSession[]>([]);
 
     const cart = useCart();
 
+    useEffect(() => {
+        try {
+            const o = localStorage.getItem('cuboic_active_orders');
+            if (o) setActiveOrders(JSON.parse(o));
+        } catch (e) {
+            console.error('Failed to parse active orders', e);
+        }
+    }, []);
+
+    const handleTableSelect = (newTableId: string) => {
+        if (activeOrders.length > 0) {
+            const tbl = availableTables.find(t => t.id === newTableId);
+            if (tbl) {
+                setPendingTableMove({ id: tbl.id, number: tbl.table_number.toString() });
+            }
+            setTablesOpen(false);
+        } else {
+            proceedWithTableMove(newTableId, false);
+        }
+    };
+
+    const proceedWithTableMove = async (newTableId: string, moveOrders: boolean) => {
+        if (moveOrders && activeOrders.length > 0) {
+            try {
+                await Promise.all(activeOrders.map(o => updateOrderTable(o.id, newTableId)));
+            } catch (err) {
+                console.error("Failed to move active orders to new table", err);
+            }
+        }
+        setParams(prev => {
+            const next = new URLSearchParams(prev);
+            next.set('t', newTableId);
+            return next;
+        });
+        // Clear cart if swapping table
+        cart.clear();
+        setPendingTableMove(null);
+        setTablesOpen(false);
+    };
+
+    interface FlyingItem {
+        id: number;
+        x: number;
+        y: number;
+        image: string;
+    }
+    const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
+
+    const handleAdd = (item: MenuItem, e?: React.MouseEvent) => {
+        cart.add(item);
+        if (e) {
+            const { clientX, clientY } = e;
+            const flyId = Date.now() + Math.random();
+            setFlyingItems(prev => [...prev, {
+                id: flyId,
+                x: clientX,
+                y: clientY,
+                image: item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=480&h=320&fit=crop&auto=format&q=80'
+            }]);
+            setTimeout(() => {
+                setFlyingItems(prev => prev.filter(f => f.id !== flyId));
+            }, 800);
+        }
+    };
     /* load restaurant + categories once */
     useEffect(() => {
         if (!restaurantId) return;
@@ -32,8 +109,19 @@ export function MenuPage() {
             const sorted = cats.sort((a, b) => a.display_order - b.display_order);
             setCategories(sorted);
             setActiveCategory(null);
+
+            if (rest.tables) {
+                setAvailableTables(rest.tables);
+            }
+
+            if (tableId && rest.tables) {
+                const tbl = rest.tables.find(t => t.id === tableId);
+                setTableLabel(tbl ? `Table ${tbl.table_number}` : `Table ${tableId.slice(-4).toUpperCase()}`);
+            } else if (tableId) {
+                setTableLabel(`Table ${tableId.slice(-4).toUpperCase()}`);
+            }
         });
-    }, [restaurantId]);
+    }, [restaurantId, tableId]);
 
     /* load ALL items once */
     useEffect(() => {
@@ -51,12 +139,12 @@ export function MenuPage() {
         const matchingCatIds = new Set(
             categories
                 .filter(c => c.name.toLowerCase().includes(searchLower))
-                .map(c => c._id)
+                .map(c => c.id)
         );
         return allItems.filter(item =>
             item.name.toLowerCase().includes(searchLower) ||
             (item.description ?? '').toLowerCase().includes(searchLower) ||
-            matchingCatIds.has(item.category_id)
+            matchingCatIds.has(item.categoryId)
         );
     }, [allItems, categories, searchLower]);
 
@@ -64,27 +152,39 @@ export function MenuPage() {
     const visibleItems = useMemo(() => {
         if (searchLower) return searchedItems; // search overrides category
         if (!activeCategory) return allItems;
-        return allItems.filter(item => item.category_id === activeCategory);
+        return allItems.filter(item => item.categoryId === activeCategory);
     }, [allItems, searchedItems, activeCategory, searchLower]);
 
     /* group items by category for the "All" grouped view */
     const grouped = useMemo(() => {
         if (searchLower) return null; // flat results for search
-        if (activeCategory) return null;
+        if (activeCategory) return null; // flat results for specific category
         const map = new Map<string, MenuItem[]>();
-        for (const cat of categories) map.set(cat._id, []);
+        for (const cat of categories) map.set(cat.id, []);
         for (const item of allItems) {
-            if (!map.has(item.category_id)) map.set(item.category_id, []);
-            map.get(item.category_id)!.push(item);
+            if (!map.has(item.categoryId)) map.set(item.categoryId, []);
+            map.get(item.categoryId)!.push(item);
         }
         return map;
-    }, [allItems, categories, activeCategory, searchLower]);
+    }, [allItems, categories, searchLower, activeCategory]);
 
-    const tableLabel = tableId ? `Table ${tableId.slice(-4).toUpperCase()}` : '';
+    const scrollToCategory = (catId: string | null) => {
+        setActiveCategory(catId);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         if (e.target.value) setActiveCategory(null); // reset category when typing
+    };
+
+    const handleSearchOpen = () => {
+        setSearchOpen(true);
+    };
+
+    const handleSearchClose = () => {
+        setSearchOpen(false);
+        setSearchQuery('');
     };
 
     /* show QR hint if no params */
@@ -107,44 +207,38 @@ export function MenuPage() {
                 <div className="menu-header__inner">
                     {/* Brand */}
                     <div className="menu-header__brand">
-                        <span className="menu-header__logo">⬡</span>
+                        <img src="/logo1.png" className="menu-header__logo" alt="Cuboic" />
                         <div>
                             <div className="menu-header__name">{restaurantName}</div>
-                            <div className="menu-header__sub">Cuboic · Robot Delivery</div>
+                            <div className="menu-header__sub">Cuboic</div>
                         </div>
                     </div>
 
-                    {/* Search bar */}
-                    <div className="search-wrap">
+                    {/* Search bar button toggle */}
+                    <div className="search-trigger" onClick={handleSearchOpen}>
                         <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
-                        <input
-                            className="search-input"
-                            type="search"
-                            placeholder="Search dishes or categories…"
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            aria-label="Search menu"
-                        />
-                        {searchQuery && (
-                            <button className="search-clear" onClick={() => setSearchQuery('')} aria-label="Clear search">✕</button>
-                        )}
+                        <div className="search-placeholder">
+                            <span className="desktop-search-text">Search for restaurants or dishes</span>
+                            <span className="mobile-search-text">Search...</span>
+                        </div>
                     </div>
 
-                    {/* Table tag + cart */}
+                    {/* Table tag */}
                     <div className="menu-header__actions">
-                        {tableLabel && <div className="table-tag">{tableLabel}</div>}
-                        <button
-                            className={`cart-btn ${cart.count > 0 ? 'cart-btn--active' : ''}`}
-                            onClick={() => setCartOpen(true)}
-                            aria-label="Open cart"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
-                            {cart.count > 0 && (
-                                <span className="cart-btn__badge">{cart.count}</span>
-                            )}
-                        </button>
+                        {tableLabel && (
+                            <button
+                                className="table-tag"
+                                onClick={() => setTablesOpen(true)}
+                                style={{ cursor: 'pointer', border: 'none', fontFamily: 'inherit' }}
+                            >
+                                {tableLabel}
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px' }}>
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
                 </div>
             </header>
@@ -155,18 +249,18 @@ export function MenuPage() {
                     <div className="category-row__inner">
                         <button
                             className={`cat-pill ${activeCategory === null ? 'cat-pill--active' : ''}`}
-                            onClick={() => setActiveCategory(null)}
+                            onClick={() => scrollToCategory(null)}
                         >
                             All
                             <span className="cat-pill__count">{allItems.length}</span>
                         </button>
                         {categories.map(c => {
-                            const count = allItems.filter(i => i.category_id === c._id).length;
+                            const count = allItems.filter(i => i.categoryId === c.id).length;
                             return (
                                 <button
-                                    key={c._id}
-                                    className={`cat-pill ${activeCategory === c._id ? 'cat-pill--active' : ''}`}
-                                    onClick={() => setActiveCategory(c._id)}
+                                    key={c.id}
+                                    className={`cat-pill ${activeCategory === c.id ? 'cat-pill--active' : ''}`}
+                                    onClick={() => scrollToCategory(c.id)}
                                 >
                                     {c.name}
                                     <span className="cat-pill__count">{count}</span>
@@ -178,7 +272,7 @@ export function MenuPage() {
             )}
 
             {/* ── Search results label ────────────────────────────── */}
-            {searchLower && (
+            {searchLower && !searchOpen && (
                 <div className="search-results-bar">
                     {visibleItems.length > 0
                         ? <>{visibleItems.length} result{visibleItems.length !== 1 ? 's' : ''} for "<strong>{searchQuery}</strong>"</>
@@ -190,7 +284,7 @@ export function MenuPage() {
             {/* ── Items ──────────────────────────────────────────── */}
             <main className="container menu-body">
                 {loading ? (
-                    <div className="spinner-center"><div className="spinner" /></div>
+                    <SkeletonLoader count={8} />
                 ) : visibleItems.length === 0 && !grouped ? (
                     <div className="menu-empty">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
@@ -199,20 +293,20 @@ export function MenuPage() {
                 ) : grouped ? (
                     <>
                         {categories.map(cat => {
-                            const catItems = grouped.get(cat._id) ?? [];
+                            const catItems = grouped.get(cat.id) ?? [];
                             if (catItems.length === 0) return null;
                             return (
-                                <section key={cat._id} className="menu-section fade-up">
+                                <section key={cat.id} id={`cat-${cat.id}`} className="menu-section fade-up">
                                     <div className="section-label">
                                         <span className="section-label__text">{cat.name}</span>
                                     </div>
                                     <div className="item-grid">
                                         {catItems.map(item => (
                                             <ItemCard
-                                                key={item._id}
+                                                key={item.id}
                                                 item={item}
-                                                cartItem={cart.items.find(c => c.item._id === item._id)}
-                                                onAdd={cart.add}
+                                                cartItem={cart.items.find(c => c.item.id === item.id)}
+                                                onAdd={handleAdd}
                                                 onRemove={cart.remove}
                                             />
                                         ))}
@@ -226,10 +320,10 @@ export function MenuPage() {
                         <div className="item-grid fade-up">
                             {visibleItems.map(item => (
                                 <ItemCard
-                                    key={item._id}
+                                    key={item.id}
                                     item={item}
-                                    cartItem={cart.items.find(c => c.item._id === item._id)}
-                                    onAdd={cart.add}
+                                    cartItem={cart.items.find(c => c.item.id === item.id)}
+                                    onAdd={handleAdd}
                                     onRemove={cart.remove}
                                 />
                             ))}
@@ -238,18 +332,53 @@ export function MenuPage() {
                 )}
             </main>
 
+            {/* ── Full-screen search ─────────────────────────────── */}
+            <SearchOverlay
+                open={searchOpen}
+                onClose={handleSearchClose}
+                query={searchQuery}
+                onQueryChange={handleSearchChange}
+                onClear={() => setSearchQuery('')}
+                results={visibleItems}
+                cartItems={cart.items}
+                onAdd={cart.add}
+                onRemove={cart.remove}
+            />
+
+            {/* ── Flying Ghost Items ─────────────────────────────── */}
+            {flyingItems.map(f => (
+                <img
+                    key={f.id}
+                    src={f.image}
+                    className="flying-ghost"
+                    style={{ '--start-x': `${f.x}px`, '--start-y': `${f.y}px` } as React.CSSProperties}
+                    alt=""
+                />
+            ))}
+
+            {/* ── Flying Ghost Items ─────────────────────────────── */}
+            {flyingItems.map(f => (
+                <img
+                    key={f.id}
+                    src={f.image}
+                    className="flying-ghost"
+                    style={{ '--start-x': `${f.x}px`, '--start-y': `${f.y}px` } as React.CSSProperties}
+                    alt=""
+                />
+            ))}
+
             {/* ── Footer ─────────────────────────────────────────── */}
             <footer className="menu-footer">
                 <div className="menu-footer__inner">
                     <div className="menu-footer__brand">
-                        <span className="menu-footer__logo">⬡</span>
+                        <img src="/logo1.png" className="menu-footer__logo" alt="Cuboic Logo" />
                         <span className="menu-footer__wordmark">Cuboic</span>
                     </div>
                     <p className="menu-footer__tagline">
                         Autonomous restaurant delivery, powered by robots.
                     </p>
                     <div className="menu-footer__links">
-                        <a href="mailto:hello@cuboic.com">hello@cuboic.com</a>
+                        <a href="mailto:hello@cuboic.com">placeholder@cuboic.com</a>
                         <span className="menu-footer__dot">·</span>
                         <a href="https://cuboic.com" target="_blank" rel="noopener noreferrer">cuboic.com</a>
                         <span className="menu-footer__dot">·</span>
@@ -259,8 +388,23 @@ export function MenuPage() {
                 </div>
             </footer>
 
+            {/* ── Active Orders pill ──────────────────────────────── */}
+            {activeOrders.length > 0 && !cartOpen && !ordersOpen && (
+                <div className="track-float" style={{ bottom: cart.count > 0 ? '88px' : '24px' }}>
+                    <button className="track-float__btn" onClick={() => setOrdersOpen(true)}>
+                        <span className="track-float__icon" style={{ display: 'flex', alignItems: 'center' }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="m11.5 7.5 5 2.5-1.5 1.5-2.5 5-1.5-1.5-.5-5z" />
+                            </svg>
+                        </span>
+                        <span>Track {activeOrders.length} Order{activeOrders.length > 1 ? 's' : ''}</span>
+                    </button>
+                </div>
+            )}
+
             {/* ── Floating cart pill ─────────────────────────────── */}
-            {cart.count > 0 && !cartOpen && (
+            {cart.count > 0 && !cartOpen && !ordersOpen && (
                 <div className="cart-float">
                     <button className="cart-float__btn" onClick={() => setCartOpen(true)}>
                         <div className="cart-float__left">
@@ -283,10 +427,42 @@ export function MenuPage() {
                 total={cart.total}
                 restaurantId={restaurantId}
                 tableId={tableId}
+                tableLabel={tableLabel}
                 sessionId={SESSION_ID}
                 onAdd={cart.add}
                 onRemove={cart.remove}
                 onClear={cart.clear}
+            />
+
+            {/* ── Orders bottom sheet ────────────────────────────── */}
+            <OrdersDrawer
+                open={ordersOpen}
+                onClose={() => setOrdersOpen(false)}
+                orders={activeOrders}
+                restaurantId={restaurantId}
+                tableId={tableId}
+            />
+
+            {/* ── Table selector modal ───────────────────────────── */}
+            <TableSelectorModal
+                open={tablesOpen}
+                onClose={() => setTablesOpen(false)}
+                tables={availableTables}
+                currentTableId={tableId}
+                onSelect={handleTableSelect}
+            />
+
+            {/* ── Confirm table move modal ───────────────────────── */}
+            <ConfirmTableMoveModal
+                open={!!pendingTableMove}
+                orderCount={activeOrders.length}
+                newTableNumber={pendingTableMove?.number || ''}
+                onCancel={() => setPendingTableMove(null)}
+                onConfirm={(moveOrders) => {
+                    if (pendingTableMove) {
+                        proceedWithTableMove(pendingTableMove.id, moveOrders);
+                    }
+                }}
             />
         </div>
     );

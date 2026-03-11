@@ -1,25 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Restaurant, RestaurantDocument } from './schemas/restaurant.schema';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class RestaurantsService {
-    constructor(
-        @InjectModel(Restaurant.name)
-        private readonly restaurantModel: Model<RestaurantDocument>,
-    ) { }
+    constructor(private prisma: PrismaService) { }
 
-    async findById(id: string) {
-        return this.restaurantModel.findById(id).exec();
+    findById(id: string) {
+        return this.prisma.restaurant.findUnique({ where: { id }, include: { tables: true } });
     }
 
-    async findAll() {
-        return this.restaurantModel.find().exec();
+    findAll() {
+        return this.prisma.restaurant.findMany();
     }
 
-    async create(data: Partial<Restaurant>) {
-        const created = new this.restaurantModel(data);
-        return created.save();
+    create(data: { name: string; description?: string; logoUrl?: string }) {
+        return this.prisma.restaurant.create({ data });
     }
 }

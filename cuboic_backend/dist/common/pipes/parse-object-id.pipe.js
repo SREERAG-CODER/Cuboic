@@ -8,11 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParseObjectIdPipe = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("mongoose");
 let ParseObjectIdPipe = class ParseObjectIdPipe {
     transform(value) {
-        if (!mongoose_1.Types.ObjectId.isValid(value)) {
-            throw new common_1.BadRequestException(`"${value}" is not a valid MongoDB ObjectId`);
+        if (!value || typeof value !== 'string') {
+            throw new common_1.BadRequestException(`"${value}" is not a valid ID`);
         }
         return value;
     }

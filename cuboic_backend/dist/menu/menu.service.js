@@ -8,96 +8,75 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuService = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const menu_item_schema_1 = require("./schemas/menu-item.schema");
-const table_schema_1 = require("../tables/schemas/table.schema");
+const prisma_service_1 = require("../prisma/prisma.service");
 let MenuService = class MenuService {
-    menuItemModel;
-    tableModel;
-    constructor(menuItemModel, tableModel) {
-        this.menuItemModel = menuItemModel;
-        this.tableModel = tableModel;
+    prisma;
+    constructor(prisma) {
+        this.prisma = prisma;
     }
     async getMenu(restaurantId, tableId, categoryId) {
-        if (!mongoose_2.Types.ObjectId.isValid(restaurantId)) {
-            throw new common_1.BadRequestException(`Invalid restaurant ID: "${restaurantId}"`);
-        }
         if (tableId) {
-            if (!mongoose_2.Types.ObjectId.isValid(tableId)) {
-                throw new common_1.BadRequestException(`Invalid table ID: "${tableId}"`);
-            }
-            const table = await this.tableModel.findOne({
-                _id: new mongoose_2.Types.ObjectId(tableId),
-                restaurant_id: new mongoose_2.Types.ObjectId(restaurantId),
-                is_active: true,
+            const table = await this.prisma.table.findFirst({
+                where: { id: tableId, restaurantId, is_active: true },
             });
             if (!table)
                 throw new common_1.NotFoundException('Table not found or inactive');
         }
-        const filter = {
-            restaurant_id: new mongoose_2.Types.ObjectId(restaurantId),
-            is_available: true,
-        };
-        if (categoryId) {
-            if (!mongoose_2.Types.ObjectId.isValid(categoryId)) {
-                throw new common_1.BadRequestException(`Invalid category ID: "${categoryId}"`);
-            }
-            filter.category_id = new mongoose_2.Types.ObjectId(categoryId);
-        }
-        return this.menuItemModel.find(filter).sort({ display_order: 1 });
-    }
-    async getAllForAdmin(restaurantId) {
-        if (!mongoose_2.Types.ObjectId.isValid(restaurantId)) {
-            throw new common_1.BadRequestException(`Invalid restaurant ID: "${restaurantId}"`);
-        }
-        return this.menuItemModel
-            .find({ restaurant_id: new mongoose_2.Types.ObjectId(restaurantId) })
-            .sort({ display_order: 1, name: 1 });
-    }
-    async createItem(dto) {
-        if (!mongoose_2.Types.ObjectId.isValid(dto.restaurant_id)) {
-            throw new common_1.BadRequestException('Invalid restaurant_id');
-        }
-        if (!mongoose_2.Types.ObjectId.isValid(dto.category_id)) {
-            throw new common_1.BadRequestException('Invalid category_id');
-        }
-        const item = new this.menuItemModel({
-            ...dto,
-            restaurant_id: new mongoose_2.Types.ObjectId(dto.restaurant_id),
-            category_id: new mongoose_2.Types.ObjectId(dto.category_id),
+        return this.prisma.menuItem.findMany({
+            where: {
+                restaurantId,
+                is_available: true,
+                ...(categoryId ? { categoryId } : {}),
+            },
+            orderBy: { display_order: 'asc' },
         });
-        return item.save();
+    }
+    getAllForAdmin(restaurantId) {
+        return this.prisma.menuItem.findMany({
+            where: { restaurantId },
+            orderBy: [{ display_order: 'asc' }, { name: 'asc' }],
+        });
+    }
+    createItem(dto) {
+        return this.prisma.menuItem.create({
+            data: {
+                restaurantId: dto.restaurantId,
+                categoryId: dto.categoryId,
+                name: dto.name,
+                description: dto.description,
+                price: dto.price,
+                image_url: dto.image_url,
+                is_available: dto.is_available ?? true,
+                display_order: dto.display_order ?? 0,
+            },
+        });
     }
     async updateItem(id, dto) {
-        if (!mongoose_2.Types.ObjectId.isValid(id)) {
-            throw new common_1.BadRequestException('Invalid item ID');
-        }
-        const update = { ...dto };
-        if (dto.category_id) {
-            if (!mongoose_2.Types.ObjectId.isValid(dto.category_id)) {
-                throw new common_1.BadRequestException('Invalid category_id');
-            }
-            update.category_id = new mongoose_2.Types.ObjectId(dto.category_id);
-        }
-        const updated = await this.menuItemModel.findByIdAndUpdate(id, { $set: update }, { new: true });
-        if (!updated)
-            throw new common_1.NotFoundException('Menu item not found');
+        const updated = await this.prisma.menuItem.update({
+            where: { id },
+            data: {
+                ...(dto.name !== undefined && { name: dto.name }),
+                ...(dto.description !== undefined && { description: dto.description }),
+                ...(dto.price !== undefined && { price: dto.price }),
+                ...(dto.categoryId !== undefined && { categoryId: dto.categoryId }),
+                ...(dto.image_url !== undefined && { image_url: dto.image_url }),
+                ...(dto.is_available !== undefined && { is_available: dto.is_available }),
+                ...(dto.display_order !== undefined && { display_order: dto.display_order }),
+            },
+        }).catch(() => { throw new common_1.NotFoundException('Menu item not found'); });
         return updated;
+    }
+    deleteItem(id) {
+        return this.prisma.menuItem.delete({ where: { id } })
+            .catch(() => { throw new common_1.NotFoundException('Menu item not found'); });
     }
 };
 exports.MenuService = MenuService;
 exports.MenuService = MenuService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(menu_item_schema_1.MenuItem.name)),
-    __param(1, (0, mongoose_1.InjectModel)(table_schema_1.Table.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model,
-        mongoose_2.Model])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], MenuService);
 //# sourceMappingURL=menu.service.js.map

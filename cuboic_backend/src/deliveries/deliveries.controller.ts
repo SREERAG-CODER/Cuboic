@@ -18,12 +18,12 @@ export class DeliveriesController {
     }
 
     @Get('active')
-    findActive(@Query('restaurant_id') restaurantId: string) {
+    findActive(@Query('restaurantId') restaurantId: string) {
         return this.deliveriesService.findActive(restaurantId);
     }
 
     @Get()
-    findAll(@Query('restaurant_id') restaurantId: string) {
+    findAll(@Query('restaurantId') restaurantId: string) {
         return this.deliveriesService.findAll(restaurantId);
     }
 

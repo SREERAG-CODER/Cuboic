@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const mongoose_1 = require("@nestjs/mongoose");
+const prisma_module_1 = require("./prisma/prisma.module");
 const menu_module_1 = require("./menu/menu.module");
 const categories_module_1 = require("./categories/categories.module");
 const orders_module_1 = require("./orders/orders.module");
@@ -22,6 +22,7 @@ const auth_module_1 = require("./auth/auth.module");
 const events_module_1 = require("./events/events.module");
 const restaurants_module_1 = require("./restaurants/restaurants.module");
 const robot_runtime_module_1 = require("./robot-runtime/robot-runtime.module");
+const health_module_1 = require("./health/health.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -29,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
-            mongoose_1.MongooseModule.forRoot(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/cuboic'),
+            prisma_module_1.PrismaModule,
             menu_module_1.MenuModule,
             categories_module_1.CategoriesModule,
             orders_module_1.OrdersModule,
@@ -42,6 +43,7 @@ exports.AppModule = AppModule = __decorate([
             events_module_1.EventsModule,
             restaurants_module_1.RestaurantsModule,
             robot_runtime_module_1.RobotRuntimeModule,
+            health_module_1.HealthModule,
         ],
     })
 ], AppModule);

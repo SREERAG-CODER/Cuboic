@@ -9,7 +9,7 @@ const EMPTY_FORM = {
     description: '',
     price: '',
     image_url: '',
-    category_id: '',
+    categoryId: '',
     is_available: true,
 }
 
@@ -17,7 +17,7 @@ type FormState = typeof EMPTY_FORM
 
 export default function MenuPage() {
     const { user } = useAuth()
-    const restaurantId = user?.restaurant_id ?? ''
+    const restaurantId = user?.restaurantId ?? ''
 
     const [items, setItems] = useState<AdminMenuItem[]>([])
     const [categories, setCategories] = useState<Category[]>([])
@@ -51,9 +51,9 @@ export default function MenuPage() {
     // Toggle availability inline (no modal needed)
     const toggleAvailability = async (item: AdminMenuItem) => {
         try {
-            await menuApi.updateItem(item._id, { is_available: !item.is_available })
+            await menuApi.updateItem(item.id, { is_available: !item.is_available })
             setItems(prev =>
-                prev.map(i => i._id === item._id ? { ...i, is_available: !item.is_available } : i)
+                prev.map(i => i.id === item.id ? { ...i, is_available: !item.is_available } : i)
             )
             showToast(
                 item.is_available ? 'Marked Unavailable' : 'Marked Available',
@@ -68,19 +68,19 @@ export default function MenuPage() {
     // Open modal for new item
     const openAddModal = () => {
         setEditingId(null)
-        setForm({ ...EMPTY_FORM, category_id: categories[0]?._id ?? '' })
+        setForm({ ...EMPTY_FORM, categoryId: categories[0]?.id ?? '' })
         setModalOpen(true)
     }
 
     // Open modal to edit existing item
     const openEditModal = (item: AdminMenuItem) => {
-        setEditingId(item._id)
+        setEditingId(item.id)
         setForm({
             name: item.name,
             description: item.description ?? '',
             price: String(item.price),
             image_url: item.image_url ?? '',
-            category_id: item.category_id,
+            categoryId: item.categoryId,
             is_available: item.is_available,
         })
         setModalOpen(true)
@@ -95,7 +95,7 @@ export default function MenuPage() {
         if (!form.name.trim()) { showToast('Validation', 'Name is required', 'warning'); return }
         const price = parseFloat(form.price)
         if (isNaN(price) || price < 0) { showToast('Validation', 'Enter a valid price', 'warning'); return }
-        if (!form.category_id) { showToast('Validation', 'Select a category', 'warning'); return }
+        if (!form.categoryId) { showToast('Validation', 'Select a category', 'warning'); return }
 
         setSaving(true)
         try {
@@ -105,15 +105,15 @@ export default function MenuPage() {
                     description: form.description.trim() || undefined,
                     price,
                     image_url: form.image_url.trim() || undefined,
-                    category_id: form.category_id,
+                    categoryId: form.categoryId,
                     is_available: form.is_available,
                 })
-                setItems(prev => prev.map(i => i._id === editingId ? res.data : i))
+                setItems(prev => prev.map(i => i.id === editingId ? res.data : i))
                 showToast('Saved', `"${res.data.name}" updated`, 'success')
             } else {
                 const res = await menuApi.createItem({
-                    restaurant_id: restaurantId,
-                    category_id: form.category_id,
+                    restaurantId: restaurantId,
+                    categoryId: form.categoryId,
                     name: form.name.trim(),
                     description: form.description.trim() || undefined,
                     price,
@@ -133,10 +133,10 @@ export default function MenuPage() {
 
     const visibleItems = filterCat === 'all'
         ? items
-        : items.filter(i => i.category_id === filterCat || String(i.category_id) === filterCat)
+        : items.filter(i => i.categoryId === filterCat || String(i.categoryId) === filterCat)
 
     const getCategoryName = (id: string) =>
-        categories.find(c => c._id === id || String(c._id) === id)?.name ?? '—'
+        categories.find(c => c.id === id || String(c.id) === id)?.name ?? '—'
 
     return (
         <div className="page">
@@ -157,12 +157,12 @@ export default function MenuPage() {
                     All ({items.length})
                 </button>
                 {categories.map(cat => {
-                    const count = items.filter(i => i.category_id === cat._id || String(i.category_id) === cat._id).length
+                    const count = items.filter(i => i.categoryId === cat.id || String(i.categoryId) === cat.id).length
                     return (
                         <button
-                            key={cat._id}
-                            className={`filter-tab ${filterCat === cat._id ? 'tab-active' : ''}`}
-                            onClick={() => setFilterCat(cat._id)}
+                            key={cat.id}
+                            className={`filter-tab ${filterCat === cat.id ? 'tab-active' : ''}`}
+                            onClick={() => setFilterCat(cat.id)}
                         >
                             {cat.name} ({count})
                         </button>
@@ -188,7 +188,7 @@ export default function MenuPage() {
                         </thead>
                         <tbody>
                             {visibleItems.map(item => (
-                                <tr key={item._id} className={!item.is_available ? 'row-unavailable' : ''}>
+                                <tr key={item.id} className={!item.is_available ? 'row-unavailable' : ''}>
                                     <td>
                                         <div className="menu-item-cell">
                                             {item.image_url && (
@@ -207,7 +207,7 @@ export default function MenuPage() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{getCategoryName(item.category_id)}</td>
+                                    <td>{getCategoryName(item.categoryId)}</td>
                                     <td className="cell-mono">₹{item.price.toFixed(2)}</td>
                                     <td>
                                         <button
@@ -281,12 +281,12 @@ export default function MenuPage() {
                                 <div className="form-group">
                                     <label>Category *</label>
                                     <select
-                                        value={form.category_id}
-                                        onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))}
+                                        value={form.categoryId}
+                                        onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}
                                     >
                                         <option value="">— Select —</option>
                                         {categories.map(c => (
-                                            <option key={c._id} value={c._id}>{c.name}</option>
+                                            <option key={c.id} value={c.id}>{c.name}</option>
                                         ))}
                                     </select>
                                 </div>

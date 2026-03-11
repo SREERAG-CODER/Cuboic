@@ -1,81 +1,115 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Order, OrderDocument } from './schemas/order.schema';
-import { MenuItem, MenuItemDocument } from '../menu/schemas/menu-item.schema';
+import { PrismaService } from '../prisma/prisma.service';
 import { EventsGateway } from '../events/events.gateway';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { OrderStatus } from '@prisma/client';
 
 const TAX_RATE = 0.05;
 
 @Injectable()
 export class OrdersService {
     constructor(
-        @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
-        @InjectModel(MenuItem.name) private menuItemModel: Model<MenuItemDocument>,
+        private prisma: PrismaService,
         private readonly eventsGateway: EventsGateway,
     ) { }
 
     async create(dto: CreateOrderDto) {
-        const itemDocs = await this.menuItemModel.find({
-            _id: { $in: dto.items.map((i) => new Types.ObjectId(i.item_id)) },
+        console.log('[DEBUG] createOrder DTO:', JSON.stringify(dto, null, 2));
+        const itemDocs = await this.prisma.menuItem.findMany({
+            where: { id: { in: dto.items.map((i) => i.itemId) } },
         });
 
         if (itemDocs.length !== dto.items.length) {
+            console.log('[DEBUG] itemDocs found:', itemDocs.map(d => d.id), 'but expected:', dto.items.map(i => i.itemId));
             throw new BadRequestException('One or more menu items not found');
         }
 
         const orderItems = dto.items.map((i) => {
-            const doc = itemDocs.find((d) => d._id.toString() === i.item_id);
-            return { item_id: doc!._id, name: doc!.name, unit_price: doc!.price, quantity: i.quantity };
+            const doc = itemDocs.find((d) => d.id === i.itemId);
+            return { itemId: doc!.id, name: doc!.name, unitPrice: doc!.price, quantity: i.quantity };
         });
 
-        const subtotal = orderItems.reduce((sum, i) => sum + i.unit_price * i.quantity, 0);
+        const subtotal = orderItems.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
         const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
         const total = parseFloat((subtotal + tax).toFixed(2));
 
-        const order = await this.orderModel.create({
-            restaurant_id: new Types.ObjectId(dto.restaurant_id),
-            table_id: new Types.ObjectId(dto.table_id),
-            customer_session_id: dto.customer_session_id,
-            items: orderItems,
-            subtotal,
-            tax,
-            total,
+        const order = await this.prisma.order.create({
+            data: {
+                restaurantId: dto.restaurantId,
+                tableId: dto.tableId,
+                customer_session_id: dto.customerSessionId,
+                items: orderItems,
+                subtotal,
+                tax,
+                total,
+            },
         });
 
-        this.eventsGateway.emitToRestaurant(dto.restaurant_id, 'order:new', order);
+        this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
         return order;
     }
 
     findOne(id: string) {
-        return this.orderModel.findById(id);
+        return this.prisma.order.findUnique({
+            where: { id },
+            include: { table: true },
+        });
     }
 
     findAll(restaurantId: string, status?: string) {
-        const filter: any = { restaurant_id: new Types.ObjectId(restaurantId) };
-        if (status) filter.status = status;
-        return this.orderModel.find(filter).sort({ createdAt: -1 });
+        return this.prisma.order.findMany({
+            where: {
+                restaurantId,
+                ...(status ? { status: status as OrderStatus } : {}),
+            },
+            include: { table: true },
+            orderBy: { createdAt: 'desc' },
+        });
     }
 
     async updateStatus(id: string, dto: UpdateOrderStatusDto) {
-        const order = await this.orderModel.findByIdAndUpdate(
-            id,
-            { status: dto.status },
-            { new: true },
-        );
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: { status: dto.status as OrderStatus },
+        });
         if (!order) throw new NotFoundException('Order not found');
-        this.eventsGateway.emitToRestaurant(order.restaurant_id.toString(), 'order:updated', order);
+        this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
+        return order;
+    }
+
+    async updateTable(id: string, tableId: string) {
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: { tableId },
+        });
+        if (!order) throw new NotFoundException('Order not found');
+        this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
+        return order;
+    }
+
+    async cancelOrder(id: string) {
+        const existing = await this.prisma.order.findUnique({ where: { id } });
+        if (!existing) throw new NotFoundException('Order not found');
+
+        const cancellableStates = ['Pending', 'Confirmed', 'Preparing'];
+        if (!cancellableStates.includes(existing.status)) {
+            throw new BadRequestException(`Order cannot be cancelled in state: ${existing.status}`);
+        }
+
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: { status: 'Cancelled' },
+        });
+        this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
         return order;
     }
 
     async confirmDelivery(id: string) {
-        const order = await this.orderModel.findByIdAndUpdate(
-            id,
-            { status: 'Delivered' },
-            { new: true },
-        );
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: { status: 'Delivered' },
+        });
         if (!order) throw new NotFoundException('Order not found');
         return order;
     }

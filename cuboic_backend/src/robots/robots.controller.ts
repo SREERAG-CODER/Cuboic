@@ -11,7 +11,7 @@ export class RobotsController {
     constructor(private readonly robotsService: RobotsService) { }
 
     @Get()
-    findAll(@Query('restaurant_id') restaurantId: string) {
+    findAll(@Query('restaurantId') restaurantId: string) {
         return this.robotsService.findAll(restaurantId);
     }
 

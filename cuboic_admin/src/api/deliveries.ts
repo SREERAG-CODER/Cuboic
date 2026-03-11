@@ -1,24 +1,24 @@
 import { apiClient } from './client'
 
 export interface CreateDeliveryStop {
-    order_id: string
-    table_id: string
+    orderId: string
+    tableId: string
     cabinets: string[]
     sequence: number
 }
 
 export interface CreateDeliveryDto {
-    restaurant_id: string
-    robot_id: string
+    restaurantId: string
+    robotId: string
     stops: CreateDeliveryStop[]
 }
 
 export const deliveriesApi = {
-    findAll: (restaurant_id: string) =>
-        apiClient.get('/deliveries', { params: { restaurant_id } }),
+    findAll: (restaurantId: string) =>
+        apiClient.get('/deliveries', { params: { restaurantId } }),
 
-    findActive: (restaurant_id: string) =>
-        apiClient.get('/deliveries/active', { params: { restaurant_id } }),
+    findActive: (restaurantId: string) =>
+        apiClient.get('/deliveries/active', { params: { restaurantId } }),
 
     create: (dto: CreateDeliveryDto) => apiClient.post('/deliveries', dto),
 

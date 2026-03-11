@@ -1,5 +1,5 @@
 export declare class QueryPaymentDto {
-    restaurant_id: string;
+    restaurantId: string;
     from?: string;
     to?: string;
 }

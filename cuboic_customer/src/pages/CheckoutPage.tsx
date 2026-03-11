@@ -11,6 +11,7 @@ interface LocationState {
     total: number;
     restaurantId: string;
     tableId: string;
+    tableLabel?: string;
     sessionId: string;
 }
 
@@ -41,7 +42,7 @@ export function CheckoutPage() {
         );
     }
 
-    const { items, total, restaurantId, tableId, sessionId } = state;
+    const { items, total, restaurantId, tableId, tableLabel, sessionId } = state;
     const taxAmount = total * 0.05;
     const grandTotal = total + taxAmount;
 
@@ -61,13 +62,30 @@ export function CheckoutPage() {
 
             // Payment "succeeded" — now create the order
             const order = await placeOrder({
-                restaurant_id: restaurantId,
-                table_id: tableId,
-                customer_session_id: sessionId ?? SESSION_ID,
-                items: items.map(c => ({ item_id: c.item._id, quantity: c.quantity })),
+                restaurantId: restaurantId,
+                tableId: tableId,
+                customerSessionId: sessionId ?? SESSION_ID,
+                items: items.map(c => ({ itemId: c.item.id, quantity: c.quantity })),
             });
 
-            navigate(`/order/${order._id}`, { replace: true });
+            localStorage.removeItem('cuboic_cart');
+
+            // Save order history array
+            try {
+                const stored = localStorage.getItem('cuboic_active_orders');
+                const prevOrders = stored ? JSON.parse(stored) : [];
+                const newOrderSession = {
+                    id: order.id,
+                    time: Date.now(),
+                    total: grandTotal,
+                    itemCount: items.reduce((sum, c) => sum + c.quantity, 0)
+                };
+                localStorage.setItem('cuboic_active_orders', JSON.stringify([...prevOrders, newOrderSession]));
+            } catch (err) {
+                console.error('Failed to log active order', err);
+            }
+
+            navigate(`/order/${order.id}`, { replace: true });
         } catch (err: unknown) {
             const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
             setError(msg ?? 'Failed to place order. Please try again.');
@@ -79,34 +97,46 @@ export function CheckoutPage() {
         <div className="checkout-page fade-in">
             <header className="checkout-header">
                 <div className="container">
-                    <Link to="/" className="checkout-back">← Menu</Link>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <Link to={`/?r=${restaurantId}&t=${tableId}`} className="checkout-back">← Menu</Link>
+                        {tableLabel && <div className="table-tag" style={{ margin: 0, padding: '4px 8px', fontSize: '0.75rem', borderRadius: '4px', background: 'var(--surface2)', color: 'var(--text-muted)', fontWeight: 600 }}>{tableLabel}</div>}
+                    </div>
                     <p className="checkout-brand">Cuboic</p>
                 </div>
             </header>
 
-            <main className="container checkout-body">
-                {/* Order Summary */}
-                <section className="co-card">
-                    <h2 className="co-section-title">Order Summary</h2>
-                    <div className="co-items">
+            <main className="container checkout-bento">
+                {/* ── Order Summary Tile (Large) ── */}
+                <section className="bento-tile bento-tile--main fade-up">
+                    <h2 className="bento-title">Your Order</h2>
+
+                    <div className="bento-items-grid">
                         {items.map(c => (
-                            <div key={c.item._id} className="co-item-row">
-                                <span className="co-item-name">{c.quantity}× {c.item.name}</span>
-                                <span className="co-item-price">₹{(c.item.price * c.quantity).toFixed(2)}</span>
+                            <div key={c.item.id} className="bento-item">
+                                <img src={c.item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'} alt={c.item.name} className="bento-item-img" />
+                                <div className="bento-item-info">
+                                    <div className="bento-item-name">
+                                        {c.item.name} <span className="bento-item-qty-inline">x{c.quantity}</span>
+                                    </div>
+                                </div>
+                                <div className="bento-item-price">₹{((Number(c.item.price) || 0) * (Number(c.quantity) || 1)).toFixed(2)}</div>
                             </div>
                         ))}
                     </div>
-                    <hr className="divider" />
-                    <div className="co-totals">
-                        <div className="co-total-row"><span>Subtotal</span><span>₹{total.toFixed(2)}</span></div>
-                        <div className="co-total-row"><span>Tax (5%)</span><span>₹{taxAmount.toFixed(2)}</span></div>
-                        <div className="co-total-row co-total-grand"><span>Total</span><span>₹{grandTotal.toFixed(2)}</span></div>
-                    </div>
                 </section>
 
-                {/* Payment Method */}
-                <section className="co-card">
-                    <h2 className="co-section-title">Payment Method</h2>
+                {/* ── Totals Tile ── */}
+                <section className="bento-tile bento-totals fade-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="co-total-row"><span>Subtotal</span><span>₹{total.toFixed(2)}</span></div>
+                    <div className="co-total-row"><span>Tax (5%)</span><span>₹{taxAmount.toFixed(2)}</span></div>
+                    <hr className="divider" style={{ margin: '12px 0' }} />
+                    <div className="co-total-row co-total-grand"><span>Total</span><span>₹{grandTotal.toFixed(2)}</span></div>
+                </section>
+
+                {/* ── Payment Method Tile ── */}
+                <section className="bento-tile bento-payment fade-up" style={{ animationDelay: '0.2s' }}>
+                    <h2 className="bento-title">Payment Method</h2>
+
                     <div className="co-methods">
                         {(['Card', 'UPI', 'Cash'] as PaymentMethod[]).map(m => (
                             <button
@@ -115,14 +145,14 @@ export function CheckoutPage() {
                                 onClick={() => setMethod(m)}
                             >
                                 <span className="co-method-icon">
-                                    {m === 'Card' ? 'Card' : m === 'UPI' ? 'UPI' : 'Cash'}
+                                    {m === 'Card' ? '💳' : m === 'UPI' ? '📱' : '💵'}
                                 </span>
                                 <span>{m}</span>
                             </button>
                         ))}
                     </div>
 
-                    {/* Card details — only shown when Card is selected */}
+                    {/* Card fields */}
                     {method === 'Card' && (
                         <div className="co-card-fields fade-in">
                             <div className="co-field">
@@ -162,35 +192,37 @@ export function CheckoutPage() {
 
                     {method === 'UPI' && (
                         <p className="co-method-hint fade-in">
-                            You'll be redirected to your UPI app after confirming.
+                            Redirecting to your UPI app soon.
                         </p>
                     )}
 
                     {method === 'Cash' && (
                         <p className="co-method-hint fade-in">
-                            Please have exact change ready when the robot arrives.
+                            Please pay at the end of your meal.
                         </p>
                     )}
                 </section>
 
-                {error && <div className="co-error">{error}</div>}
+                {/* ── Checkout Action Tile ── */}
+                <section className="bento-action fade-up" style={{ animationDelay: '0.3s' }}>
+                    {error && <div className="co-error">{error}</div>}
 
-                <button
-                    className="btn btn-primary co-pay-btn"
-                    onClick={handlePay}
-                    disabled={processing}
-                >
-                    {processing ? (
-                        <span className="co-processing">
-                            <span className="co-spinner" />
-                            Processing payment…
-                        </span>
-                    ) : (
-                        `Pay ₹${grandTotal.toFixed(2)}`
-                    )}
-                </button>
-
-                <p className="co-secure-note">Secured and encrypted payment</p>
+                    <button
+                        className="btn btn-primary co-pay-btn bento-pay-btn"
+                        onClick={handlePay}
+                        disabled={processing}
+                    >
+                        {processing ? (
+                            <span className="co-processing">
+                                <span className="co-spinner" />
+                                Processing…
+                            </span>
+                        ) : (
+                            `Pay ₹${grandTotal.toFixed(2)}`
+                        )}
+                    </button>
+                    <p className="co-secure-note">Secured & encrypted</p>
+                </section>
             </main>
         </div>
     );

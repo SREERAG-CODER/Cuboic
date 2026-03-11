@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { PrismaModule } from './prisma/prisma.module';
 import { MenuModule } from './menu/menu.module';
 import { CategoriesModule } from './categories/categories.module';
 import { OrdersModule } from './orders/orders.module';
@@ -13,11 +13,12 @@ import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { RobotRuntimeModule } from './robot-runtime/robot-runtime.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/cuboic'),
+    PrismaModule,
     MenuModule,
     CategoriesModule,
     OrdersModule,
@@ -30,6 +31,7 @@ import { RobotRuntimeModule } from './robot-runtime/robot-runtime.module';
     EventsModule,
     RestaurantsModule,
     RobotRuntimeModule,
+    HealthModule,
   ],
 })
 export class AppModule { }

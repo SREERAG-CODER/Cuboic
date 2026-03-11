@@ -1,59 +1,92 @@
-import { Model, Types } from 'mongoose';
-import { Order, OrderDocument } from './schemas/order.schema';
-import { MenuItemDocument } from '../menu/schemas/menu-item.schema';
+import { PrismaService } from '../prisma/prisma.service';
 import { EventsGateway } from '../events/events.gateway';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 export declare class OrdersService {
-    private orderModel;
-    private menuItemModel;
+    private prisma;
     private readonly eventsGateway;
-    constructor(orderModel: Model<OrderDocument>, menuItemModel: Model<MenuItemDocument>, eventsGateway: EventsGateway);
-    create(dto: CreateOrderDto): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & Order & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    constructor(prisma: PrismaService, eventsGateway: EventsGateway);
+    create(dto: CreateOrderDto): Promise<{
+        restaurantId: string;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
     }>;
-    findOne(id: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & Order & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
+    findOne(id: string): import("@prisma/client").Prisma.Prisma__OrderClient<({
+        table: {
+            restaurantId: string;
+            id: string;
+            table_number: string;
+            is_active: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
     } & {
+        restaurantId: string;
         id: string;
-    }) | null, import("mongoose").Document<unknown, {}, OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & Order & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
+    }) | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    findAll(restaurantId: string, status?: string): import("@prisma/client").Prisma.PrismaPromise<({
+        table: {
+            restaurantId: string;
+            id: string;
+            table_number: string;
+            is_active: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
     } & {
+        restaurantId: string;
         id: string;
-    }, {}, OrderDocument, "findOne", {}>;
-    findAll(restaurantId: string, status?: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & Order & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
+    })[]>;
+    updateStatus(id: string, dto: UpdateOrderStatusDto): Promise<{
+        restaurantId: string;
         id: string;
-    })[], import("mongoose").Document<unknown, {}, OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & Order & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, OrderDocument, "find", {}>;
-    updateStatus(id: string, dto: UpdateOrderStatusDto): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & Order & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
     }>;
-    confirmDelivery(id: string): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & Order & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    confirmDelivery(id: string): Promise<{
+        restaurantId: string;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
     }>;
 }

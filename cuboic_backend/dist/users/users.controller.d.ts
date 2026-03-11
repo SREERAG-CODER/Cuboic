@@ -3,18 +3,23 @@ import { CreateUserDto } from './dto/create-user.dto';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    create(dto: CreateUserDto): Promise<any>;
-    findAll(restaurantId: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, import("./schemas/user.schema").UserDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/user.schema").User & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    create(dto: CreateUserDto): Promise<{
+        restaurantId: string | null;
+        name: string;
         id: string;
-    })[], import("mongoose").Document<unknown, {}, import("./schemas/user.schema").UserDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/user.schema").User & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        role: import("@prisma/client").$Enums.UserRole;
+        user_id: string;
+    }>;
+    findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        restaurantId: string | null;
+        name: string;
         id: string;
-    }, {}, import("./schemas/user.schema").UserDocument, "find", {}>;
+        is_active: boolean;
+        createdAt: Date;
+        role: import("@prisma/client").$Enums.UserRole;
+        user_id: string;
+    }[]>;
 }

@@ -1,21 +1,31 @@
-import { Model, Types } from 'mongoose';
-import { Payment, PaymentDocument } from './schemas/payment.schema';
+import { PrismaService } from '../prisma/prisma.service';
 export declare class PaymentsService {
-    private paymentModel;
-    constructor(paymentModel: Model<PaymentDocument>);
-    findAll(restaurantId: string, from?: string, to?: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, PaymentDocument, {}, import("mongoose").DefaultSchemaOptions> & Payment & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
+    private prisma;
+    constructor(prisma: PrismaService);
+    findAll(restaurantId: string, from?: string, to?: string): import("@prisma/client").Prisma.PrismaPromise<({
+        order: {
+            restaurantId: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            tableId: string;
+            items: import("@prisma/client/runtime/library").JsonValue;
+            status: import("@prisma/client").$Enums.OrderStatus;
+            customer_session_id: string;
+            subtotal: number;
+            tax: number;
+            total: number;
+        };
     } & {
         id: string;
-    })[], import("mongoose").Document<unknown, {}, PaymentDocument, {}, import("mongoose").DefaultSchemaOptions> & Payment & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, PaymentDocument, "find", {}>;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.PaymentStatus;
+        orderId: string;
+        amount: number;
+        method: string;
+        transaction_id: string | null;
+    })[]>;
     getSummary(restaurantId: string): Promise<{
         order_count: number;
         total_revenue: number;

@@ -12,7 +12,7 @@ export class PaymentsController {
 
     @Get()
     findAll(
-        @Query('restaurant_id') restaurantId: string,
+        @Query('restaurantId') restaurantId: string,
         @Query('from') from?: string,
         @Query('to') to?: string,
     ) {
@@ -20,7 +20,7 @@ export class PaymentsController {
     }
 
     @Get('summary')
-    getSummary(@Query('restaurant_id') restaurantId: string) {
+    getSummary(@Query('restaurantId') restaurantId: string) {
         return this.paymentsService.getSummary(restaurantId);
     }
 }

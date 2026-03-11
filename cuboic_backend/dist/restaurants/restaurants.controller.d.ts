@@ -1,27 +1,41 @@
 import { RestaurantsService } from './restaurants.service';
-import { Types } from 'mongoose';
 export declare class RestaurantsController {
     private readonly restaurantsService;
     constructor(restaurantsService: RestaurantsService);
-    getAll(): Promise<(import("mongoose").Document<unknown, {}, import("./schemas/restaurant.schema").RestaurantDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/restaurant.schema").Restaurant & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    getAll(): Promise<{
+        name: string;
+        description: string | null;
         id: string;
-    })[]>;
-    getById(id: string): Promise<import("mongoose").Document<unknown, {}, import("./schemas/restaurant.schema").RestaurantDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/restaurant.schema").Restaurant & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        logo_url: string | null;
+    }[]>;
+    getById(id: string): Promise<{
+        tables: {
+            restaurantId: string;
+            id: string;
+            table_number: string;
+            is_active: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
     } & {
+        name: string;
+        description: string | null;
         id: string;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        logo_url: string | null;
     }>;
-    create(body: any): Promise<import("mongoose").Document<unknown, {}, import("./schemas/restaurant.schema").RestaurantDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/restaurant.schema").Restaurant & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    create(body: any): Promise<{
+        name: string;
+        description: string | null;
         id: string;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        logo_url: string | null;
     }>;
 }

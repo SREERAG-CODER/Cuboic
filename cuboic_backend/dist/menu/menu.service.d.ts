@@ -1,38 +1,72 @@
-import { Types, Model } from 'mongoose';
-import { MenuItem, MenuItemDocument } from './schemas/menu-item.schema';
-import { TableDocument } from '../tables/schemas/table.schema';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateMenuItemDto } from './dto/create-menu-item.dto';
 import { UpdateMenuItemDto } from './dto/update-menu-item.dto';
 export declare class MenuService {
-    private menuItemModel;
-    private tableModel;
-    constructor(menuItemModel: Model<MenuItemDocument>, tableModel: Model<TableDocument>);
-    getMenu(restaurantId: string, tableId?: string, categoryId?: string): Promise<(import("mongoose").Document<unknown, {}, MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & MenuItem & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    private prisma;
+    constructor(prisma: PrismaService);
+    getMenu(restaurantId: string, tableId?: string, categoryId?: string): Promise<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
-    })[]>;
-    getAllForAdmin(restaurantId: string): Promise<(import("mongoose").Document<unknown, {}, MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & MenuItem & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    getAllForAdmin(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
-    })[]>;
-    createItem(dto: CreateMenuItemDto): Promise<import("mongoose").Document<unknown, {}, MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & MenuItem & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    createItem(dto: CreateMenuItemDto): import("@prisma/client").Prisma.Prisma__MenuItemClient<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    updateItem(id: string, dto: UpdateMenuItemDto): Promise<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
-    updateItem(id: string, dto: UpdateMenuItemDto): Promise<import("mongoose").Document<unknown, {}, MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & MenuItem & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    deleteItem(id: string): Promise<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

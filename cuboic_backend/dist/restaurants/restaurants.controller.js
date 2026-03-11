@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestaurantsController = void 0;
 const common_1 = require("@nestjs/common");
 const restaurants_service_1 = require("./restaurants.service");
-const mongoose_1 = require("mongoose");
 let RestaurantsController = class RestaurantsController {
     restaurantsService;
     constructor(restaurantsService) {
@@ -25,9 +24,6 @@ let RestaurantsController = class RestaurantsController {
         return this.restaurantsService.findAll();
     }
     async getById(id) {
-        if (!mongoose_1.Types.ObjectId.isValid(id)) {
-            throw new common_1.NotFoundException('Invalid restaurant ID');
-        }
         const restaurant = await this.restaurantsService.findById(id);
         if (!restaurant) {
             throw new common_1.NotFoundException('Restaurant not found');

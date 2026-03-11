@@ -17,7 +17,7 @@ export class UsersController {
     }
 
     @Get()
-    findAll(@Query('restaurant_id') restaurantId: string) {
+    findAll(@Query('restaurantId') restaurantId: string) {
         return this.usersService.findAll(restaurantId);
     }
 }

@@ -8,52 +8,50 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RobotsService = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const robot_schema_1 = require("./schemas/robot.schema");
+const prisma_service_1 = require("../prisma/prisma.service");
 let RobotsService = class RobotsService {
-    robotModel;
-    constructor(robotModel) {
-        this.robotModel = robotModel;
+    prisma;
+    constructor(prisma) {
+        this.prisma = prisma;
     }
     findAll(restaurantId) {
-        return this.robotModel.find({ restaurant_id: new mongoose_2.Types.ObjectId(restaurantId) });
+        return this.prisma.robot.findMany({ where: { restaurantId } });
     }
     findOne(id) {
-        return this.robotModel.findById(id);
-    }
-    async markOnline(robotId) {
-        return this.robotModel.findByIdAndUpdate(robotId, {
-            isOnline: true,
-            lastSeen: new Date(),
-        });
-    }
-    async markOffline(robotId) {
-        return this.robotModel.findByIdAndUpdate(robotId, {
-            isOnline: false,
-        });
-    }
-    async updateTelemetry(robotId, telemetry) {
-        return this.robotModel.findByIdAndUpdate(robotId, {
-            battery: telemetry.battery,
-            location: telemetry.location,
-            lastSeen: new Date(),
-        });
+        return this.prisma.robot.findUnique({ where: { id } });
     }
     async findByIdWithSecret(robotId) {
-        return this.robotModel.findById(robotId).select('+secretKey');
+        return this.prisma.robot.findUnique({ where: { id: robotId } });
+    }
+    markOnline(robotId) {
+        return this.prisma.robot.update({
+            where: { id: robotId },
+            data: { isOnline: true, lastSeen: new Date() },
+        });
+    }
+    markOffline(robotId) {
+        return this.prisma.robot.update({
+            where: { id: robotId },
+            data: { isOnline: false },
+        });
+    }
+    updateTelemetry(robotId, telemetry) {
+        return this.prisma.robot.update({
+            where: { id: robotId },
+            data: {
+                battery: telemetry.battery,
+                location: telemetry.location,
+                lastSeen: new Date(),
+            },
+        });
     }
 };
 exports.RobotsService = RobotsService;
 exports.RobotsService = RobotsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(robot_schema_1.Robot.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], RobotsService);
 //# sourceMappingURL=robots.service.js.map

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { io, Socket } from 'socket.io-client'
 
-const SOCKET_URL = 'http://localhost:3000'
+const SOCKET_URL = 'https://cuboic.onrender.com'
 
 let sharedSocket: Socket | null = null
 
@@ -13,7 +13,7 @@ export function useSocket(restaurantId: string | undefined, handlers: Record<str
         if (!restaurantId) return
 
         if (!sharedSocket || !sharedSocket.connected) {
-            sharedSocket = io(SOCKET_URL, { transports: ['websocket'] })
+            sharedSocket = io(SOCKET_URL)
         }
 
         const socket = sharedSocket

@@ -1,60 +1,101 @@
-import { Model, Types } from 'mongoose';
-import { Robot, RobotDocument } from './schemas/robot.schema';
+import { PrismaService } from '../prisma/prisma.service';
 export declare class RobotsService {
-    private robotModel;
-    constructor(robotModel: Model<RobotDocument>);
-    findAll(restaurantId: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    private prisma;
+    constructor(prisma: PrismaService);
+    findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        restaurantId: string;
+        name: string;
         id: string;
-    })[], import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    }[]>;
+    findOne(id: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
+        restaurantId: string;
+        name: string;
         id: string;
-    }, {}, RobotDocument, "find", {}>;
-    findOne(id: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    findByIdWithSecret(robotId: string): Promise<{
+        restaurantId: string;
+        name: string;
         id: string;
-    }) | null, import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    } | null>;
+    markOnline(robotId: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
+        restaurantId: string;
+        name: string;
         id: string;
-    }, {}, RobotDocument, "findOne", {}>;
-    markOnline(robotId: string): Promise<(import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    markOffline(robotId: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
+        restaurantId: string;
+        name: string;
         id: string;
-    }) | null>;
-    markOffline(robotId: string): Promise<(import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    updateTelemetry(robotId: string, telemetry: any): import("@prisma/client").Prisma.Prisma__RobotClient<{
+        restaurantId: string;
+        name: string;
         id: string;
-    }) | null>;
-    updateTelemetry(robotId: string, telemetry: any): Promise<(import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }) | null>;
-    findByIdWithSecret(robotId: string): Promise<(import("mongoose").Document<unknown, {}, RobotDocument, {}, import("mongoose").DefaultSchemaOptions> & Robot & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }) | null>;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        secretKey: string;
+        mode: import("@prisma/client").$Enums.RobotMode;
+        currentDeliveryId: string | null;
+        isOnline: boolean;
+        lastSeen: Date | null;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        cabinets: import("@prisma/client/runtime/library").JsonValue;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
 }

@@ -5,32 +5,56 @@ import { UpdateMenuItemDto } from './dto/update-menu-item.dto';
 export declare class MenuController {
     private readonly menuService;
     constructor(menuService: MenuService);
-    getMenu(query: QueryMenuDto): Promise<(import("mongoose").Document<unknown, {}, import("./schemas/menu-item.schema").MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/menu-item.schema").MenuItem & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    getMenu(query: QueryMenuDto): Promise<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
-    })[]>;
-    getAdminMenu(restaurantId: string): Promise<(import("mongoose").Document<unknown, {}, import("./schemas/menu-item.schema").MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/menu-item.schema").MenuItem & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    getAdminMenu(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
-    })[]>;
-    createItem(dto: CreateMenuItemDto): Promise<import("mongoose").Document<unknown, {}, import("./schemas/menu-item.schema").MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/menu-item.schema").MenuItem & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    createItem(dto: CreateMenuItemDto): import("@prisma/client").Prisma.Prisma__MenuItemClient<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
-    }>;
-    updateItem(id: string, dto: UpdateMenuItemDto): Promise<import("mongoose").Document<unknown, {}, import("./schemas/menu-item.schema").MenuItemDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/menu-item.schema").MenuItem & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    updateItem(id: string, dto: UpdateMenuItemDto): Promise<{
+        restaurantId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image_url: string | null;
+        is_available: boolean;
+        display_order: number;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

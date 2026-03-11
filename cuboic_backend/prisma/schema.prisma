@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ──────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  Admin
+  Owner
+  Staff
+}
+
+enum OrderStatus {
+  Pending
+  Confirmed
+  Preparing
+  Ready
+  Assigned
+  Delivered
+  Cancelled
+}
+
+enum RobotStatus {
+  Idle
+  Assigned
+  Delivering
+  Returning
+  Charging
+  Error
+}
+
+enum RobotMode {
+  Automatic
+  Manual
+  Stopped
+}
+
+enum DeliveryStatus {
+  InTransit
+  Completed
+  Cancelled
+}
+
+enum PaymentStatus {
+  Pending
+  Paid
+  Refunded
+  Failed
+}
+
+// ── Models ─────────────────────────────────────────────────────────────────
+
+model Restaurant {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  logo_url    String?
+  is_active   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tables     Table[]
+  categories Category[]
+  menuItems  MenuItem[]
+  users      User[]
+  robots     Robot[]
+  orders     Order[]
+  deliveries Delivery[]
+}
+
+model Table {
+  id           String  @id @default(cuid())
+  restaurantId String
+  table_number String
+  is_active    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  orders     Order[]
+}
+
+model Category {
+  id            String  @id @default(cuid())
+  restaurantId  String
+  name          String
+  display_order Int     @default(0)
+  is_active     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  menuItems  MenuItem[]
+}
+
+model MenuItem {
+  id            String  @id @default(cuid())
+  restaurantId  String
+  categoryId    String
+  name          String
+  description   String?
+  price         Float
+  image_url     String?
+  is_available  Boolean @default(true)
+  display_order Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  category   Category   @relation(fields: [categoryId], references: [id])
+}
+
+model User {
+  id            String   @id @default(cuid())
+  restaurantId  String?
+  name          String
+  user_id       String   @unique
+  password_hash String
+  role          UserRole @default(Staff)
+  is_active     Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
+}
+
+// items stored as Json: [{item_id, name, unit_price, quantity}]
+model Order {
+  id                  String      @id @default(cuid())
+  restaurantId        String
+  tableId             String
+  customer_session_id String
+  items               Json
+  subtotal            Float
+  tax                 Float
+  total               Float
+  status              OrderStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  table      Table      @relation(fields: [tableId], references: [id])
+  payment    Payment?
+}
+
+// cabinets stored as Json: [{id, status}]
+// location stored as Json: {x, y}
+model Robot {
+  id                String      @id @default(cuid())
+  restaurantId      String
+  name              String
+  secretKey         String
+  status            RobotStatus @default(Idle)
+  mode              RobotMode   @default(Automatic)
+  currentDeliveryId String?
+  isOnline          Boolean     @default(false)
+  lastSeen          DateTime?
+  battery           Float       @default(100)
+  location          Json        @default("{\"x\":0,\"y\":0}")
+  cabinets          Json        @default("[{\"id\":\"C1\",\"status\":\"Free\"},{\"id\":\"C2\",\"status\":\"Free\"},{\"id\":\"C3\",\"status\":\"Free\"}]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant  Restaurant      @relation(fields: [restaurantId], references: [id])
+  telemetries RobotTelemetry[]
+}
+
+// stops stored as Json: [{order_id, table_id, cabinets, sequence, status, delivered_at?}]
+model Delivery {
+  id           String         @id @default(cuid())
+  restaurantId String
+  robotId      String
+  stops        Json
+  status       DeliveryStatus @default(InTransit)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  orderId        String        @unique
+  amount         Float
+  method         String
+  status         PaymentStatus @default(Pending)
+  transaction_id String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model RobotTelemetry {
+  id       String      @id @default(cuid())
+  robotId  String
+  battery  Float
+  location Json
+  status   RobotStatus
+
+  createdAt DateTime @default(now())
+
+  robot Robot @relation(fields: [robotId], references: [id])
+}

@@ -70,7 +70,7 @@ export class RobotRuntimeGateway
     this.runtimeService.registerRobot(
       robotId,
       client.id,
-      robot.restaurant_id.toString(),
+      robot.restaurantId.toString(),
     );
 
     client.join(robotId);

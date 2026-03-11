@@ -52,7 +52,7 @@ let RobotRuntimeGateway = class RobotRuntimeGateway {
             return client.disconnect();
         }
         await this.robotsService.markOnline(robotId);
-        this.runtimeService.registerRobot(robotId, client.id, robot.restaurant_id.toString());
+        this.runtimeService.registerRobot(robotId, client.id, robot.restaurantId.toString());
         client.join(robotId);
         console.log(`Robot ${robotId} authenticated & connected`);
     }

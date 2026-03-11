@@ -4,51 +4,87 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 export declare class OrdersController {
     private readonly ordersService;
     constructor(ordersService: OrdersService);
-    create(dto: CreateOrderDto): Promise<import("mongoose").Document<unknown, {}, import("./schemas/order.schema").OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/order.schema").Order & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    create(dto: CreateOrderDto): Promise<{
+        restaurantId: string;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
     }>;
-    findOne(id: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, import("./schemas/order.schema").OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/order.schema").Order & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
+    findOne(id: string): import("@prisma/client").Prisma.Prisma__OrderClient<({
+        table: {
+            restaurantId: string;
+            id: string;
+            table_number: string;
+            is_active: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
     } & {
+        restaurantId: string;
         id: string;
-    }) | null, import("mongoose").Document<unknown, {}, import("./schemas/order.schema").OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/order.schema").Order & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
+    }) | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    findAll(restaurantId: string, status?: string): import("@prisma/client").Prisma.PrismaPromise<({
+        table: {
+            restaurantId: string;
+            id: string;
+            table_number: string;
+            is_active: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
     } & {
+        restaurantId: string;
         id: string;
-    }, {}, import("./schemas/order.schema").OrderDocument, "findOne", {}>;
-    findAll(restaurantId: string, status?: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, import("./schemas/order.schema").OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/order.schema").Order & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
+    })[]>;
+    updateStatus(id: string, dto: UpdateOrderStatusDto): Promise<{
+        restaurantId: string;
         id: string;
-    })[], import("mongoose").Document<unknown, {}, import("./schemas/order.schema").OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/order.schema").Order & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, import("./schemas/order.schema").OrderDocument, "find", {}>;
-    updateStatus(id: string, dto: UpdateOrderStatusDto): Promise<import("mongoose").Document<unknown, {}, import("./schemas/order.schema").OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/order.schema").Order & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
     }>;
-    confirmDelivery(id: string): Promise<import("mongoose").Document<unknown, {}, import("./schemas/order.schema").OrderDocument, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/order.schema").Order & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    confirmDelivery(id: string): Promise<{
+        restaurantId: string;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tableId: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: import("@prisma/client").$Enums.OrderStatus;
+        customer_session_id: string;
+        subtotal: number;
+        tax: number;
+        total: number;
     }>;
 }

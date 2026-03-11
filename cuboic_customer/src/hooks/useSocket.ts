@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? 'http://localhost:3000';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? 'https://cuboic.onrender.com';
 
 export function useSocket(restaurantId: string | null) {
     const socketRef = useRef<Socket | null>(null);
@@ -9,11 +9,11 @@ export function useSocket(restaurantId: string | null) {
     useEffect(() => {
         if (!restaurantId) return;
 
-        const socket = io(SOCKET_URL, { transports: ['websocket'] });
+        const socket = io(SOCKET_URL);
         socketRef.current = socket;
 
         socket.on('connect', () => {
-            socket.emit('join', { restaurant_id: restaurantId });
+            socket.emit('join', { restaurantId: restaurantId });
         });
 
         return () => {

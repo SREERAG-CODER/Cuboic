@@ -1,34 +1,23 @@
-import { Model, Types } from 'mongoose';
-import { RobotTelemetry, RobotTelemetryDocument } from './schemas/robot-telemetry.schema';
+import { PrismaService } from '../prisma/prisma.service';
 export declare class TelemetryService {
-    private telemetryModel;
-    constructor(telemetryModel: Model<RobotTelemetryDocument>);
-    getLatest(robotId: string): import("mongoose").Query<(import("mongoose").Document<unknown, {}, RobotTelemetryDocument, {}, import("mongoose").DefaultSchemaOptions> & RobotTelemetry & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    private prisma;
+    constructor(prisma: PrismaService);
+    getLatest(robotId: string): import("@prisma/client").Prisma.Prisma__RobotTelemetryClient<{
         id: string;
-    }) | null, import("mongoose").Document<unknown, {}, RobotTelemetryDocument, {}, import("mongoose").DefaultSchemaOptions> & RobotTelemetry & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+        createdAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        robotId: string;
+    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    getHistory(robotId: string, limit?: number): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
-    }, {}, RobotTelemetryDocument, "findOne", {}>;
-    getHistory(robotId: string, limit?: number): import("mongoose").Query<(import("mongoose").Document<unknown, {}, RobotTelemetryDocument, {}, import("mongoose").DefaultSchemaOptions> & RobotTelemetry & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[], import("mongoose").Document<unknown, {}, RobotTelemetryDocument, {}, import("mongoose").DefaultSchemaOptions> & RobotTelemetry & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, RobotTelemetryDocument, "find", {}>;
+        createdAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        robotId: string;
+    }[]>;
     recordTelemetry(data: {
         robotId: string;
         battery: number;
@@ -37,12 +26,12 @@ export declare class TelemetryService {
             y: number;
         };
         status?: string;
-        speed?: number;
-    }): Promise<import("mongoose").Document<unknown, {}, RobotTelemetryDocument, {}, import("mongoose").DefaultSchemaOptions> & RobotTelemetry & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
+    }): Promise<{
         id: string;
+        createdAt: Date;
+        status: import("@prisma/client").$Enums.RobotStatus;
+        battery: number;
+        location: import("@prisma/client/runtime/library").JsonValue;
+        robotId: string;
     }>;
 }

@@ -41,49 +41,48 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
 const bcrypt = __importStar(require("bcryptjs"));
-const user_schema_1 = require("./schemas/user.schema");
+const prisma_service_1 = require("../prisma/prisma.service");
 let UsersService = class UsersService {
-    userModel;
-    constructor(userModel) {
-        this.userModel = userModel;
+    prisma;
+    constructor(prisma) {
+        this.prisma = prisma;
     }
     async create(dto) {
-        const existing = await this.userModel.findOne({ user_id: dto.user_id });
+        const existing = await this.prisma.user.findUnique({ where: { user_id: dto.userId } });
         if (existing)
             throw new common_1.ConflictException('User ID already taken');
-        const password_hash = await bcrypt.hash(dto.password, 10);
-        const user = await this.userModel.create({
-            name: dto.name,
-            user_id: dto.user_id,
-            password_hash,
-            role: dto.role,
-            restaurant_id: dto.restaurant_id ? new mongoose_2.Types.ObjectId(dto.restaurant_id) : undefined,
+        const passwordHash = await bcrypt.hash(dto.password, 10);
+        const { password_hash: _, ...user } = await this.prisma.user.create({
+            data: {
+                name: dto.name,
+                user_id: dto.userId,
+                password_hash: passwordHash,
+                role: dto.role ?? 'Staff',
+                restaurantId: dto.restaurantId ?? null,
+            },
         });
-        const { password_hash: _, ...result } = user.toObject();
-        return result;
+        return user;
     }
     findAll(restaurantId) {
-        return this.userModel
-            .find({ restaurant_id: new mongoose_2.Types.ObjectId(restaurantId) })
-            .select('-password_hash');
+        return this.prisma.user.findMany({
+            where: { restaurantId },
+            select: {
+                id: true, name: true, user_id: true, role: true,
+                is_active: true, restaurantId: true, createdAt: true,
+            },
+        });
     }
     async findByUserId(userId) {
-        return this.userModel.findOne({ user_id: userId });
+        return this.prisma.user.findUnique({ where: { user_id: userId } });
     }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

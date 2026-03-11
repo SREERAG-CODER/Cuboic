@@ -1,6 +1,6 @@
 export declare class CreateMenuItemDto {
-    restaurant_id: string;
-    category_id: string;
+    restaurantId: string;
+    categoryId: string;
     name: string;
     description?: string;
     price: number;

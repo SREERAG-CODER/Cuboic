@@ -1,94 +1,70 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Types, Model } from 'mongoose';
-import { MenuItem, MenuItemDocument } from './schemas/menu-item.schema';
-import { Table, TableDocument } from '../tables/schemas/table.schema';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateMenuItemDto } from './dto/create-menu-item.dto';
 import { UpdateMenuItemDto } from './dto/update-menu-item.dto';
 
 @Injectable()
 export class MenuService {
-    constructor(
-        @InjectModel(MenuItem.name) private menuItemModel: Model<MenuItemDocument>,
-        @InjectModel(Table.name) private tableModel: Model<TableDocument>,
-    ) { }
+    constructor(private prisma: PrismaService) { }
 
     async getMenu(restaurantId: string, tableId?: string, categoryId?: string) {
-        if (!Types.ObjectId.isValid(restaurantId)) {
-            throw new BadRequestException(`Invalid restaurant ID: "${restaurantId}"`);
-        }
-
         if (tableId) {
-            if (!Types.ObjectId.isValid(tableId)) {
-                throw new BadRequestException(`Invalid table ID: "${tableId}"`);
-            }
-
-            const table = await this.tableModel.findOne({
-                _id: new Types.ObjectId(tableId),
-                restaurant_id: new Types.ObjectId(restaurantId),
-                is_active: true,
+            const table = await this.prisma.table.findFirst({
+                where: { id: tableId, restaurantId, is_active: true },
             });
             if (!table) throw new NotFoundException('Table not found or inactive');
         }
 
-        const filter: Record<string, any> = {
-            restaurant_id: new Types.ObjectId(restaurantId),
-            is_available: true,
-        };
-
-        if (categoryId) {
-            if (!Types.ObjectId.isValid(categoryId)) {
-                throw new BadRequestException(`Invalid category ID: "${categoryId}"`);
-            }
-            filter.category_id = new Types.ObjectId(categoryId);
-        }
-
-        return this.menuItemModel.find(filter).sort({ display_order: 1 });
-    }
-
-    // ── Admin-only methods ──────────────────────────────────
-
-    async getAllForAdmin(restaurantId: string) {
-        if (!Types.ObjectId.isValid(restaurantId)) {
-            throw new BadRequestException(`Invalid restaurant ID: "${restaurantId}"`);
-        }
-        return this.menuItemModel
-            .find({ restaurant_id: new Types.ObjectId(restaurantId) })
-            .sort({ display_order: 1, name: 1 });
-    }
-
-    async createItem(dto: CreateMenuItemDto) {
-        if (!Types.ObjectId.isValid(dto.restaurant_id)) {
-            throw new BadRequestException('Invalid restaurant_id');
-        }
-        if (!Types.ObjectId.isValid(dto.category_id)) {
-            throw new BadRequestException('Invalid category_id');
-        }
-        const item = new this.menuItemModel({
-            ...dto,
-            restaurant_id: new Types.ObjectId(dto.restaurant_id),
-            category_id: new Types.ObjectId(dto.category_id),
+        return this.prisma.menuItem.findMany({
+            where: {
+                restaurantId,
+                is_available: true,
+                ...(categoryId ? { categoryId } : {}),
+            },
+            orderBy: { display_order: 'asc' },
         });
-        return item.save();
+    }
+
+    getAllForAdmin(restaurantId: string) {
+        return this.prisma.menuItem.findMany({
+            where: { restaurantId },
+            orderBy: [{ display_order: 'asc' }, { name: 'asc' }],
+        });
+    }
+
+    createItem(dto: CreateMenuItemDto) {
+        return this.prisma.menuItem.create({
+            data: {
+                restaurantId: dto.restaurantId,
+                categoryId: dto.categoryId,
+                name: dto.name,
+                description: dto.description,
+                price: dto.price,
+                image_url: dto.image_url,
+                is_available: dto.is_available ?? true,
+                display_order: dto.display_order ?? 0,
+            },
+        });
     }
 
     async updateItem(id: string, dto: UpdateMenuItemDto) {
-        if (!Types.ObjectId.isValid(id)) {
-            throw new BadRequestException('Invalid item ID');
-        }
-        const update: Record<string, any> = { ...dto };
-        if (dto.category_id) {
-            if (!Types.ObjectId.isValid(dto.category_id)) {
-                throw new BadRequestException('Invalid category_id');
-            }
-            update.category_id = new Types.ObjectId(dto.category_id);
-        }
-        const updated = await this.menuItemModel.findByIdAndUpdate(
-            id,
-            { $set: update },
-            { new: true },
-        );
-        if (!updated) throw new NotFoundException('Menu item not found');
+        const updated = await this.prisma.menuItem.update({
+            where: { id },
+            data: {
+                ...(dto.name !== undefined && { name: dto.name }),
+                ...(dto.description !== undefined && { description: dto.description }),
+                ...(dto.price !== undefined && { price: dto.price }),
+                ...(dto.categoryId !== undefined && { categoryId: dto.categoryId }),
+                ...(dto.image_url !== undefined && { image_url: dto.image_url }),
+                ...(dto.is_available !== undefined && { is_available: dto.is_available }),
+                ...(dto.display_order !== undefined && { display_order: dto.display_order }),
+            },
+        }).catch(() => { throw new NotFoundException('Menu item not found'); });
         return updated;
+    }
+
+    deleteItem(id: string) {
+        return this.prisma.menuItem.delete({ where: { id } })
+            .catch(() => { throw new NotFoundException('Menu item not found'); });
     }
 }
