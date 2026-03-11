@@ -9,6 +9,7 @@ export interface PlaceOrderPayload {
     restaurantId: string;
     tableId: string;
     customerSessionId: string;
+    notes?: string;
     items: OrderItem[];
 }
 
@@ -20,6 +21,7 @@ export interface Order {
     table?: { id: string; table_number: number };
     /** Backend field name is `status` (not order_status) */
     status: 'Pending' | 'Confirmed' | 'Preparing' | 'Ready' | 'Assigned' | 'Delivered' | 'Cancelled';
+    notes?: string;
     items: Array<{
         name: string;
         quantity: number;

@@ -27,6 +27,7 @@ export function CheckoutPage() {
     const [cardNumber, setCardNumber] = useState('');
     const [expiry, setExpiry] = useState('');
     const [cvv, setCvv] = useState('');
+    const [notes, setNotes] = useState('');
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState('');
 
@@ -65,6 +66,7 @@ export function CheckoutPage() {
                 restaurantId: restaurantId,
                 tableId: tableId,
                 customerSessionId: sessionId ?? SESSION_ID,
+                notes: notes.trim() || undefined,
                 items: items.map(c => ({ itemId: c.item.id, quantity: c.quantity })),
             });
 
@@ -131,6 +133,19 @@ export function CheckoutPage() {
                     <div className="co-total-row"><span>Tax (5%)</span><span>₹{taxAmount.toFixed(2)}</span></div>
                     <hr className="divider" style={{ margin: '12px 0' }} />
                     <div className="co-total-row co-total-grand"><span>Total</span><span>₹{grandTotal.toFixed(2)}</span></div>
+                </section>
+
+                {/* ── Special Instructions Tile ── */}
+                <section className="bento-tile bento-notes fade-up" style={{ animationDelay: '0.15s' }}>
+                    <h2 className="bento-title">Special Instructions (Optional)</h2>
+                    <textarea 
+                        className="checkout-notes-input"
+                        placeholder="e.g. Make it spicy, no onions, etc."
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                        maxLength={250}
+                        rows={3}
+                    />
                 </section>
 
                 {/* ── Payment Method Tile ── */}

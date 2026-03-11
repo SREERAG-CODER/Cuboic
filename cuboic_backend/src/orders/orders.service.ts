@@ -39,6 +39,7 @@ export class OrdersService {
                 restaurantId: dto.restaurantId,
                 tableId: dto.tableId,
                 customer_session_id: dto.customerSessionId,
+                notes: dto.notes,
                 items: orderItems,
                 subtotal,
                 tax,

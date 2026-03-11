@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested, IsInt, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, ValidateNested, IsInt, Min, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class OrderItemDto {
@@ -23,6 +23,10 @@ export class CreateOrderDto {
     @IsString()
     @IsNotEmpty()
     customerSessionId: string;
+
+    @IsString()
+    @IsOptional()
+    notes?: string;
 
     @IsArray()
     @ValidateNested({ each: true })

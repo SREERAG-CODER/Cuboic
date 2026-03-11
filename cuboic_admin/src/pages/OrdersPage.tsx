@@ -17,6 +17,7 @@ interface Order {
     id: string
     tableId: string | { table_number: string }
     items: OrderItem[]
+    notes?: string
     total: number
     status: string
     createdAt: string
@@ -89,7 +90,7 @@ export default function OrdersPage() {
                             <tr>
                                 <th>Time</th>
                                 <th>Table</th>
-                                <th>Items</th>
+                                <th>Details</th>
                                 <th>Total</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -108,6 +109,11 @@ export default function OrdersPage() {
                                                 </span>
                                             ))}
                                         </div>
+                                        {order.notes && (
+                                            <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#ff6b6b', background: '#fff0f0', padding: '6px 10px', borderRadius: '4px', borderLeft: '3px solid #ff6b6b' }}>
+                                                <strong>Notes:</strong> {order.notes}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="cell-mono">₹{order.total.toFixed(2)}</td>
                                     <td><StatusBadge status={order.status} /></td>
