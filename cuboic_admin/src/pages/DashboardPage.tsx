@@ -20,18 +20,31 @@ export default function DashboardPage() {
     const restaurantId = user?.restaurantId ?? ''
 
     const load = async () => {
+        if (!user || !restaurantId) return;
+
+        // Load non-critical summary safely
+        if (user.role === 'Owner') {
+            try {
+                const summaryRes = await paymentsApi.getSummary(restaurantId);
+                if (summaryRes?.data) setSummary(summaryRes.data);
+            } catch (err) {
+                console.error('Failed to load summary data:', err);
+            }
+        }
+
+        // Load core operational data
         try {
-            const [summaryRes, deliveriesRes, robotsRes, ordersRes] = await Promise.all([
-                user?.role === 'Owner' ? paymentsApi.getSummary(restaurantId) : Promise.resolve(null),
+            const [deliveriesRes, robotsRes, ordersRes] = await Promise.all([
                 deliveriesApi.findActive(restaurantId),
                 robotsApi.findAll(restaurantId),
                 ordersApi.findAll(restaurantId, 'Pending'),
-            ])
-            if (summaryRes) setSummary(summaryRes.data)
-            setActiveDeliveries(deliveriesRes.data.length)
-            setRobotsOnline((robotsRes.data as Array<{ isOnline: boolean }>).filter((r) => r.isOnline).length)
-            setPendingOrders((ordersRes.data as Array<unknown>).length)
-        } catch {/* ignore */ }
+            ]);
+            setActiveDeliveries(deliveriesRes.data.length);
+            setRobotsOnline((robotsRes.data as Array<{ isOnline: boolean }>).filter((r) => r.isOnline).length);
+            setPendingOrders((ordersRes.data as Array<unknown>).length);
+        } catch (err) {
+            console.error('Failed to load operational data:', err);
+        }
     }
 
     useEffect(() => { load() }, [restaurantId])

@@ -44,7 +44,16 @@ export class OrdersService {
                 subtotal,
                 tax,
                 total,
+                payment: {
+                    create: {
+                        amount: total,
+                        method: 'Gateway',
+                        status: 'Paid',
+                        transaction_id: `txn_${Date.now()}`
+                    }
+                }
             },
+            include: { payment: true }
         });
 
         this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
