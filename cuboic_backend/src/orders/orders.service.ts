@@ -39,11 +39,21 @@ export class OrdersService {
                 restaurantId: dto.restaurantId,
                 tableId: dto.tableId,
                 customer_session_id: dto.customerSessionId,
+                notes: dto.notes,
                 items: orderItems,
                 subtotal,
                 tax,
                 total,
+                payment: {
+                    create: {
+                        amount: total,
+                        method: 'Gateway',
+                        status: 'Paid',
+                        transaction_id: `txn_${Date.now()}`
+                    }
+                }
             },
+            include: { payment: true }
         });
 
         this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
@@ -66,6 +76,34 @@ export class OrdersService {
             include: { table: true },
             orderBy: { createdAt: 'desc' },
         });
+    }
+
+    async getSummary(restaurantId: string) {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        const todayOrders = await this.prisma.order.findMany({
+            where: {
+                restaurantId,
+                createdAt: { gte: start, lte: end },
+            },
+            select: { status: true },
+        });
+
+        // Tally up counts by state
+        const summary = todayOrders.reduce(
+            (acc, order) => {
+                if (order.status === 'Pending') acc.pending++;
+                if (order.status === 'Preparing') acc.preparing++;
+                if (order.status === 'Delivered') acc.completed++;
+                return acc;
+            },
+            { pending: 0, preparing: 0, completed: 0 }
+        );
+
+        return summary;
     }
 
     async updateStatus(id: string, dto: UpdateOrderStatusDto) {

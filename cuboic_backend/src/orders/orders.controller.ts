@@ -15,6 +15,13 @@ export class OrdersController {
         return this.ordersService.create(dto);
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Owner')
+    @Get('summary')
+    getSummary(@Query('restaurantId') restaurantId: string) {
+        return this.ordersService.getSummary(restaurantId);
+    }
+
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.ordersService.findOne(id);

@@ -128,10 +128,11 @@ input {
 .sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 6px;
   padding: 0 20px 24px;
   border-bottom: 1px solid var(--c-border);
   margin-bottom: 12px;
+  flex-wrap: nowrap;
 }
 
 .logo-cube {
@@ -153,9 +154,10 @@ input {
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   color: var(--c-text-3);
-  margin-left: -4px;
+  margin-left: 2px;
+  margin-top: 4px;
 }
 
 .sidebar-nav {
@@ -348,8 +350,7 @@ input {
   height: 120px;
   width: auto;
   object-fit: contain;
-  display: block;
-  margin-bottom: -16px;
+  margin: 0 auto -16px;
   filter: drop-shadow(0 0 16px var(--c-accent-glow));
 }
 
@@ -391,6 +392,7 @@ input {
 
 .form-group input,
 .form-group select {
+  width: 100%;
   background: var(--c-panel);
   border: 1px solid var(--c-border);
   border-radius: var(--r-sm);
@@ -398,9 +400,9 @@ input {
   padding: 10px 14px;
   font-size: 14px;
   font-family: inherit;
+  box-sizing: border-box;
   outline: none;
   transition: border-color 0.18s;
-  width: 100%;
 }
 
 .form-group input::placeholder {

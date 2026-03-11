@@ -30,6 +30,7 @@ class CreateOrderDto {
     restaurantId;
     tableId;
     customerSessionId;
+    notes;
     items;
 }
 exports.CreateOrderDto = CreateOrderDto;
@@ -48,6 +49,11 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateOrderDto.prototype, "customerSessionId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateOrderDto.prototype, "notes", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

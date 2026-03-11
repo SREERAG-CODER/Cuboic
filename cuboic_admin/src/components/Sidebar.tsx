@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="sidebar-logo">
                 <img src="/logo1.png" className="logo-cube" alt="Cuboic Logo" />
                 <span className="logo-text">Cuboic</span>
-                <span className="logo-sub">Owner</span>
+                <span className="logo-sub">{user?.role}</span>
                 <button className="mobile-close-btn" onClick={onClose} aria-label="Close menu">×</button>
             </div>
 

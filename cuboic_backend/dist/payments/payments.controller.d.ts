@@ -9,6 +9,7 @@ export declare class PaymentsController {
             createdAt: Date;
             updatedAt: Date;
             tableId: string;
+            notes: string | null;
             items: import("@prisma/client/runtime/library").JsonValue;
             status: import("@prisma/client").$Enums.OrderStatus;
             customer_session_id: string;
@@ -21,10 +22,10 @@ export declare class PaymentsController {
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
-        orderId: string;
         amount: number;
         method: string;
         transaction_id: string | null;
+        orderId: string;
     })[]>;
     getSummary(restaurantId: string): Promise<{
         order_count: number;
