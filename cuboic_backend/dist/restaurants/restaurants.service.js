@@ -20,6 +20,12 @@ let RestaurantsService = class RestaurantsService {
     findById(id) {
         return this.prisma.restaurant.findUnique({ where: { id }, include: { tables: true } });
     }
+    findTables(restaurantId) {
+        return this.prisma.table.findMany({
+            where: { restaurantId, is_active: true },
+            orderBy: { table_number: 'asc' },
+        });
+    }
     findAll() {
         return this.prisma.restaurant.findMany();
     }

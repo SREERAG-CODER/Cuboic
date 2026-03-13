@@ -17,6 +17,12 @@ export class RestaurantsController {
     return this.restaurantsService.findAll();
   }
 
+  // GET /restaurants/:id/tables
+  @Get(':id/tables')
+  async getTables(@Param('id') id: string) {
+    return this.restaurantsService.findTables(id);
+  }
+
   // GET /restaurants/:id
   @Get(':id')
   async getById(@Param('id') id: string) {
@@ -35,4 +41,4 @@ export class RestaurantsController {
     console.log("BODY:", body);
     return this.restaurantsService.create(body);
   }
-}
+}

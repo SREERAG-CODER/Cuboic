@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsGateway } from '../events/events.gateway';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -9,6 +10,8 @@ const TAX_RATE = 0.05;
 
 @Injectable()
 export class OrdersService {
+    private readonly logger = new Logger(OrdersService.name);
+
     constructor(
         private prisma: PrismaService,
         private readonly eventsGateway: EventsGateway,
@@ -150,5 +153,43 @@ export class OrdersService {
         });
         if (!order) throw new NotFoundException('Order not found');
         return order;
+    }
+
+    @Cron(CronExpression.EVERY_HOUR)
+    async cleanupStaleOrders() {
+        this.logger.log('Running stale orders cleanup...');
+        const cutoff = new Date(Date.now() - 8 * 60 * 60 * 1000); // 8 hours ago
+
+        try {
+            // Find all pending orders older than 8 hours
+            const staleOrders = await this.prisma.order.findMany({
+                where: {
+                    status: 'Pending',
+                    createdAt: { lt: cutoff },
+                },
+                select: { id: true },
+            });
+
+            if (staleOrders.length === 0) {
+                this.logger.log('No stale orders to clean up.');
+                return;
+            }
+
+            const orderIds = staleOrders.map(o => o.id);
+
+            // Delete associated payments first (no cascade setup on DB currently)
+            await this.prisma.payment.deleteMany({
+                where: { orderId: { in: orderIds } },
+            });
+
+            // Delete the orders
+            const deleted = await this.prisma.order.deleteMany({
+                where: { id: { in: orderIds } },
+            });
+
+            this.logger.log(`Cleanup complete: Deleted ${deleted.count} stale pending order(s).`);
+        } catch (error) {
+            this.logger.error('Error during stale orders cleanup:', error);
+        }
     }
 }

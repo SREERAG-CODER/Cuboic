@@ -1,14 +1,26 @@
 import api from './client';
 
 export interface Payment {
-    _id: string;
-    order_id: string;
-    restaurant_id: string;
+    id: string;
+    orderId: string;
     amount: number;
     method: string;
-    status: 'Pending' | 'Completed' | 'Failed' | 'Refunded';
+    status: string;
+    transactionid?: string;
     createdAt: string;
 }
 
-export const getPayments = (restaurantId: string) =>
-    api.get<Payment[]>('/payments', { params: { restaurant_id: restaurantId } }).then(r => r.data);
+export interface PaymentSummary {
+    order_count: number;
+    total_revenue: number;
+}
+
+export const paymentsApi = {
+    findAll: (restaurantId: string, from?: string, to?: string) =>
+        api.get<Payment[]>('/payments', {
+            params: { restaurantId, from, to },
+        }).then(r => r.data),
+
+    getSummary: (restaurantId: string) =>
+        api.get<PaymentSummary>('/payments/summary', { params: { restaurantId } }).then(r => r.data),
+};

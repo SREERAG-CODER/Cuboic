@@ -1,0 +1,206 @@
+[
+  {
+    "id": "cmmg60r5k0002c2lwbvxfyg2w",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T1",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.207Z",
+    "updatedAt": "2026-03-07T10:13:13.207Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4g0004c2lwb5466213",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T12",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4h000gc2lwwnwfzuyq",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T11",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4h000dc2lwyt0b507p",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T2",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.207Z",
+    "updatedAt": "2026-03-07T10:13:13.207Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4i000lc2lwq4sglhwz",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T8",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4h000ic2lwkp94a8z4",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T5",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4i000oc2lwdzdodk9w",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T3",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4h000fc2lwzw3cjheb",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T4",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4i000nc2lw2v6tyq8n",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T10",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4h0009c2lwhnwxsbr0",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T7",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4h000ac2lwj8kanmyu",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T6",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  },
+  {
+    "id": "cmmg60t4h0006c2lw33g5vmks",
+    "restaurantId": "cmmg60qir0000c2lwao9t1z9m",
+    "table_number": "T9",
+    "is_active": true,
+    "createdAt": "2026-03-07T10:13:13.208Z",
+    "updatedAt": "2026-03-07T10:13:13.208Z",
+    "restaurant": {
+      "id": "cmmg60qir0000c2lwao9t1z9m",
+      "name": "Food Guru",
+      "description": "Robot-delivered dining experience",
+      "logo_url": "",
+      "is_active": true,
+      "createdAt": "2026-03-07T10:13:12.386Z",
+      "updatedAt": "2026-03-07T10:13:12.386Z"
+    }
+  }
+]

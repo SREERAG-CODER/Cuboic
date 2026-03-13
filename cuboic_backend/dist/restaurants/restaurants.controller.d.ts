@@ -11,6 +11,14 @@ export declare class RestaurantsController {
         updatedAt: Date;
         logo_url: string | null;
     }[]>;
+    getTables(id: string): Promise<{
+        restaurantId: string;
+        id: string;
+        table_number: string;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
     getById(id: string): Promise<{
         tables: {
             restaurantId: string;

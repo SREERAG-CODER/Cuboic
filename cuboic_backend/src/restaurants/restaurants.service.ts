@@ -9,6 +9,13 @@ export class RestaurantsService {
         return this.prisma.restaurant.findUnique({ where: { id }, include: { tables: true } });
     }
 
+    findTables(restaurantId: string) {
+        return this.prisma.table.findMany({
+            where: { restaurantId, is_active: true },
+            orderBy: { table_number: 'asc' },
+        });
+    }
+
     findAll() {
         return this.prisma.restaurant.findMany();
     }

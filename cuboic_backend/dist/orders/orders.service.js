@@ -8,15 +8,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var OrdersService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
+const schedule_1 = require("@nestjs/schedule");
 const prisma_service_1 = require("../prisma/prisma.service");
 const events_gateway_1 = require("../events/events.gateway");
 const TAX_RATE = 0.05;
-let OrdersService = class OrdersService {
+let OrdersService = OrdersService_1 = class OrdersService {
     prisma;
     eventsGateway;
+    logger = new common_1.Logger(OrdersService_1.name);
     constructor(prisma, eventsGateway) {
         this.prisma = prisma;
         this.eventsGateway = eventsGateway;
@@ -144,9 +147,43 @@ let OrdersService = class OrdersService {
             throw new common_1.NotFoundException('Order not found');
         return order;
     }
+    async cleanupStaleOrders() {
+        this.logger.log('Running stale orders cleanup...');
+        const cutoff = new Date(Date.now() - 8 * 60 * 60 * 1000);
+        try {
+            const staleOrders = await this.prisma.order.findMany({
+                where: {
+                    status: 'Pending',
+                    createdAt: { lt: cutoff },
+                },
+                select: { id: true },
+            });
+            if (staleOrders.length === 0) {
+                this.logger.log('No stale orders to clean up.');
+                return;
+            }
+            const orderIds = staleOrders.map(o => o.id);
+            await this.prisma.payment.deleteMany({
+                where: { orderId: { in: orderIds } },
+            });
+            const deleted = await this.prisma.order.deleteMany({
+                where: { id: { in: orderIds } },
+            });
+            this.logger.log(`Cleanup complete: Deleted ${deleted.count} stale pending order(s).`);
+        }
+        catch (error) {
+            this.logger.error('Error during stale orders cleanup:', error);
+        }
+    }
 };
 exports.OrdersService = OrdersService;
-exports.OrdersService = OrdersService = __decorate([
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_10_SECONDS),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrdersService.prototype, "cleanupStaleOrders", null);
+exports.OrdersService = OrdersService = OrdersService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         events_gateway_1.EventsGateway])

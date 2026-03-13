@@ -10,6 +10,9 @@ export const COLORS = {
     textDim: '#5a5974',
     green: '#22c55e',
     red: '#ef4444',
+    blue: '#38bdf8',
+    purple: '#a78bfa',
+    amber: '#f5a623',
 };
 
 export const FONT = {
@@ -69,19 +72,31 @@ export const S = {
 
 export function statusColor(status: string): string {
     const map: Record<string, string> = {
-        Received: '#f5a623',
+        // Order statuses
+        Pending: '#f5a623',
+        Confirmed: '#38bdf8',
         Preparing: '#a78bfa',
         Ready: '#22c55e',
         Assigned: '#38bdf8',
         Delivered: '#6b7280',
+        Cancelled: '#ef4444',
+        // Delivery statuses
+        InTransit: '#f5a623',
+        'In-Transit': '#f5a623',
+        Completed: '#22c55e',
+        // Robot status
         Idle: '#22c55e',
         Delivering: '#f5a623',
         Charging: '#38bdf8',
         Error: '#ef4444',
-        Pending: '#f5a623',
+        // Payment
         Paid: '#22c55e',
-        Completed: '#22c55e',
-        'In-Transit': '#f5a623',
+        Received: '#f5a623',
+        // Other
+        Online: '#22c55e',
+        Offline: '#6b7280',
+        Free: '#22c55e',
+        Occupied: '#f5a623',
     };
     return map[status] ?? COLORS.textMuted;
 }

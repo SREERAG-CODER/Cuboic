@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { login as apiLogin, type AuthUser } from '../api/auth';
+import { login as apiLogin } from '../api/auth';
+import type { AuthUser } from '../api/auth';
 
 interface AuthContextType {
     user: AuthUser | null;

@@ -5,6 +5,7 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 export declare class OrdersService {
     private prisma;
     private readonly eventsGateway;
+    private readonly logger;
     constructor(prisma: PrismaService, eventsGateway: EventsGateway);
     create(dto: CreateOrderDto): Promise<{
         payment: {
@@ -138,4 +139,5 @@ export declare class OrdersService {
         tax: number;
         total: number;
     }>;
+    cleanupStaleOrders(): Promise<void>;
 }
