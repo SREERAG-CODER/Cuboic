@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import type { CartItem } from '../hooks/useCart';
 import './CartDrawer.css';
 
@@ -22,17 +21,12 @@ export function CartDrawer({
     onClose,
     items,
     total,
-    restaurantId,
     tableId,
     tableLabel,
-    sessionId,
     onAdd,
     onRemove,
-    onClear,
     onCheckout,
 }: CartDrawerProps) {
-    const navigate = useNavigate();
-
     if (!open) return null;
 
     const taxAmount = total * 0.05;
