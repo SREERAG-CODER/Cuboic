@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 import { Twilio } from 'twilio';
 
 @Injectable()
@@ -10,13 +11,20 @@ export class CustomersService {
     // In-memory OTP store: phone -> { otp, expiresAt }
     private otps = new Map<string, { otp: string, expiresAt: number }>();
 
-    constructor(private prisma: PrismaService) {
-        const sid = process.env.TWILIO_ACCOUNT_SID;
-        const auth = process.env.TWILIO_AUTH_TOKEN;
-        this.twilioPhone = process.env.TWILIO_PHONE_NUMBER || '';
+    constructor(
+        private prisma: PrismaService,
+        private configService: ConfigService
+    ) {
+        // Use ConfigService to auto-strip any accidental quotes from the .env file
+        const sid = this.configService.get<string>('TWILIO_ACCOUNT_SID')?.replace(/"/g, '');
+        const auth = this.configService.get<string>('TWILIO_AUTH_TOKEN')?.replace(/"/g, '');
+        this.twilioPhone = this.configService.get<string>('TWILIO_PHONE_NUMBER')?.replace(/"/g, '') || '';
         
         if (sid && auth) {
             this.twilioClient = new Twilio(sid, auth);
+            console.log("Twilio initialized successfully on backend!");
+        } else {
+            console.log("Twilio keys not found or invalid.");
         }
     }
 
@@ -29,13 +37,19 @@ export class CustomersService {
 
         if (this.twilioClient && this.twilioPhone) {
             try {
+                // Twilio strictly requires E.164 format (e.g. +91 for India)
+                let formattedPhone = phone.trim();
+                if (formattedPhone.length === 10 && !formattedPhone.startsWith('+')) {
+                    formattedPhone = '+91' + formattedPhone;
+                }
+
                 await this.twilioClient.messages.create({
                     body: `Your Thambi verification code is: ${otp}`,
                     from: this.twilioPhone,
-                    to: phone
+                    to: formattedPhone
                 });
-            } catch (err) {
-                console.error("Twilio error, falling back to console:", err);
+            } catch (err: any) {
+                console.error("Twilio error:", err?.message || err);
                 console.log(`[DEVELOPMENT] OTP for ${phone} is ${otp}`);
             }
         } else {

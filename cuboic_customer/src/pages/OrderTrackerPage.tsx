@@ -5,6 +5,7 @@ import { getRestaurant } from '../api/menu';
 import { useSocket } from '../hooks/useSocket';
 import { StatusTimeline } from '../components/StatusTimeline';
 import { ConfirmCancelModal } from '../components/ConfirmCancelModal';
+import { getCustomer } from '../utils/auth';
 import './OrderTrackerPage.css';
 
 const TERMINAL = new Set<Order['status']>(['Delivered', 'Cancelled']);
@@ -18,6 +19,12 @@ export function OrderTrackerPage() {
     const [tableLabel, setTableLabel] = useState<string>('—');
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
     const [cancelling, setCancelling] = useState(false);
+    const [customerName, setCustomerName] = useState('');
+
+    useEffect(() => {
+        const c = getCustomer();
+        if (c?.name) setCustomerName(c.name.split(' ')[0]);
+    }, []);
 
     const fetchOrder = useCallback(() => {
         if (!orderId) return;
@@ -132,10 +139,20 @@ export function OrderTrackerPage() {
                         {isCancelled
                             ? 'Order Cancelled'
                             : order.status === 'Delivered'
-                                ? 'Enjoy your meal!'
+                                ? `Hope you enjoyed it, ${customerName}!`
                                 : 'Tracking your order…'}
                     </div>
-                    <h1 className="tracker-hero__status">{getStatusMessage(order.status)}</h1>
+                    <h1 className="tracker-hero__status">
+                        {customerName && !isCancelled && order.status !== 'Delivered' ? (
+                            <>
+                                {customerName},
+                                <br />
+                                {getStatusMessage(order.status)}
+                            </>
+                        ) : (
+                            getStatusMessage(order.status)
+                        )}
+                    </h1>
                     <p className="tracker-table">Table {tableLabel}</p>
                 </div>
 

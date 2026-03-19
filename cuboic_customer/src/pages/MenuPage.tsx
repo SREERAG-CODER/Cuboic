@@ -11,6 +11,7 @@ import { ConfirmTableMoveModal } from '../components/ConfirmTableMoveModal';
 import { CustomerAuthModal } from '../components/CustomerAuthModal';
 import { OrderTypeModal } from '../components/OrderTypeModal';
 import { type Customer } from '../api/customers';
+import { getCustomer, setCustomer as setCustomerSession } from '../utils/auth';
 import { SearchOverlay } from '../components/SearchOverlay';
 import { SkeletonLoader } from '../components/SkeletonLoader';
 import './MenuPage.css';
@@ -40,11 +41,17 @@ export function MenuPage() {
 
     const [authOpen, setAuthOpen] = useState(false);
     const [orderTypeOpen, setOrderTypeOpen] = useState(false);
+    
+    // Auth State
+    const [customer, setCustomer] = useState<Customer | null>(null);
 
     const cart = useCart();
     const navigate = useNavigate();
 
     useEffect(() => {
+        const c = getCustomer();
+        if (c) setCustomer(c);
+        
         try {
             const o = localStorage.getItem('cuboic_active_orders');
             if (o) {
@@ -102,14 +109,13 @@ export function MenuPage() {
     };
 
     const handleCheckoutInit = () => {
-        const custStr = localStorage.getItem('cuboic_customer');
-        if (!custStr) {
+        const cust = getCustomer();
+        if (!cust) {
             setCartOpen(false);
             setAuthOpen(true);
             return;
         }
-        const customer = JSON.parse(custStr);
-        proceedWithAuth(customer);
+        proceedWithAuth(cust);
     };
 
     const proceedWithAuth = (customer: Customer) => {
@@ -128,8 +134,8 @@ export function MenuPage() {
         } else {
             const takeawayTbl = availableTables.find(t => String(t.table_number).toLowerCase() === 'takeaway');
             const tId = takeawayTbl ? takeawayTbl.id : 'takeaway_virtual';
-            const customer = JSON.parse(localStorage.getItem('cuboic_customer')!);
-            goToCheckout(tId, 'Takeaway', customer);
+            const cust = getCustomer();
+            if (cust) goToCheckout(tId, 'Takeaway', cust);
         }
     };
 
@@ -147,10 +153,11 @@ export function MenuPage() {
         });
     };
 
-    const handleAuthSuccess = (customer: Customer) => {
-        localStorage.setItem('cuboic_customer', JSON.stringify(customer));
+    const handleAuthSuccess = (c: Customer) => {
+        setCustomerSession(c);
+        setCustomer(c);
         setAuthOpen(false);
-        proceedWithAuth(customer);
+        proceedWithAuth(c);
     };
 
     interface FlyingItem {
@@ -509,6 +516,7 @@ export function MenuPage() {
                 onRemove={cart.remove}
                 onClear={cart.clear}
                 onCheckout={handleCheckoutInit}
+                customerName={customer?.name}
             />
 
             <CustomerAuthModal

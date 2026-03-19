@@ -14,6 +14,7 @@ interface CartDrawerProps {
     onRemove: (itemId: string) => void;
     onClear: () => void;
     onCheckout: () => void;
+    customerName?: string;
 }
 
 export function CartDrawer({
@@ -26,6 +27,7 @@ export function CartDrawer({
     onAdd,
     onRemove,
     onCheckout,
+    customerName,
 }: CartDrawerProps) {
     if (!open) return null;
 
@@ -45,7 +47,9 @@ export function CartDrawer({
 
                 {/* Header */}
                 <div className="cart-sheet__header">
-                    <h2 className="cart-sheet__title">Your Order</h2>
+                    <h2 className="cart-sheet__title">
+                        {customerName ? `Your Order, ${customerName.split(' ')[0]}` : 'Your Order'}
+                    </h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {tableId && (
                             <div className="cart-sheet__table">
