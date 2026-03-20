@@ -8,42 +8,39 @@ dotenv.config();
 @Injectable()
 export class CustomersService implements OnModuleInit {
 
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) { }
 
     onModuleInit() {
         if (!admin.apps.length) {
-            // Robust cleaning for private key from environment variables
-            const rawKey = process.env.FIREBASE_PRIVATE_KEY || '';
-            const cleanedKey = rawKey
-                .replace(/"/g, '') // Remove literal quotes
-                .replace(/\\n/g, '\n'); // Convert literal \n to real newlines
-
-            const config = {
-                project_id: process.env.FIREBASE_PROJECT_ID?.replace(/"/g, ''),
-                client_email: process.env.FIREBASE_CLIENT_EMAIL?.replace(/"/g, ''),
-                private_key: cleanedKey,
-            };
-
-            if (!config.project_id || !config.client_email || !config.private_key) {
-                console.warn('[Firebase Admin] Warning: Missing one or more Firebase environment variables!');
-            }
-
             try {
+                // 🔥 Ensure env exists
+                if (!process.env.FIREBASE_CONFIG) {
+                    throw new Error('FIREBASE_CONFIG is missing in environment variables');
+                }
+
+                // ✅ Parse full JSON config
+                const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+
+                // 🔥 CRITICAL: Fix private key formatting
+                serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+
+                // ✅ Initialize Firebase Admin
                 admin.initializeApp({
-                    credential: admin.credential.cert(config as any),
+                    credential: admin.credential.cert(serviceAccount),
                 });
+
                 console.log('[Firebase Admin] Initialized successfully.');
+
             } catch (err: any) {
                 console.error('[Firebase Admin] Initialization failed:', err.message);
-                // Don't throw here to avoid crashing the whole backend during startup if possible,
-                // but usually NestJS onModuleInit errors are fatal.
-                throw err;
+                throw err; // Fail fast (important for production)
             }
         }
     }
 
     async verifyFirebaseToken(idToken: string) {
         let decodedToken: admin.auth.DecodedIdToken;
+
         try {
             decodedToken = await admin.auth().verifyIdToken(idToken);
         } catch (err: any) {
@@ -51,13 +48,14 @@ export class CustomersService implements OnModuleInit {
         }
 
         const phone = decodedToken.phone_number;
+
         if (!phone) {
             throw new BadRequestException('No phone number associated with this token.');
         }
 
         console.log(`[Firebase Admin] Token verified for ${phone}`);
 
-        // Strip country code for storage (keep consistent with existing DB records)
+        // Strip +91 for consistency
         const localPhone = phone.replace(/^\+91/, '');
 
         const customer = await this.prisma.customer.findUnique({
@@ -72,12 +70,16 @@ export class CustomersService implements OnModuleInit {
     }
 
     async register(phone: string, name: string) {
-        let customer = await this.prisma.customer.findUnique({ where: { phone } });
+        let customer = await this.prisma.customer.findUnique({
+            where: { phone },
+        });
+
         if (!customer) {
             customer = await this.prisma.customer.create({
                 data: { phone, name },
             });
         }
+
         return customer;
     }
 }
