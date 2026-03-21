@@ -2,10 +2,7 @@ import { CustomersService } from './customers.service';
 export declare class CustomersController {
     private readonly customersService;
     constructor(customersService: CustomersService);
-    verifyFirebaseToken(body: {
-        idToken: string;
-    }): Promise<{
-        verified: boolean;
+    findByPhone(phone: string): Promise<{
         customer: {
             name: string;
             id: string;

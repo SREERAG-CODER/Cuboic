@@ -26,6 +26,7 @@ const health_module_1 = require("./health/health.module");
 const schedule_1 = require("@nestjs/schedule");
 const tables_module_1 = require("./tables/tables.module");
 const customers_module_1 = require("./customers/customers.module");
+const platform_fees_module_1 = require("./platform-fees/platform-fees.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -50,6 +51,7 @@ exports.AppModule = AppModule = __decorate([
             schedule_1.ScheduleModule.forRoot(),
             tables_module_1.TablesModule,
             customers_module_1.CustomersModule,
+            platform_fees_module_1.PlatformFeesModule,
         ],
     })
 ], AppModule);

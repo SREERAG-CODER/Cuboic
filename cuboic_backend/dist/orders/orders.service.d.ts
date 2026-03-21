@@ -2,11 +2,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EventsGateway } from '../events/events.gateway';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { PlatformFeesService } from '../platform-fees/platform-fees.service';
 export declare class OrdersService {
     private prisma;
     private readonly eventsGateway;
+    private readonly platformFeesService;
     private readonly logger;
-    constructor(prisma: PrismaService, eventsGateway: EventsGateway);
+    constructor(prisma: PrismaService, eventsGateway: EventsGateway, platformFeesService: PlatformFeesService);
     create(dto: CreateOrderDto): Promise<{
         table: {
             restaurantId: string;
@@ -29,9 +31,9 @@ export declare class OrdersService {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;
@@ -70,9 +72,9 @@ export declare class OrdersService {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;
@@ -111,9 +113,9 @@ export declare class OrdersService {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;
@@ -210,9 +212,9 @@ export declare class OrdersService {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;

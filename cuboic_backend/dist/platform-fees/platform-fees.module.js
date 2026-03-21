@@ -6,21 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrdersModule = void 0;
+exports.PlatformFeesModule = void 0;
 const common_1 = require("@nestjs/common");
-const orders_controller_1 = require("./orders.controller");
-const orders_service_1 = require("./orders.service");
-const events_module_1 = require("../events/events.module");
-const platform_fees_module_1 = require("../platform-fees/platform-fees.module");
-let OrdersModule = class OrdersModule {
+const platform_fees_service_1 = require("./platform-fees.service");
+const platform_fees_controller_1 = require("./platform-fees.controller");
+const prisma_module_1 = require("../prisma/prisma.module");
+let PlatformFeesModule = class PlatformFeesModule {
 };
-exports.OrdersModule = OrdersModule;
-exports.OrdersModule = OrdersModule = __decorate([
+exports.PlatformFeesModule = PlatformFeesModule;
+exports.PlatformFeesModule = PlatformFeesModule = __decorate([
     (0, common_1.Module)({
-        imports: [events_module_1.EventsModule, platform_fees_module_1.PlatformFeesModule],
-        controllers: [orders_controller_1.OrdersController],
-        providers: [orders_service_1.OrdersService],
-        exports: [orders_service_1.OrdersService],
+        imports: [prisma_module_1.PrismaModule],
+        controllers: [platform_fees_controller_1.PlatformFeesController],
+        providers: [platform_fees_service_1.PlatformFeesService],
+        exports: [platform_fees_service_1.PlatformFeesService],
     })
-], OrdersModule);
-//# sourceMappingURL=orders.module.js.map
+], PlatformFeesModule);
+//# sourceMappingURL=platform-fees.module.js.map

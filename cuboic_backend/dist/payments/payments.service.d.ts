@@ -24,9 +24,9 @@ export declare class PaymentsService {
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
         amount: number;
+        orderId: string;
         method: string;
         transaction_id: string | null;
-        orderId: string;
     })[]>;
     getSummary(restaurantId: string): Promise<{
         order_count: number;

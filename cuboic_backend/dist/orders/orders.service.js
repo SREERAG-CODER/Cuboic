@@ -15,14 +15,16 @@ const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
 const prisma_service_1 = require("../prisma/prisma.service");
 const events_gateway_1 = require("../events/events.gateway");
-const PLATFORM_FEE = 5.00;
+const platform_fees_service_1 = require("../platform-fees/platform-fees.service");
 let OrdersService = OrdersService_1 = class OrdersService {
     prisma;
     eventsGateway;
+    platformFeesService;
     logger = new common_1.Logger(OrdersService_1.name);
-    constructor(prisma, eventsGateway) {
+    constructor(prisma, eventsGateway, platformFeesService) {
         this.prisma = prisma;
         this.eventsGateway = eventsGateway;
+        this.platformFeesService = platformFeesService;
     }
     async create(dto) {
         console.log('[DEBUG] createOrder DTO:', JSON.stringify(dto, null, 2));
@@ -63,6 +65,7 @@ let OrdersService = OrdersService_1 = class OrdersService {
             include: { payment: true, customer: true, table: true }
         });
         this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
+        await this.platformFeesService.createIfEligible(dto.restaurantId, order.id, total);
         return order;
     }
     findOne(id) {
@@ -202,6 +205,7 @@ __decorate([
 exports.OrdersService = OrdersService = OrdersService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        events_gateway_1.EventsGateway])
+        events_gateway_1.EventsGateway,
+        platform_fees_service_1.PlatformFeesService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

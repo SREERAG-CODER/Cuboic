@@ -1,11 +1,8 @@
-import { OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-export declare class CustomersService implements OnModuleInit {
+export declare class CustomersService {
     private prisma;
     constructor(prisma: PrismaService);
-    onModuleInit(): void;
-    verifyFirebaseToken(idToken: string): Promise<{
-        verified: boolean;
+    findByPhone(phone: string): Promise<{
         customer: {
             name: string;
             id: string;

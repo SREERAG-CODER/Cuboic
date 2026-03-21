@@ -20,8 +20,8 @@ let CustomersController = class CustomersController {
     constructor(customersService) {
         this.customersService = customersService;
     }
-    verifyFirebaseToken(body) {
-        return this.customersService.verifyFirebaseToken(body.idToken);
+    findByPhone(phone) {
+        return this.customersService.findByPhone(phone);
     }
     register(body) {
         return this.customersService.register(body.phone, body.name);
@@ -29,12 +29,12 @@ let CustomersController = class CustomersController {
 };
 exports.CustomersController = CustomersController;
 __decorate([
-    (0, common_1.Post)('verify-firebase-token'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Get)('lookup'),
+    __param(0, (0, common_1.Query)('phone')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], CustomersController.prototype, "verifyFirebaseToken", null);
+], CustomersController.prototype, "findByPhone", null);
 __decorate([
     (0, common_1.Post)('register'),
     __param(0, (0, common_1.Body)()),

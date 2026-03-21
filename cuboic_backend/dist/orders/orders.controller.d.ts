@@ -26,9 +26,9 @@ export declare class OrdersController {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;
@@ -72,9 +72,9 @@ export declare class OrdersController {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;
@@ -113,9 +113,9 @@ export declare class OrdersController {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;
@@ -207,9 +207,9 @@ export declare class OrdersController {
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             amount: number;
+            orderId: string;
             method: string;
             transaction_id: string | null;
-            orderId: string;
         } | null;
     } & {
         restaurantId: string;
