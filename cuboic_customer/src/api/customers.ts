@@ -7,8 +7,8 @@ export interface Customer {
 }
 
 export const customersApi = {
-    verifyFirebaseToken: (idToken: string) =>
-        api.post<{ verified: boolean; customer: Customer | null }>('/customers/verify-firebase-token', { idToken }).then(r => r.data),
+    lookup: (phone: string) =>
+        api.get<{ customer: Customer | null; phone: string }>('/customers/lookup', { params: { phone } }).then(r => r.data),
     register: (phone: string, name: string) =>
         api.post<Customer>('/customers/register', { phone, name }).then(r => r.data),
 };
