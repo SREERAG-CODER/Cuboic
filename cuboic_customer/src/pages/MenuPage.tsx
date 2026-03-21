@@ -194,7 +194,17 @@ export function MenuPage() {
             setActiveCategory(null);
 
             if (rest.tables) {
-                setAvailableTables(rest.tables);
+                const sortedTables = [...rest.tables].sort((a, b) => {
+                    const numA = parseInt(a.table_number);
+                    const numB = parseInt(b.table_number);
+                    
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return numA - numB;
+                    }
+                    // Fallback to string comparison for mixed or non-numeric types
+                    return String(a.table_number).localeCompare(String(b.table_number), undefined, { numeric: true });
+                });
+                setAvailableTables(sortedTables);
             }
 
             if (tableId && rest.tables) {

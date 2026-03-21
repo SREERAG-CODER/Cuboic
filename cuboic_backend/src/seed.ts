@@ -86,8 +86,25 @@ async function seed() {
         )
     );
 
-    // ── Categories — 5 ──────────────────────────────────────────────
-    const catNames = ['Starters', 'Mains', 'Sides', 'Desserts', 'Drinks'];
+    // ── Categories — 16 total ──────────────────────────────────────────────
+    const catNames = [
+        'Chicken Curries',
+        'Veg Curries',
+        'Egg Items',
+        'Starters',
+        'Tandoori',
+        'Indian Breads',
+        'Tiffins (AG Tiffins Menu)',
+        'Dosas',
+        'Pesarattu',
+        'Others',
+        'Chicken Biryani (UPDATED)',
+        'Veg Biryani',
+        'Fried Rice (UPDATED)',
+        'Noodles',
+        'Meals & Rice',
+        'Evening Snacks'
+    ];
     const categories = await Promise.all(
         catNames.map((name, i) =>
             prisma.category.create({
@@ -101,47 +118,144 @@ async function seed() {
         )
     );
 
-    // ── Menu Items — 34 South Indian dishes ─────────────────────────
+    // ── Menu Items ──────────────────────────────────────────────────
     const menuItemsData = [
-        // Starters (cat 0)
-        { name: 'Medu Vadai', description: 'Crispy urad dal doughnuts, served with sambar & coconut chutney', price: 80, cat: 0, image: IMG.vadai },
-        { name: 'Idli Sambar', description: 'Three steamed rice cakes with aromatic sambar & three chutneys', price: 70, cat: 0, image: IMG.idli },
-        { name: 'Mysore Bonda', description: 'Fluffy deep-fried urad dal balls with ginger & curry leaves', price: 80, cat: 0, image: IMG.bondaBajji },
-        { name: 'Masala Papadum', description: 'Roasted papadums with raw mango, onion & green chilli topping', price: 60, cat: 0, image: IMG.papadum },
-        { name: 'Rasam', description: 'Thin tangy tomato-tamarind pepper broth — the South Indian soul', price: 60, cat: 0, image: IMG.rasam },
-        { name: 'Filter Coffee Shots', description: 'Two small tumblers of traditional Mysore filter decoction', price: 70, cat: 0, image: IMG.filterShots },
-        // Mains (cat 1)
-        { name: 'Masala Dosa', description: 'Crispy rice-lentil crepe folded over spiced potato & onion filling', price: 130, cat: 1, image: IMG.dosa },
-        { name: 'Ghee Roast Dosa', description: 'Paper-thin dosa finished with generous ghee, served with chutneys', price: 150, cat: 1, image: IMG.gheeRoastDosa },
-        { name: 'Onion Uttapam', description: 'Thick soft pancake topped with caramelised onion & tomato', price: 120, cat: 1, image: IMG.uttapam },
-        { name: 'Chicken Biryani', description: 'Chettinad-spiced chicken layered with seeraga samba rice', price: 280, cat: 1, image: IMG.biryani },
-        { name: 'Chettinad Chicken Curry', description: 'Dry-roasted whole-spice chicken curry — fiery & fragrant', price: 320, cat: 1, image: IMG.chettinadChicken },
-        { name: 'Pesarattu', description: 'Green moong dal crepe with ginger chutney & upma stuffing', price: 120, cat: 1, image: IMG.pesarattu },
-        { name: 'Kerala Fish Curry', description: 'Karimeen in a tangy raw mango & coconut milk gravy', price: 340, cat: 1, image: IMG.fishCurry },
-        { name: 'Avial', description: 'Mixed vegetables in a thick coconut-curd gravy, tempered with coconut oil', price: 170, cat: 1, image: IMG.avialCurry },
-        { name: 'Pesara Pappu Dal', description: 'Andhra-style green moong dal tempered with dry red chilli & ghee', price: 160, cat: 1, image: IMG.palakDal },
-        { name: 'Kothu Parotta', description: 'Shredded layered parotta stir-fried with egg, onion & spiced gravy', price: 210, cat: 1, image: IMG.kothuParotta },
-        { name: 'Andhra Veg Thali', description: '7-item unlimited thali — rice, dal, sambar, rasam, 2 curries, curd', price: 220, cat: 1, image: IMG.thaliPlate },
-        // Sides (cat 2)
-        { name: 'Coconut Rice', description: 'Steamed rice tossed with freshly grated coconut & mustard seeds', price: 110, cat: 2, image: IMG.coconutRice },
-        { name: 'Appam', description: 'Lacy fermented rice hoppers, best paired with stew or curry', price: 100, cat: 2, image: IMG.appam },
-        { name: 'Beans Poriyal', description: 'Green beans stir-fried with coconut, mustard seeds & curry leaves', price: 90, cat: 2, image: IMG.poriyal },
-        { name: 'Chutney Trio', description: 'Coconut, tomato & mint-coriander chutneys with fresh curry leaf oil', price: 60, cat: 2, image: IMG.chutneySet },
-        { name: 'Pickle & Raita', description: 'House mango pickle with chilled cucumber raita', price: 70, cat: 2, image: IMG.pickleRaita },
-        // Desserts (cat 3)
-        { name: 'Semiya Payasam', description: 'Vermicelli simmered in milk, cardamom, cashews & golden raisins', price: 100, cat: 3, image: IMG.payasam },
-        { name: 'Carrot Halwa', description: 'Slow-cooked grated carrot in ghee, milk & khoya, topped with pistachios', price: 120, cat: 3, image: IMG.halwa },
-        { name: 'Kesari Bath', description: 'Semolina sweet with saffron, ghee & cardamom — a Bangalore classic', price: 90, cat: 3, image: IMG.kesariBath },
-        { name: 'Tender Coconut Ice Cream', description: 'Hand-churned tender coconut sorbet — light & tropical', price: 110, cat: 3, image: IMG.iceCream },
-        { name: 'Mysore Pak', description: 'Melt-in-the-mouth gram flour & ghee fudge from the royal kitchens', price: 80, cat: 3, image: IMG.mysurePak },
-        { name: 'Banana Sheera', description: 'Ripe banana & semolina pudding with jaggery and cardamom', price: 90, cat: 3, image: IMG.banana },
-        // Drinks (cat 4)
-        { name: 'Spiced Buttermilk', description: 'Chilled churned curd with ginger, green chilli, coriander & mustard', price: 60, cat: 4, image: IMG.buttermilk },
-        { name: 'Masala Chai', description: 'Kadak tea brewed with cardamom, ginger, cinnamon & jaggery', price: 60, cat: 4, image: IMG.masalaChai },
-        { name: 'Mango Lassi', description: 'Thick Alphonso mango blended with full-fat curd & a hint of saffron', price: 100, cat: 4, image: IMG.mangoLassi },
-        { name: 'Tender Coconut Water', description: 'Fresh green coconut served tableside — hydrating & natural', price: 80, cat: 4, image: IMG.coconutWater },
-        { name: 'Filter Coffee', description: 'Classic South Indian filter decoction with full-cream milk & froth', price: 70, cat: 4, image: IMG.filterCoffee },
-        { name: 'Panakam', description: 'Temple-style cold drink of jaggery, ginger, cardamom & pepper', price: 60, cat: 4, image: IMG.panakam },
+        // Chicken Curries (cat 0)
+        { name: 'Chilli Chicken', price: 200, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Kadai Chicken', price: 200, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Boneless Chicken', price: 190, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Punjabi Chicken (Full)', price: 280, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Punjabi Chicken (Half)', price: 150, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Ramba Chicken (Full)', price: 280, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Ramba Chicken (Half)', price: 150, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Mughlai Chicken (Full)', price: 280, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Mughlai Chicken (Half)', price: 180, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Butter Chicken (Full)', price: 280, cat: 0, image: IMG.chettinadChicken },
+        { name: 'Butter Chicken (Half)', price: 180, cat: 0, image: IMG.chettinadChicken },
+
+        // Veg Curries (cat 1)
+        { name: 'Gobi Curry', price: 120, cat: 1, image: IMG.avialCurry },
+        { name: 'Chilli Gobi', price: 130, cat: 1, image: IMG.avialCurry },
+        { name: 'Chilli Paneer', price: 150, cat: 1, image: IMG.avialCurry },
+        { name: 'Mixed Veg Curry', price: 150, cat: 1, image: IMG.avialCurry },
+        { name: 'Paneer Curry', price: 150, cat: 1, image: IMG.avialCurry },
+        { name: 'Kaju Paneer', price: 180, cat: 1, image: IMG.avialCurry },
+        { name: 'Kadai Paneer', price: 180, cat: 1, image: IMG.avialCurry },
+        { name: 'Paneer Butter Masala', price: 180, cat: 1, image: IMG.avialCurry },
+        { name: 'Methi Chaman', price: 180, cat: 1, image: IMG.avialCurry },
+
+        // Egg Items (cat 2)
+        { name: 'Egg Bhurji', price: 100, cat: 2, image: IMG.kothuParotta },
+        { name: 'Egg Curry', price: 120, cat: 2, image: IMG.kothuParotta },
+        { name: 'Egg Roast', price: 130, cat: 2, image: IMG.kothuParotta },
+        { name: 'Egg 65', price: 150, cat: 2, image: IMG.kothuParotta },
+        { name: 'Egg Chilli', price: 160, cat: 2, image: IMG.kothuParotta },
+        { name: 'Omelette', price: 50, cat: 2, image: IMG.kothuParotta },
+
+        // Starters (cat 3)
+        { name: 'Gobi 65', price: 120, cat: 3, image: IMG.bondaBajji },
+        { name: 'Paneer 65', price: 180, cat: 3, image: IMG.bondaBajji },
+        { name: 'Veg Manchuria', price: 120, cat: 3, image: IMG.bondaBajji },
+        { name: 'Chicken Manchuria', price: 170, cat: 3, image: IMG.bondaBajji },
+        { name: 'Kaju Chicken', price: 200, cat: 3, image: IMG.bondaBajji },
+        { name: 'Chicken Lollipop', price: 230, cat: 3, image: IMG.bondaBajji },
+
+        // Tandoori (cat 4)
+        { name: 'Tandoori Chicken (Quarter)', price: 130, cat: 4, image: IMG.biryani },
+        { name: 'Tandoori Chicken (Half)', price: 260, cat: 4, image: IMG.biryani },
+        { name: 'Tandoori Chicken (Full)', price: 520, cat: 4, image: IMG.biryani },
+        { name: 'Al Faham (Quarter)', price: 110, cat: 4, image: IMG.biryani },
+        { name: 'Al Faham (Half)', price: 220, cat: 4, image: IMG.biryani },
+        { name: 'Al Faham (Full)', price: 440, cat: 4, image: IMG.biryani },
+        { name: 'Paneer Tikka Masala', price: 180, cat: 4, image: IMG.biryani },
+        { name: 'Chicken Tikka Masala', price: 180, cat: 4, image: IMG.biryani },
+
+        // Indian Breads (cat 5)
+        { name: 'Porota', price: 10, cat: 5, image: IMG.appam },
+        { name: 'Tandoori Roti', price: 15, cat: 5, image: IMG.appam },
+        { name: 'Butter Roti', price: 20, cat: 5, image: IMG.appam },
+        { name: 'Butter Naan', price: 30, cat: 5, image: IMG.appam },
+        { name: 'Normal Naan', price: 25, cat: 5, image: IMG.appam },
+        { name: 'Chapati (2)', price: 30, cat: 5, image: IMG.appam },
+
+        // Tiffins (cat 6)
+        { name: 'Idly', price: 40, cat: 6, image: IMG.idli },
+        { name: 'Sambar Idly', price: 50, cat: 6, image: IMG.idli },
+        { name: 'Ghee Podi Idly', price: 40, cat: 6, image: IMG.idli },
+        { name: 'Mysore Bonda', price: 40, cat: 6, image: IMG.bondaBajji },
+        { name: 'Vada', price: 40, cat: 6, image: IMG.vadai },
+        { name: 'Sambar Vada', price: 50, cat: 6, image: IMG.vadai },
+        { name: 'Perugu Vada', price: 30, cat: 6, image: IMG.vadai },
+
+        // Dosas (cat 7)
+        { name: 'Plain Dosa', price: 40, cat: 7, image: IMG.dosa },
+        { name: 'Onion Dosa', price: 50, cat: 7, image: IMG.uttapam },
+        { name: 'Egg Dosa', price: 60, cat: 7, image: IMG.dosa },
+        { name: 'Double Egg Dosa', price: 70, cat: 7, image: IMG.dosa },
+        { name: 'Ghee Roast Dosa', price: 70, cat: 7, image: IMG.gheeRoastDosa },
+        { name: 'Ghee Masala Dosa', price: 70, cat: 7, image: IMG.gheeRoastDosa },
+        { name: 'Ghee Podi Dosa', price: 70, cat: 7, image: IMG.gheeRoastDosa },
+        { name: 'Paneer Dosa', price: 70, cat: 7, image: IMG.dosa },
+        { name: 'Set Dosa', price: 100, cat: 7, image: IMG.dosa },
+        { name: 'Uttapam', price: 60, cat: 7, image: IMG.uttapam },
+        { name: 'Upma Dosa', price: 70, cat: 7, image: IMG.dosa },
+
+        // Pesarattu (cat 8)
+        { name: 'Plain Pesarattu', price: 50, cat: 8, image: IMG.pesarattu },
+        { name: 'Masala Pesarattu', price: 70, cat: 8, image: IMG.pesarattu },
+        { name: 'Onion Pesarattu', price: 60, cat: 8, image: IMG.pesarattu },
+        { name: 'Upma Pesarattu', price: 80, cat: 8, image: IMG.pesarattu },
+
+        // Others (cat 9)
+        { name: 'Puri (2 pcs)', price: 50, cat: 9, image: IMG.appam },
+        { name: 'Chapati (2 pcs)', price: 50, cat: 9, image: IMG.appam },
+
+        // Chicken Biryani (cat 10)
+        { name: 'Kebab Biryani', price: 150, cat: 10, image: IMG.biryani },
+        { name: 'Dum Biryani', price: 160, cat: 10, image: IMG.biryani },
+        { name: 'Fry Piece Biryani', price: 160, cat: 10, image: IMG.biryani },
+        { name: 'Boneless Biryani', price: 180, cat: 10, image: IMG.biryani },
+        { name: 'Tandoori Biryani', price: 220, cat: 10, image: IMG.biryani },
+        { name: 'Al Faham Biryani', price: 210, cat: 10, image: IMG.biryani },
+        { name: 'Lollipop Biryani', price: 200, cat: 10, image: IMG.biryani },
+        { name: 'Star Chicken Biryani', price: 200, cat: 10, image: IMG.biryani },
+        { name: 'Mughlai Biryani', price: 250, cat: 10, image: IMG.biryani },
+        { name: 'Chicken Tikka Biryani', price: 200, cat: 10, image: IMG.biryani },
+        { name: 'Mutton Biryani', price: 280, cat: 10, image: IMG.biryani },
+        { name: 'Egg Biryani', price: 140, cat: 10, image: IMG.biryani },
+
+        // Veg Biryani (cat 11)
+        { name: 'Veg Biryani', price: 130, cat: 11, image: IMG.biryani },
+        { name: 'Paneer Biryani', price: 160, cat: 11, image: IMG.biryani },
+        { name: 'Kaju Paneer Biryani', price: 180, cat: 11, image: IMG.biryani },
+        { name: 'Paneer Tikka Biryani', price: 200, cat: 11, image: IMG.biryani },
+
+        // Fried Rice (cat 12)
+        { name: 'Veg Fried Rice', price: 100, cat: 12, image: IMG.coconutRice },
+        { name: 'Gobi Fried Rice', price: 70, cat: 12, image: IMG.coconutRice },
+        { name: 'Egg Gobi Fried Rice', price: 130, cat: 12, image: IMG.coconutRice },
+        { name: 'Double Egg Fried Rice', price: 140, cat: 12, image: IMG.coconutRice },
+        { name: 'Kaju Fried Rice', price: 160, cat: 12, image: IMG.coconutRice },
+        { name: 'Paneer Fried Rice', price: 150, cat: 12, image: IMG.coconutRice },
+        { name: 'Chicken Fried Rice', price: 140, cat: 12, image: IMG.coconutRice },
+
+        // Noodles (cat 13)
+        { name: 'Egg Noodles', price: 120, cat: 13, image: IMG.kothuParotta },
+        { name: 'Double Egg Noodles', price: 130, cat: 13, image: IMG.kothuParotta },
+        { name: 'Chicken Noodles', price: 130, cat: 13, image: IMG.kothuParotta },
+
+        // Meals & Rice (cat 14)
+        { name: 'Veg Meals', price: 100, cat: 14, image: IMG.thaliPlate },
+        { name: 'Non-Veg Meals', price: 150, cat: 14, image: IMG.thaliPlate },
+        { name: 'White Rice', price: 70, cat: 14, image: IMG.coconutRice },
+        { name: 'Jeera Rice', price: 70, cat: 14, image: IMG.coconutRice },
+        { name: 'Tomato Rice', price: 70, cat: 14, image: IMG.coconutRice },
+        { name: 'Biryani Rice', price: 90, cat: 14, image: IMG.biryani },
+
+        // Evening Snacks (cat 15)
+        { name: 'Chinna Punugulu', price: 40, cat: 15, image: IMG.bondaBajji },
+        { name: 'Mirchi Bajji', price: 30, cat: 15, image: IMG.bondaBajji },
+        { name: 'Egg Bonda', price: 30, cat: 15, image: IMG.bondaBajji },
     ];
 
     for (let i = 0; i < menuItemsData.length; i++) {
@@ -151,7 +265,7 @@ async function seed() {
                 restaurantId: restaurant.id,
                 categoryId: categories[item.cat].id,
                 name: item.name,
-                description: item.description,
+                description: (item as any).description || '',
                 price: item.price,
                 image_url: item.image,
                 is_available: true,
