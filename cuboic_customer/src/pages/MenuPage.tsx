@@ -24,7 +24,7 @@ export function MenuPage() {
     const restaurantId = params.get('r') ?? '';
     const tableId = params.get('t') ?? '';
 
-    const [restaurantName, setRestaurantName] = useState('Food Guru');
+    const [restaurantName, setRestaurantName] = useState('Restaurant');
     const [categories, setCategories] = useState<Category[]>([]);
     const [allItems, setAllItems] = useState<MenuItem[]>([]);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export function MenuPage() {
 
     const [authOpen, setAuthOpen] = useState(false);
     const [orderTypeOpen, setOrderTypeOpen] = useState(false);
-    
+
     // Auth State
     const [customer, setCustomer] = useState<Customer | null>(null);
 
@@ -51,7 +51,7 @@ export function MenuPage() {
     useEffect(() => {
         const c = getCustomer();
         if (c) setCustomer(c);
-        
+
         try {
             const o = localStorage.getItem('cuboic_active_orders');
             if (o) {
@@ -197,7 +197,7 @@ export function MenuPage() {
                 const sortedTables = [...rest.tables].sort((a, b) => {
                     const numA = parseInt(a.table_number);
                     const numB = parseInt(b.table_number);
-                    
+
                     if (!isNaN(numA) && !isNaN(numB)) {
                         return numA - numB;
                     }
@@ -320,8 +320,8 @@ export function MenuPage() {
                             Are you dining in with us or taking your order to go?
                         </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <button 
-                                className="btn btn-primary" 
+                            <button
+                                className="btn btn-primary"
                                 onClick={() => {
                                     const takeawayTbl = availableTables.find(t => String(t.table_number).toLowerCase() === 'takeaway');
                                     const tId = takeawayTbl ? takeawayTbl.id : 'takeaway_virtual';
@@ -330,14 +330,14 @@ export function MenuPage() {
                                         next.set('t', tId);
                                         return next;
                                     });
-                                }} 
+                                }}
                                 style={{ padding: '16px', fontSize: '1.05rem', fontWeight: 700, borderRadius: '14px' }}
                             >
                                 🥡 Order Takeaway
                             </button>
-                            <button 
-                                className="btn btn-secondary" 
-                                onClick={() => setTablesOpen(true)} 
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setTablesOpen(true)}
                                 style={{ padding: '16px', fontSize: '1.05rem', fontWeight: 600, backgroundColor: 'var(--surface2)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: '14px' }}
                             >
                                 🍽 Dine-in (Select Table)

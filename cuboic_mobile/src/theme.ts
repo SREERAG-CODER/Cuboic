@@ -27,8 +27,6 @@ export const S = {
         flex: 1 as const,
         backgroundColor: COLORS.bg,
         width: '100%' as const,
-        maxWidth: 800,
-        alignSelf: 'center' as const,
     },
     card: {
         backgroundColor: COLORS.surface,

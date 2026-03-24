@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ActivityIndicator, View, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { LoginScreen } from '../screens/auth/LoginScreen';
@@ -43,6 +44,7 @@ function MainTabs() {
     const { user } = useAuth();
     const isOwner = user?.role === 'Owner';
     const isStaff = user?.role === 'Staff';
+    const insets = useSafeAreaInsets();
 
     return (
         <Tab.Navigator
@@ -52,9 +54,11 @@ function MainTabs() {
                     backgroundColor: COLORS.surface,
                     borderTopColor: COLORS.border,
                     borderTopWidth: 1,
-                    paddingBottom: 4,
+                    paddingBottom: Math.max(insets.bottom, 4),
                     paddingTop: 4,
-                    height: 60,
+                    paddingLeft: Math.max(insets.left, 0),
+                    paddingRight: Math.max(insets.right, 0),
+                    height: 60 + insets.bottom,
                 },
                 tabBarActiveTintColor: COLORS.accent,
                 tabBarInactiveTintColor: COLORS.textMuted,

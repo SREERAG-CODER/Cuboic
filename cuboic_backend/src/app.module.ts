@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { MenuModule } from './menu/menu.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -22,6 +24,10 @@ import { PlatformFeesModule } from './platform-fees/platform-fees.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 100,
+    }]),
     PrismaModule,
     MenuModule,
     CategoriesModule,
@@ -40,6 +46,12 @@ import { PlatformFeesModule } from './platform-fees/platform-fees.module';
     TablesModule,
     CustomersModule,
     PlatformFeesModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule { }

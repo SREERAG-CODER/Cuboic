@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, FlatList, TouchableOpacity, StyleSheet,
     RefreshControl, ActivityIndicator, Alert, ScrollView, Pressable,
@@ -241,8 +241,11 @@ export function OrdersScreen() {
                 const voices = await Speech.getAvailableVoicesAsync();
                 console.log(`[DEBUG] Found ${voices.length} voices.`);
                 // Prioritize en-IN, then en-US/GB/AU, then any en
-                const inVoice = voices.find(v => v.language.startsWith('en-IN'))?.identifier;
-                const enVoice = voices.find(v => v.language.startsWith('en-'))?.identifier;
+                const inVoice = voices.find(v => {
+                    const lang = v.language.replace('_', '-').toLowerCase();
+                    return lang.startsWith('en-in');
+                })?.identifier;
+                const enVoice = voices.find(v => v.language.toLowerCase().startsWith('en-'))?.identifier;
                 console.log(`[DEBUG] Preferred voice: ${inVoice || enVoice || 'Default'}`);
                 setPreferredVoice(inVoice || enVoice);
             } catch (err) {
@@ -271,6 +274,75 @@ export function OrdersScreen() {
 
     useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
 
+    const isMountedRef = useRef(true);
+    const pendingOrdersRef = useRef<Order[]>([]);
+    const isSpeakingRef = useRef(false);
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+            Speech.stop();
+        };
+    }, []);
+
+    useEffect(() => {
+        pendingOrdersRef.current = orders.filter(o => o.status === 'Pending');
+        
+        if (pendingOrdersRef.current.length === 0 && isSpeakingRef.current) {
+            Speech.stop();
+            isSpeakingRef.current = false;
+        }
+    }, [orders]);
+
+    const announcementLoop = useCallback(() => {
+        if (!isMountedRef.current) return;
+        const pending = pendingOrdersRef.current;
+        if (pending.length === 0) {
+            isSpeakingRef.current = false;
+            return;
+        }
+        
+        isSpeakingRef.current = true;
+        
+        const messages = pending.map((o: Order) => {
+            const tableNum = getTableNum(o);
+            const itemsList = o.items.map((it: any) => `${it.quantity} ${it.name}`).join(', ');
+            return `New order for Table ${tableNum}. Items: ${itemsList}.`;
+        });
+        
+        const fullMessage = messages.join(' ... ');
+        
+        Speech.speak(fullMessage, {
+            language: 'en-IN',
+            voice: preferredVoice,
+            rate: 0.85,
+            pitch: 1.0,
+            onDone: () => {
+                setTimeout(() => {
+                    if (isMountedRef.current && isSpeakingRef.current && pendingOrdersRef.current.length > 0) {
+                        announcementLoop();
+                    } else {
+                        isSpeakingRef.current = false;
+                    }
+                }, 4000); // 4 second pause
+            },
+            onStopped: () => {
+                isSpeakingRef.current = false;
+            },
+            onError: (err) => {
+                console.error('[DEBUG] Speech error:', err);
+                isSpeakingRef.current = false;
+            }
+        });
+    }, [preferredVoice]);
+
+    useEffect(() => {
+        if (pendingOrdersRef.current.length > 0 && !isSpeakingRef.current) {
+            announcementLoop();
+        }
+    }, [orders, announcementLoop]);
+
     // Poll every 1 second
     useEffect(() => {
         const interval = setInterval(load, 1000);
@@ -280,25 +352,7 @@ export function OrdersScreen() {
     useSocket(restaurantId, {
         'order:new': async (newOrder: Order) => {
             console.log('[DEBUG] Received order:new event:', newOrder.id);
-
             load();
-
-            // Voice announcement
-            const tableNum = getTableNum(newOrder);
-
-            const itemsList = newOrder.items
-                .map(it => `${it.quantity} ${it.name}`)
-                .join(', ');
-
-            const message = `New order for Table ${tableNum}. Items: ${itemsList}.`;
-            console.log(`[DEBUG] Speaking: "${message}" with voice: ${preferredVoice}`);
-            Speech.stop();
-            Speech.speak(message, {
-                voice: preferredVoice,
-                rate: 0.85,
-                pitch: 1.0,
-                onError: (err) => console.error('[DEBUG] Speech error:', err),
-            });
         },
 
         'order:updated': () => load(),
@@ -416,7 +470,7 @@ export function OrdersScreen() {
                     </Text>
                 </View>
                 <TouchableOpacity
-                    onPress={() => Speech.speak("Test voice message", { voice: preferredVoice, rate: 0.85 })}
+                    onPress={() => Speech.speak("Test voice message", { language: 'en-IN', voice: preferredVoice, rate: 0.85 })}
                     style={{ padding: 8, backgroundColor: COLORS.surface2, borderRadius: 8 }}
                 >
                     <Feather name="volume-2" size={20} color={COLORS.accent} />

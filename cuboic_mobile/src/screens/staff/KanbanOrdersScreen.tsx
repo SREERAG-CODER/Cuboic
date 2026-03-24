@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View, Text, ScrollView, TouchableOpacity, StyleSheet,
     RefreshControl, ActivityIndicator, Dimensions, Alert
@@ -146,8 +146,11 @@ export function KanbanOrdersScreen() {
         const initVoices = async () => {
             try {
                 const voices = await Speech.getAvailableVoicesAsync();
-                const inVoice = voices.find(v => v.language.startsWith('en-IN'))?.identifier;
-                const enVoice = voices.find(v => v.language.startsWith('en-'))?.identifier;
+                const inVoice = voices.find(v => {
+                    const lang = v.language.replace('_', '-').toLowerCase();
+                    return lang.startsWith('en-in');
+                })?.identifier;
+                const enVoice = voices.find(v => v.language.toLowerCase().startsWith('en-'))?.identifier;
                 setPreferredVoice(inVoice || enVoice);
             } catch (err) {
                 console.error('[DEBUG] Error fetching voices:', err);
@@ -168,6 +171,74 @@ export function KanbanOrdersScreen() {
 
     useEffect(() => { loadOrders().finally(() => setLoading(false)); }, [loadOrders]);
 
+    const isMountedRef = useRef(true);
+    const pendingOrdersRef = useRef<Order[]>([]);
+    const isSpeakingRef = useRef(false);
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+            Speech.stop();
+        };
+    }, []);
+
+    useEffect(() => {
+        pendingOrdersRef.current = orders.filter(o => o.status === 'Pending');
+        
+        if (pendingOrdersRef.current.length === 0 && isSpeakingRef.current) {
+            Speech.stop();
+            isSpeakingRef.current = false;
+        }
+    }, [orders]);
+
+    const announcementLoop = useCallback(() => {
+        if (!isMountedRef.current) return;
+        const pending = pendingOrdersRef.current;
+        if (pending.length === 0) {
+            isSpeakingRef.current = false;
+            return;
+        }
+        
+        isSpeakingRef.current = true;
+        
+        const messages = pending.map((o: Order) => {
+            const tableNum = getTableNum(o);
+            const itemsList = o.items.map((it: any) => `${it.quantity} ${it.name}`).join(', ');
+            return `New order for Table ${tableNum}. Items: ${itemsList}.`;
+        });
+        
+        const fullMessage = messages.join(' ... ');
+        
+        Speech.speak(fullMessage, {
+            language: 'en-IN',
+            voice: preferredVoice,
+            rate: 0.85,
+            pitch: 1.0,
+            onDone: () => {
+                setTimeout(() => {
+                    if (isMountedRef.current && isSpeakingRef.current && pendingOrdersRef.current.length > 0) {
+                        announcementLoop();
+                    } else {
+                        isSpeakingRef.current = false;
+                    }
+                }, 4000);
+            },
+            onStopped: () => {
+                isSpeakingRef.current = false;
+            },
+            onError: () => {
+                isSpeakingRef.current = false;
+            }
+        });
+    }, [preferredVoice]);
+
+    useEffect(() => {
+        if (pendingOrdersRef.current.length > 0 && !isSpeakingRef.current) {
+            announcementLoop();
+        }
+    }, [orders, announcementLoop]);
+
     // Poll every 2 seconds
     useEffect(() => {
         const interval = setInterval(loadOrders, 2000);
@@ -177,17 +248,6 @@ export function KanbanOrdersScreen() {
     useSocket(restaurantId, {
         'order:new': async (newOrder: Order) => {
             loadOrders();
-            const tableNum = getTableNum(newOrder);
-            const itemsList = newOrder.items
-                .map(it => `${it.quantity} ${it.name}`)
-                .join(', ');
-            const message = `New order for Table ${tableNum}. Items: ${itemsList}.`;
-            Speech.stop();
-            Speech.speak(message, { 
-                voice: preferredVoice,
-                rate: 0.85,
-                pitch: 1.0
-            });
         },
         'order:updated': () => loadOrders(),
     });
@@ -217,7 +277,7 @@ export function KanbanOrdersScreen() {
     const tableKeys = new Set(orders.map(o => getTableNum(o)));
 
     return (
-        <View style={[S.screen, { maxWidth: '100%' }]}>
+        <View style={S.screen}>
             {/* Standard App Header */}
             <View style={styles.header}>
                 <View>
@@ -227,7 +287,7 @@ export function KanbanOrdersScreen() {
                     </Text>
                 </View>
                 <TouchableOpacity
-                    onPress={() => Speech.speak("Test voice message", { voice: preferredVoice, rate: 0.85 })}
+                    onPress={() => Speech.speak("Test voice message", { language: 'en-IN', voice: preferredVoice, rate: 0.85 })}
                     style={{ padding: 8, backgroundColor: COLORS.surface2, borderRadius: 8 }}
                 >
                     <Feather name="volume-2" size={20} color={COLORS.accent} />
