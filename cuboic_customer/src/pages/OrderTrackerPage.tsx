@@ -77,16 +77,17 @@ export function OrderTrackerPage() {
     const socketRef = useSocket(order?.restaurantId?.toString() ?? null);
     useEffect(() => {
         const socket = socketRef.current;
-        if (!socket || !orderId) return;
+        if (!socket || !orderId || !order?.restaurantId) return;
 
+        const eventName = `order:updated:${order.restaurantId}`;
         const handler = (data: { id: string; status: Order['status'] }) => {
             if (data.id === orderId || data.id?.toString() === orderId) {
                 setOrder(prev => prev ? { ...prev, status: data.status } : prev);
                 setLastUpdated(new Date());
             }
         };
-        socket.on('order:updated', handler);
-        return () => { socket.off('order:updated', handler); };
+        socket.on(eventName, handler);
+        return () => { socket.off(eventName, handler); };
     }, [socketRef, orderId, order?.restaurantId]);
 
     if (loading) return <div className="tracker-page"><div className="spinner-center"><div className="spinner" /></div></div>;
@@ -211,7 +212,7 @@ export function OrderTrackerPage() {
 function getStatusMessage(status: Order['status']): string {
     const map: Record<Order['status'], string> = {
         Pending: 'Order Received',
-        Confirmed: 'Order Confirmed',
+        Confirmed: 'Being Prepared',
         Preparing: 'Being Prepared',
         Ready: 'Ready to Serve',
         Assigned: 'Robot on the Way',
