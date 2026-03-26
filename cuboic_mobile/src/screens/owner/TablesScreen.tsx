@@ -4,9 +4,11 @@ import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { tablesApi, type RestaurantTable } from '../../api/tables';
 import { COLORS, S } from '../../theme';
+import { useNavigation } from '@react-navigation/native';
 
 export function TablesScreen() {
     const { user } = useAuth();
+    const navigation = useNavigation();
     const [tables, setTables] = useState<RestaurantTable[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -60,9 +62,14 @@ export function TablesScreen() {
     return (
         <View style={S.screen}>
             <View style={styles.header}>
-                <View>
-                    <Text style={styles.title}>Tables</Text>
-                    <Text style={styles.sub}>Manage restaurant tables</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                        <Feather name="arrow-left" size={20} color={COLORS.text} />
+                    </TouchableOpacity>
+                    <View>
+                        <Text style={styles.title}>Tables</Text>
+                        <Text style={styles.sub}>Manage restaurant tables</Text>
+                    </View>
                 </View>
                 <TouchableOpacity onPress={() => setIsCreating(!isCreating)} style={styles.addBtn}>
                     <Feather name={isCreating ? "x" : "plus"} size={20} color="#000" />
@@ -122,6 +129,7 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: '800', color: COLORS.text },
     sub: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
     addBtn: { backgroundColor: COLORS.accent, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.surface2 },
     createArea: { padding: 16, backgroundColor: COLORS.surface2, borderBottomWidth: 1, borderBottomColor: COLORS.border },
     label: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted, marginBottom: 8 },
     input: { backgroundColor: COLORS.surface, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border, fontSize: 16 },

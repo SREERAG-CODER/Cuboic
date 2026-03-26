@@ -16,8 +16,8 @@ export declare class RestaurantsController {
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
-        restaurantId: string;
         table_number: string;
+        restaurantId: string;
     }[]>;
     getById(id: string): Promise<{
         tables: {
@@ -25,8 +25,8 @@ export declare class RestaurantsController {
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
-            restaurantId: string;
             table_number: string;
+            restaurantId: string;
         }[];
     } & {
         id: string;

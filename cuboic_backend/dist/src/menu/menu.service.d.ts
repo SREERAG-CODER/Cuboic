@@ -12,10 +12,10 @@ export declare class MenuService {
         updatedAt: Date;
         restaurantId: string;
         display_order: number;
-        categoryId: string;
         price: number;
         image_url: string | null;
         is_available: boolean;
+        categoryId: string;
     }[]>;
     getAllForAdmin(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
@@ -25,10 +25,10 @@ export declare class MenuService {
         updatedAt: Date;
         restaurantId: string;
         display_order: number;
-        categoryId: string;
         price: number;
         image_url: string | null;
         is_available: boolean;
+        categoryId: string;
     }[]>;
     createItem(dto: CreateMenuItemDto): import("@prisma/client").Prisma.Prisma__MenuItemClient<{
         id: string;
@@ -38,10 +38,10 @@ export declare class MenuService {
         updatedAt: Date;
         restaurantId: string;
         display_order: number;
-        categoryId: string;
         price: number;
         image_url: string | null;
         is_available: boolean;
+        categoryId: string;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     updateItem(id: string, dto: UpdateMenuItemDto): Promise<{
         id: string;
@@ -51,10 +51,10 @@ export declare class MenuService {
         updatedAt: Date;
         restaurantId: string;
         display_order: number;
-        categoryId: string;
         price: number;
         image_url: string | null;
         is_available: boolean;
+        categoryId: string;
     }>;
     deleteItem(id: string): Promise<{
         id: string;
@@ -64,9 +64,9 @@ export declare class MenuService {
         updatedAt: Date;
         restaurantId: string;
         display_order: number;
-        categoryId: string;
         price: number;
         image_url: string | null;
         is_available: boolean;
+        categoryId: string;
     }>;
 }

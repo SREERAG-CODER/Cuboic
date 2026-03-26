@@ -9,6 +9,7 @@ import { menuApi, type MenuItem, type Category } from '../../api/menu';
 import { useAuth } from '../../context/AuthContext';
 import { StatusBadge } from '../../components/StatusBadge';
 import { COLORS, S } from '../../theme';
+import { useNavigation } from '@react-navigation/native';
 
 const EMPTY_FORM = {
     name: '',
@@ -23,6 +24,7 @@ type FormState = typeof EMPTY_FORM;
 
 export function MenuScreen() {
     const { user } = useAuth();
+    const navigation = useNavigation();
     const restaurantId = user?.restaurantId ?? '';
 
     const [items, setItems] = useState<MenuItem[]>([]);
@@ -139,9 +141,14 @@ export function MenuScreen() {
         <View style={S.screen}>
             {/* Header */}
             <View style={styles.header}>
-                <View>
-                    <Text style={styles.title}>Menu</Text>
-                    <Text style={styles.sub}>{items.length} items · {items.filter(i => !i.is_available).length} unavailable</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                        <Feather name="arrow-left" size={20} color={COLORS.text} />
+                    </TouchableOpacity>
+                    <View>
+                        <Text style={styles.title}>Menu</Text>
+                        <Text style={styles.sub}>{items.length} items · {items.filter(i => !i.is_available).length} unavailable</Text>
+                    </View>
                 </View>
                 <TouchableOpacity style={styles.addBtn} onPress={openAddModal} activeOpacity={0.8}>
                     <Text style={styles.addBtnText}>+ Add</Text>
@@ -364,6 +371,7 @@ const styles = StyleSheet.create({
     sub: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
     addBtn: { backgroundColor: COLORS.accent, paddingHorizontal: 16, paddingVertical: 9, borderRadius: 10 },
     addBtnText: { color: '#0f0f13', fontWeight: '700', fontSize: 14 },
+    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.surface2 },
     tabsContainer: { backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.border },
     tabsContent: { paddingHorizontal: 10, paddingVertical: 20, flexDirection: 'row', alignItems: 'center' },
     tab: { paddingHorizontal: 14, paddingVertical: 4, borderRadius: 99, backgroundColor: COLORS.surface2, borderWidth: 1, borderColor: COLORS.border, marginRight: 8, flexShrink: 0, height: 40, justifyContent: 'center' },

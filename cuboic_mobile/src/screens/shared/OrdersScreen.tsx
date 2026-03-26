@@ -223,7 +223,8 @@ function OrderCard({
 
 // ─── main screen ────────────────────────────────────────────────────────────
 
-export function OrdersScreen() {
+export function OrdersScreen({ route }: any) {
+    const statusInitial = route?.params?.statusInitial;
     const { user } = useAuth();
     const restaurantId = user?.restaurantId ?? '';
     console.log(`[DEBUG] OrdersScreen restaurantId: "${restaurantId}"`);
@@ -233,6 +234,7 @@ export function OrdersScreen() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [preferredVoice, setPreferredVoice] = useState<string | undefined>(undefined);
+    const [isMuted, setIsMuted] = useState(false);
 
     useEffect(() => {
         const initVoices = async () => {
@@ -257,7 +259,13 @@ export function OrdersScreen() {
 
     // table-view state
     const [selectedTable, setSelectedTable] = useState<string | null>(null);
-    const [filterStatus, setFilterStatus] = useState('All');
+    const [filterStatus, setFilterStatus] = useState(statusInitial || 'All');
+
+    useEffect(() => {
+        if (statusInitial) {
+            setFilterStatus(statusInitial);
+        }
+    }, [statusInitial]);
 
     const load = useCallback(async () => {
         if (!restaurantId) return;
@@ -296,7 +304,11 @@ export function OrdersScreen() {
     }, [orders]);
 
     const announcementLoop = useCallback(() => {
-        if (!isMountedRef.current) return;
+        if (!isMountedRef.current || isMuted) {
+            isSpeakingRef.current = false;
+            Speech.stop();
+            return;
+        }
         const pending = pendingOrdersRef.current;
         if (pending.length === 0) {
             isSpeakingRef.current = false;
@@ -338,10 +350,14 @@ export function OrdersScreen() {
     }, [preferredVoice]);
 
     useEffect(() => {
-        if (pendingOrdersRef.current.length > 0 && !isSpeakingRef.current) {
+        if (pendingOrdersRef.current.length > 0 && !isSpeakingRef.current && !isMuted) {
             announcementLoop();
         }
-    }, [orders, announcementLoop]);
+        if (isMuted) {
+            Speech.stop();
+            isSpeakingRef.current = false;
+        }
+    }, [orders, announcementLoop, isMuted]);
 
     // Poll every 1 second
     useEffect(() => {
@@ -470,10 +486,10 @@ export function OrdersScreen() {
                     </Text>
                 </View>
                 <TouchableOpacity
-                    onPress={() => Speech.speak("Test voice message", { language: 'en-IN', voice: preferredVoice, rate: 0.85 })}
-                    style={{ padding: 8, backgroundColor: COLORS.surface2, borderRadius: 8 }}
+                    onPress={() => setIsMuted(prev => !prev)}
+                    style={{ padding: 8, backgroundColor: isMuted ? '#ef444422' : COLORS.surface2, borderRadius: 8, borderWidth: 1, borderColor: isMuted ? '#ef444455' : 'transparent' }}
                 >
-                    <Feather name="volume-2" size={20} color={COLORS.accent} />
+                    <Feather name={isMuted ? "volume-x" : "volume-2"} size={20} color={isMuted ? "#ef4444" : COLORS.accent} />
                 </TouchableOpacity>
             </View>
 

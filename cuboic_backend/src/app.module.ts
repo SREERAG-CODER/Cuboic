@@ -20,7 +20,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TablesModule } from './tables/tables.module';
 import { CustomersModule } from './customers/customers.module';
 import { PlatformFeesModule } from './platform-fees/platform-fees.module';
-
+import { AnalyticsModule } from './analytics/analytics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -46,6 +46,7 @@ import { PlatformFeesModule } from './platform-fees/platform-fees.module';
     TablesModule,
     CustomersModule,
     PlatformFeesModule,
+    AnalyticsModule,
   ],
   providers: [
     {

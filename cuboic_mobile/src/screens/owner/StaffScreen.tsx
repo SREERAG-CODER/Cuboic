@@ -4,9 +4,11 @@ import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { usersApi, type User } from '../../api/users';
 import { COLORS, S } from '../../theme';
+import { useNavigation } from '@react-navigation/native';
 
 export function StaffScreen() {
     const { user } = useAuth();
+    const navigation = useNavigation();
     const [staff, setStaff] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -165,9 +167,14 @@ export function StaffScreen() {
     return (
         <View style={S.screen}>
             <View style={styles.header}>
-                <View>
-                    <Text style={styles.title}>Staff</Text>
-                    <Text style={styles.sub}>Manage restaurant team</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                        <Feather name="arrow-left" size={20} color={COLORS.text} />
+                    </TouchableOpacity>
+                    <View>
+                        <Text style={styles.title}>Staff</Text>
+                        <Text style={styles.sub}>Manage restaurant team</Text>
+                    </View>
                 </View>
                 <TouchableOpacity onPress={openCreate} style={styles.addBtn}>
                     <Feather name="plus" size={20} color="#000" />
@@ -206,6 +213,7 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: '800', color: COLORS.text },
     sub: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
     addBtn: { backgroundColor: COLORS.accent, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.surface2 },
     card: { backgroundColor: COLORS.surface, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: COLORS.border },
     staffName: { fontSize: 16, fontWeight: '700', color: COLORS.text },
     staffSub: { fontSize: 13, color: COLORS.textMuted, marginTop: 4 },

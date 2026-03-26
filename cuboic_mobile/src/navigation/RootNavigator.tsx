@@ -17,6 +17,8 @@ import { PaymentsScreen } from '../screens/shared/PaymentsScreen';
 import { ProfileScreen } from '../screens/shared/ProfileScreen';
 import { StaffScreen } from '../screens/owner/StaffScreen';
 import { TablesScreen } from '../screens/owner/TablesScreen';
+import { AnalyticsScreen } from '../screens/owner/AnalyticsScreen';
+import { ManagementScreen } from '../screens/owner/ManagementScreen';
 import { COLORS } from '../theme';
 
 export type RootStackParamList = {
@@ -29,16 +31,42 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 type MainTabParamList = {
     Dashboard: undefined;
     Orders: undefined;
-    Menu: undefined;
-    Deliveries: undefined;
-    Robots: undefined;
-    Payments: undefined;
-    Staff: undefined;
-    Tables: undefined;
+    Analytics: undefined;
+    Manage: undefined;
     Profile: undefined;
 };
 
+type ManageStackParamList = {
+    ManagementMain: undefined;
+    Menu: undefined;
+    Staff: undefined;
+    Tables: undefined;
+    Payments: undefined;
+};
+
 const Tab = createBottomTabNavigator<MainTabParamList>();
+const MStack = createNativeStackNavigator<ManageStackParamList>();
+
+function ManageStack() {
+    return (
+        <MStack.Navigator
+            screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: COLORS.bg },
+            }}
+        >
+            <MStack.Screen 
+                name="ManagementMain" 
+                component={ManagementScreen} 
+                options={{ title: 'Manage' }} 
+            />
+            <MStack.Screen name="Menu" component={MenuScreen} />
+            <MStack.Screen name="Staff" component={StaffScreen} />
+            <MStack.Screen name="Tables" component={TablesScreen} />
+            <MStack.Screen name="Payments" component={PaymentsScreen} />
+        </MStack.Navigator>
+    );
+}
 
 function MainTabs() {
     const { user } = useAuth();
@@ -54,11 +82,11 @@ function MainTabs() {
                     backgroundColor: COLORS.surface,
                     borderTopColor: COLORS.border,
                     borderTopWidth: 1,
-                    paddingBottom: Math.max(insets.bottom, 4),
-                    paddingTop: 4,
+                    paddingBottom: Math.max(insets.bottom, 8), // Increased padding
+                    paddingTop: 8, // Increased padding
                     paddingLeft: Math.max(insets.left, 0),
                     paddingRight: Math.max(insets.right, 0),
-                    height: 60 + insets.bottom,
+                    height: 64 + insets.bottom, // Slightly taller
                 },
                 tabBarActiveTintColor: COLORS.accent,
                 tabBarInactiveTintColor: COLORS.textMuted,
@@ -71,31 +99,20 @@ function MainTabs() {
                     let iconName: any = 'circle';
                     if (route.name === 'Dashboard') iconName = 'pie-chart';
                     else if (route.name === 'Orders') iconName = 'list';
-                    else if (route.name === 'Menu') iconName = 'book-open';
-                    else if (route.name === 'Deliveries') iconName = 'box';
-                    else if (route.name === 'Robots') iconName = 'cpu';
-                    else if (route.name === 'Payments') iconName = 'credit-card';
-                    else if (route.name === 'Staff') iconName = 'users';
-                    else if (route.name === 'Tables') iconName = 'grid';
+                    else if (route.name === 'Analytics') iconName = 'bar-chart-2';
+                    else if (route.name === 'Manage') iconName = 'settings';
                     else if (route.name === 'Profile') iconName = 'user';
 
-                    return <Feather name={iconName} size={size} color={color} />;
+                    return <Feather name={iconName} size={22} color={color} />; // Reduced size from 24 (default size param was likely 24)
                 },
             })}
         >
             <Tab.Screen name="Dashboard" component={DashboardScreen} />
             <Tab.Screen name="Orders" component={isStaff ? KanbanOrdersScreen : OrdersScreen} />
-            <Tab.Screen name="Menu" component={MenuScreen} />
-            {/* Temporarily hidden: Deliveries and Robots tabs */}
-            {/* <Tab.Screen name="Deliveries" component={DeliveriesScreen} /> */}
-            {/* <Tab.Screen name="Robots" component={RobotsScreen} /> */}
             {isOwner && (
-                <>
-                    <Tab.Screen name="Payments" component={PaymentsScreen} />
-                    <Tab.Screen name="Staff" component={StaffScreen} />
-                    <Tab.Screen name="Tables" component={TablesScreen} />
-                </>
+                <Tab.Screen name="Analytics" component={AnalyticsScreen} />
             )}
+            <Tab.Screen name="Manage" component={ManageStack} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
     );

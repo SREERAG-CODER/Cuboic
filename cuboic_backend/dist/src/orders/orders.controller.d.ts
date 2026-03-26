@@ -10,8 +10,8 @@ export declare class OrdersController {
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
-            restaurantId: string;
             table_number: string;
+            restaurantId: string;
         };
         customer: {
             id: string;
@@ -56,8 +56,8 @@ export declare class OrdersController {
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
-            restaurantId: string;
             table_number: string;
+            restaurantId: string;
         };
         customer: {
             id: string;
@@ -97,8 +97,8 @@ export declare class OrdersController {
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
-            restaurantId: string;
             table_number: string;
+            restaurantId: string;
         };
         customer: {
             id: string;
@@ -198,8 +198,8 @@ export declare class OrdersController {
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
-            restaurantId: string;
             table_number: string;
+            restaurantId: string;
         };
         payment: {
             id: string;

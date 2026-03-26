@@ -29,6 +29,7 @@ const schedule_1 = require("@nestjs/schedule");
 const tables_module_1 = require("./tables/tables.module");
 const customers_module_1 = require("./customers/customers.module");
 const platform_fees_module_1 = require("./platform-fees/platform-fees.module");
+const analytics_module_1 = require("./analytics/analytics.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -58,6 +59,7 @@ exports.AppModule = AppModule = __decorate([
             tables_module_1.TablesModule,
             customers_module_1.CustomersModule,
             platform_fees_module_1.PlatformFeesModule,
+            analytics_module_1.AnalyticsModule,
         ],
         providers: [
             {

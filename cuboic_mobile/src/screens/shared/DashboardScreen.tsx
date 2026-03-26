@@ -11,9 +11,11 @@ import { deliveriesApi, robotsApi } from '../../api/deliveries';
 import { useSocket } from '../../hooks/useSocket';
 import { KpiCard } from '../../components/KpiCard';
 import { COLORS } from '../../theme';
+import { useNavigation } from '@react-navigation/native';
 
 export function DashboardScreen() {
     const { user } = useAuth();
+    const navigation = useNavigation<any>();
     const restaurantId = user?.restaurantId ?? '';
 
     const [summary, setSummary] = useState({ order_count: 0, total_revenue: 0 });
@@ -58,9 +60,14 @@ export function DashboardScreen() {
     useSocket(restaurantId, {
         'order:new': () => load(),
         'order:updated': () => load(),
+        'order:status': () => load(),
         'delivery:started': () => load(),
         'delivery:updated': () => load(),
     });
+
+    const handleDrillDown = (status: string) => {
+        navigation.navigate('Orders', { statusInitial: status });
+    };
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -70,14 +77,54 @@ export function DashboardScreen() {
 
     const kpis = [
         ...(user?.role === 'Owner' ? [
-            { icon: <Feather name="hash" size={24} color={COLORS.blue} />, value: summary.order_count, label: "Today's Orders", sub: 'paid today', color: COLORS.blue },
-            { icon: <Feather name="dollar-sign" size={24} color={COLORS.green} />, value: `₹${summary.total_revenue.toFixed(0)}`, label: "Today's Revenue", sub: 'before fees', color: COLORS.green },
+            { 
+                icon: <Feather name="dollar-sign" size={24} color={COLORS.green} />, 
+                value: `₹${summary.total_revenue.toFixed(0)}`, 
+                label: "Today's Revenue", 
+                sub: 'Total gross revenue today', 
+                color: COLORS.green,
+                fullWidth: true 
+            },
+            { 
+                icon: <Feather name="hash" size={24} color={COLORS.blue} />, 
+                value: summary.order_count, 
+                label: "Today's Orders", 
+                sub: 'Total orders processed', 
+                color: COLORS.blue,
+                fullWidth: true 
+            },
         ] : []),
-        { icon: <Feather name="clock" size={24} color={COLORS.amber} />, value: orderSummary.pending, label: 'Pending Orders', sub: 'action needed', color: COLORS.amber },
-        { icon: <Feather name="coffee" size={24} color={COLORS.blue} />, value: orderSummary.preparing, label: 'Preparing', sub: 'in kitchen', color: COLORS.blue },
-        { icon: <Feather name="check-circle" size={24} color={COLORS.green} />, value: orderSummary.completed, label: 'Completed Today', sub: 'delivered', color: COLORS.green },
-        { icon: <Feather name="box" size={24} color={COLORS.amber} />, value: activeDeliveries, label: 'Active Deliveries', sub: 'in transit', color: COLORS.amber },
-        { icon: <Feather name="cpu" size={24} color={COLORS.purple} />, value: robotsOnline, label: 'Robots Online', sub: 'connected', color: COLORS.purple },
+        { 
+            icon: <Feather name="alert-circle" size={24} color={COLORS.amber} />, 
+            value: orderSummary.pending, 
+            label: 'Pending Orders', 
+            sub: 'Requires attention', 
+            color: COLORS.amber, // Kept amber as it represents warning/action
+            onPress: () => handleDrillDown('Pending')
+        },
+        { 
+            icon: <Feather name="coffee" size={24} color={COLORS.purple} />, 
+            value: orderSummary.preparing, 
+            label: 'Preparing', 
+            sub: 'Being cooked', 
+            color: COLORS.purple,
+            onPress: () => handleDrillDown('Confirmed') // Assuming Confirmed shows preparing items
+        },
+        { 
+            icon: <Feather name="check-circle" size={24} color="#a7f3d0" />, // Softer green
+            value: orderSummary.completed, 
+            label: 'Completed', 
+            sub: 'Ready / Delivered', 
+            color: '#059669', // Stronger label color, soft icon
+            onPress: () => handleDrillDown('Ready')
+        },
+        { 
+            icon: <Feather name="cpu" size={24} color={COLORS.blue} />, 
+            value: robotsOnline, 
+            label: 'Robots', 
+            sub: 'Online now', 
+            color: COLORS.blue 
+        },
     ];
 
     return (
@@ -89,8 +136,9 @@ export function DashboardScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.greeting}>Welcome back, {user?.name?.split(' ')[0]}</Text>
-                    <Text style={styles.role}>{user?.role} Dashboard</Text>
+                    <Text style={styles.greeting}>Welcome back,</Text>
+                    <Text style={styles.restaurantName}>{user?.name || 'Administrator'}</Text>
+                    <Text style={styles.role}>{user?.role} Overview</Text>
                 </View>
             </View>
 
@@ -106,6 +154,8 @@ export function DashboardScreen() {
                             label={k.label}
                             sub={k.sub}
                             accentColor={k.color}
+                            fullWidth={(k as any).fullWidth}
+                            onPress={(k as any).onPress}
                         />
                     ))}
                 </View>
@@ -128,9 +178,10 @@ const styles = StyleSheet.create({
         paddingTop: 48,
         paddingBottom: 24,
     },
-    greeting: { fontSize: 20, fontWeight: '800', color: COLORS.text },
-    role: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
-    grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 },
+    greeting: { fontSize: 16, fontWeight: '600', color: COLORS.textMuted },
+    restaurantName: { fontSize: 26, fontWeight: '800', color: COLORS.text, marginTop: 4 },
+    role: { fontSize: 13, color: COLORS.textDim, marginTop: 4, textTransform: 'uppercase', letterSpacing: 1 },
+    grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 24 },
     hint: {
         textAlign: 'center',
         color: COLORS.textDim,

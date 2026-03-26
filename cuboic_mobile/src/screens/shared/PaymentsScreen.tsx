@@ -9,9 +9,11 @@ import { useAuth } from '../../context/AuthContext';
 import { StatusBadge } from '../../components/StatusBadge';
 import { KpiCard } from '../../components/KpiCard';
 import { COLORS, S } from '../../theme';
+import { useNavigation } from '@react-navigation/native';
 
 export function PaymentsScreen() {
     const { user } = useAuth();
+    const navigation = useNavigation();
     const restaurantId = user?.restaurantId ?? '';
     const isOwner = user?.role === 'Owner';
 
@@ -134,7 +136,12 @@ export function PaymentsScreen() {
             ListHeaderComponent={
                 <View>
                     <View style={styles.header}>
-                        <Text style={styles.title}>Payments</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                                <Feather name="arrow-left" size={20} color={COLORS.text} />
+                            </TouchableOpacity>
+                            <Text style={styles.title}>Payments</Text>
+                        </View>
                     </View>
 
                     {/* KPI Cards */}
@@ -284,6 +291,7 @@ export function PaymentsScreen() {
 const styles = StyleSheet.create({
     body: { padding: 16, paddingBottom: 40, gap: 12 },
     header: { paddingTop: 48, paddingBottom: 16 },
+    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.surface2 },
     title: { fontSize: 26, fontWeight: '800', color: COLORS.text },
     kpiRow: { flexDirection: 'row', gap: 12, marginBottom: 4 },
 

@@ -8,8 +8,8 @@ export declare class RestaurantsService {
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
-            restaurantId: string;
             table_number: string;
+            restaurantId: string;
         }[];
     } & {
         id: string;
@@ -25,8 +25,8 @@ export declare class RestaurantsService {
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
-        restaurantId: string;
         table_number: string;
+        restaurantId: string;
     }[]>;
     findAll(): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
