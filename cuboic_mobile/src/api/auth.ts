@@ -9,7 +9,7 @@ export interface AuthUser {
     id: string;
     name: string;
     userid: string;
-    role: 'Owner' | 'Staff';
+    role: 'Owner' | 'Staff' | 'Admin';
     restaurantId: string;
     // legacy alias used in some screens
     restaurant_id: string;

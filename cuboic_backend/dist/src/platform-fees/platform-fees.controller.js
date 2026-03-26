@@ -36,6 +36,7 @@ let PlatformFeesController = class PlatformFeesController {
 exports.PlatformFeesController = PlatformFeesController;
 __decorate([
     (0, common_1.Get)(),
+    (0, roles_decorator_1.Roles)('Owner', 'Admin'),
     __param(0, (0, common_1.Query)('restaurantId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -43,6 +44,7 @@ __decorate([
 ], PlatformFeesController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('summary'),
+    (0, roles_decorator_1.Roles)('Owner', 'Admin'),
     __param(0, (0, common_1.Query)('restaurantId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -50,6 +52,7 @@ __decorate([
 ], PlatformFeesController.prototype, "getSummary", null);
 __decorate([
     (0, common_1.Patch)(':id/pay'),
+    (0, roles_decorator_1.Roles)('Admin'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -57,7 +60,6 @@ __decorate([
 ], PlatformFeesController.prototype, "markAsPaid", null);
 exports.PlatformFeesController = PlatformFeesController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('Owner'),
     (0, common_1.Controller)('platform-fees'),
     __metadata("design:paramtypes", [platform_fees_service_1.PlatformFeesService])
 ], PlatformFeesController);

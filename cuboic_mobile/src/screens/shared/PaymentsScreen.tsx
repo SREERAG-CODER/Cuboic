@@ -111,17 +111,19 @@ export function PaymentsScreen() {
                             <Text style={styles.paidBadgeText}>Paid</Text>
                         </View>
                     ) : (
-                        <TouchableOpacity
-                            style={styles.markPaidBtn}
-                            onPress={() => handleMarkFeePaid(item.id)}
-                            disabled={payingFeeId === item.id}
-                            activeOpacity={0.8}
-                        >
-                            {payingFeeId === item.id
-                                ? <ActivityIndicator size="small" color="#0f0f13" />
-                                : <Text style={styles.markPaidBtnText}>Mark Paid</Text>
-                            }
-                        </TouchableOpacity>
+                        user?.role === 'Admin' && (
+                            <TouchableOpacity
+                                style={styles.markPaidBtn}
+                                onPress={() => handleMarkFeePaid(item.id)}
+                                disabled={payingFeeId === item.id}
+                                activeOpacity={0.8}
+                            >
+                                {payingFeeId === item.id
+                                    ? <ActivityIndicator size="small" color="#0f0f13" />
+                                    : <Text style={styles.markPaidBtnText}>Mark Paid</Text>
+                                }
+                            </TouchableOpacity>
+                        )
                     )}
                 </View>
             </View>

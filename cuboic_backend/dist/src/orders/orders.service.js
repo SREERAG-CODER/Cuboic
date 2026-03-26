@@ -99,7 +99,7 @@ let OrdersService = OrdersService_1 = class OrdersService {
         const summary = todayOrders.reduce((acc, order) => {
             if (order.status === 'Pending')
                 acc.pending++;
-            if (order.status === 'Preparing')
+            if (order.status === 'Confirmed' || order.status === 'Preparing')
                 acc.preparing++;
             if (order.status === 'Delivered')
                 acc.completed++;
