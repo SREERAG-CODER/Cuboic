@@ -28,8 +28,8 @@ export default function LoginPage() {
         <div className="login-bg">
             <div className="login-card">
                 <div className="login-logo">
-                    <img src="/logo1.png" className="logo-cube-lg" alt="Cuboic Logo" />
-                    <h1 className="login-title">Cuboic</h1>
+                    <img src="/pic1.png" className="logo-cube-lg" alt="Thambi Logo" />
+                    <h1 className="login-title">Thambi</h1>
                     <p className="login-subtitle">Admin Dashboard</p>
                 </div>
 

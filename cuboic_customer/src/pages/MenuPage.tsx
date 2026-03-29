@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getRestaurant, getCategories, getMenuItems, type Category, type MenuItem } from '../api/menu';
 import { updateOrderTable } from '../api/orders';
 import { useCart } from '../hooks/useCart';
@@ -8,6 +8,10 @@ import { CartDrawer } from '../components/CartDrawer';
 import { OrdersDrawer, type ActiveOrderSession } from '../components/OrdersDrawer';
 import { TableSelectorModal } from '../components/TableSelectorModal';
 import { ConfirmTableMoveModal } from '../components/ConfirmTableMoveModal';
+import { CustomerAuthModal } from '../components/CustomerAuthModal';
+import { OrderTypeModal } from '../components/OrderTypeModal';
+import { type Customer } from '../api/customers';
+import { getCustomer, setCustomer as setCustomerSession } from '../utils/auth';
 import { SearchOverlay } from '../components/SearchOverlay';
 import { SkeletonLoader } from '../components/SkeletonLoader';
 import './MenuPage.css';
@@ -20,7 +24,7 @@ export function MenuPage() {
     const restaurantId = params.get('r') ?? '';
     const tableId = params.get('t') ?? '';
 
-    const [restaurantName, setRestaurantName] = useState('Food Guru');
+    const [restaurantName, setRestaurantName] = useState('Restaurant');
     const [categories, setCategories] = useState<Category[]>([]);
     const [allItems, setAllItems] = useState<MenuItem[]>([]);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -32,15 +36,42 @@ export function MenuPage() {
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [tableLabel, setTableLabel] = useState<string>('');
-    const [availableTables, setAvailableTables] = useState<Array<{ id: string; table_number: number }>>([]);
+    const [availableTables, setAvailableTables] = useState<any[]>([]);
     const [activeOrders, setActiveOrders] = useState<ActiveOrderSession[]>([]);
 
+    const [authOpen, setAuthOpen] = useState(false);
+    const [orderTypeOpen, setOrderTypeOpen] = useState(false);
+
+    // Auth State
+    const [customer, setCustomer] = useState<Customer | null>(null);
+
     const cart = useCart();
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const c = getCustomer();
+        if (c) setCustomer(c);
+
         try {
             const o = localStorage.getItem('cuboic_active_orders');
-            if (o) setActiveOrders(JSON.parse(o));
+            if (o) {
+                const parsed = JSON.parse(o);
+                const TWO_HOURS = 2 * 60 * 60 * 1000;
+                const now = Date.now();
+                const validOrders = parsed.filter((order: any) => {
+                    return (now - (order.time || 0)) < TWO_HOURS;
+                });
+
+                setActiveOrders(validOrders);
+
+                if (validOrders.length !== parsed.length) {
+                    if (validOrders.length === 0) {
+                        localStorage.removeItem('cuboic_active_orders');
+                    } else {
+                        localStorage.setItem('cuboic_active_orders', JSON.stringify(validOrders));
+                    }
+                }
+            }
         } catch (e) {
             console.error('Failed to parse active orders', e);
         }
@@ -77,6 +108,58 @@ export function MenuPage() {
         setTablesOpen(false);
     };
 
+    const handleCheckoutInit = () => {
+        const cust = getCustomer();
+        if (!cust) {
+            setCartOpen(false);
+            setAuthOpen(true);
+            return;
+        }
+        proceedWithAuth(cust);
+    };
+
+    const proceedWithAuth = (customer: Customer) => {
+        if (!tableId) {
+            setCartOpen(false);
+            setOrderTypeOpen(true);
+            return;
+        }
+        goToCheckout(tableId, tableLabel, customer);
+    };
+
+    const handleOrderTypeSelect = (type: 'Dine-in' | 'Takeaway') => {
+        setOrderTypeOpen(false);
+        if (type === 'Dine-in') {
+            setTablesOpen(true);
+        } else {
+            const takeawayTbl = availableTables.find(t => String(t.table_number).toLowerCase() === 'takeaway');
+            const tId = takeawayTbl ? takeawayTbl.id : 'takeaway_virtual';
+            const cust = getCustomer();
+            if (cust) goToCheckout(tId, 'Takeaway', cust);
+        }
+    };
+
+    const goToCheckout = (tId: string, tLabel: string, customer: Customer) => {
+        navigate('/checkout', {
+            state: {
+                items: cart.items,
+                total: cart.total,
+                restaurantId,
+                tableId: tId,
+                tableLabel: tLabel,
+                sessionId: SESSION_ID,
+                customerId: customer.id
+            },
+        });
+    };
+
+    const handleAuthSuccess = (c: Customer) => {
+        setCustomerSession(c);
+        setCustomer(c);
+        setAuthOpen(false);
+        proceedWithAuth(c);
+    };
+
     interface FlyingItem {
         id: number;
         x: number;
@@ -111,14 +194,28 @@ export function MenuPage() {
             setActiveCategory(null);
 
             if (rest.tables) {
-                setAvailableTables(rest.tables);
+                const sortedTables = [...rest.tables].sort((a, b) => {
+                    const numA = parseInt(a.table_number);
+                    const numB = parseInt(b.table_number);
+
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return numA - numB;
+                    }
+                    // Fallback to string comparison for mixed or non-numeric types
+                    return String(a.table_number).localeCompare(String(b.table_number), undefined, { numeric: true });
+                });
+                setAvailableTables(sortedTables);
             }
 
-            if (tableId && rest.tables) {
-                const tbl = rest.tables.find(t => t.id === tableId);
-                setTableLabel(tbl ? `Table ${tbl.table_number}` : `Table ${tableId.slice(-4).toUpperCase()}`);
-            } else if (tableId) {
-                setTableLabel(`Table ${tableId.slice(-4).toUpperCase()}`);
+            if (tableId) {
+                const tbl = rest.tables ? rest.tables.find(t => t.id === tableId) : undefined;
+                if (tableId === 'takeaway_virtual' || tbl?.table_number.toLowerCase() === 'takeaway') {
+                    setTableLabel('Takeaway');
+                } else if (tbl) {
+                    setTableLabel(`Table ${tbl.table_number}`);
+                } else {
+                    setTableLabel(`Table ${tableId.slice(-4).toUpperCase()}`);
+                }
             }
         });
     }, [restaurantId, tableId]);
@@ -199,6 +296,67 @@ export function MenuPage() {
         );
     }
 
+    if (!tableId && !loading && restaurantName) {
+        return (
+            <div className="menu-page" style={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)' }}>
+                <header className="menu-header">
+                    <div className="menu-header__inner">
+                        <div className="menu-header__brand">
+                            <img src="/pic1.png" className="menu-header__logo" alt="Thambi" />
+                            <div>
+                                <div className="menu-header__name">{restaurantName}</div>
+                                <div className="menu-header__sub">Thambi</div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center' }}>
+                    <div className="fade-up" style={{ width: '100%', maxWidth: '340px', backgroundColor: 'var(--surface)', padding: '32px 24px', borderRadius: '24px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', border: '1px solid var(--border)' }}>
+                        <div style={{ width: '64px', height: '64px', backgroundColor: 'var(--surface2)', borderRadius: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                            <span style={{ fontSize: '28px' }}>👋</span>
+                        </div>
+                        <h1 style={{ fontWeight: 800, fontSize: '1.5rem', marginBottom: '8px', color: 'var(--text)' }}>Welcome!</h1>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '32px', lineHeight: 1.5 }}>
+                            Are you dining in with us or taking your order to go?
+                        </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => {
+                                    const takeawayTbl = availableTables.find(t => String(t.table_number).toLowerCase() === 'takeaway');
+                                    const tId = takeawayTbl ? takeawayTbl.id : 'takeaway_virtual';
+                                    setParams(prev => {
+                                        const next = new URLSearchParams(prev);
+                                        next.set('t', tId);
+                                        return next;
+                                    });
+                                }}
+                                style={{ padding: '16px', fontSize: '1.05rem', fontWeight: 700, borderRadius: '14px' }}
+                            >
+                                🥡 Order Takeaway
+                            </button>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setTablesOpen(true)}
+                                style={{ padding: '16px', fontSize: '1.05rem', fontWeight: 600, backgroundColor: 'var(--surface2)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: '14px' }}
+                            >
+                                🍽 Dine-in (Select Table)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <TableSelectorModal
+                    open={tablesOpen}
+                    onClose={() => setTablesOpen(false)}
+                    tables={availableTables.filter(t => String(t.table_number).toLowerCase() !== 'takeaway')}
+                    currentTableId={tableId}
+                    onSelect={handleTableSelect}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className="menu-page">
 
@@ -207,10 +365,10 @@ export function MenuPage() {
                 <div className="menu-header__inner">
                     {/* Brand */}
                     <div className="menu-header__brand">
-                        <img src="/logo1.png" className="menu-header__logo" alt="Cuboic" />
+                        <img src="/pic1.png" className="menu-header__logo" alt="Thambi" />
                         <div>
                             <div className="menu-header__name">{restaurantName}</div>
-                            <div className="menu-header__sub">Cuboic</div>
+                            <div className="menu-header__sub">Thambi</div>
                         </div>
                     </div>
 
@@ -371,20 +529,20 @@ export function MenuPage() {
             <footer className="menu-footer">
                 <div className="menu-footer__inner">
                     <div className="menu-footer__brand">
-                        <img src="/logo1.png" className="menu-footer__logo" alt="Cuboic Logo" />
-                        <span className="menu-footer__wordmark">Cuboic</span>
+                        <img src="/pic1.png" className="menu-footer__logo" alt="Thambi Logo" />
+                        <span className="menu-footer__wordmark">Thambi</span>
                     </div>
                     <p className="menu-footer__tagline">
                         Autonomous restaurant delivery, powered by robots.
                     </p>
                     <div className="menu-footer__links">
-                        <a href="mailto:hello@cuboic.com">placeholder@cuboic.com</a>
+                        <a href="mailto:hello@thambi.com">placeholder@thambi.com</a>
                         <span className="menu-footer__dot">·</span>
-                        <a href="https://cuboic.com" target="_blank" rel="noopener noreferrer">cuboic.com</a>
+                        <a href="https://thambi.com" target="_blank" rel="noopener noreferrer">thambi.com</a>
                         <span className="menu-footer__dot">·</span>
-                        <span>Bengaluru, India</span>
+                        <span>Kerala, India</span>
                     </div>
-                    <p className="menu-footer__copy">© {new Date().getFullYear()} Cuboic Technologies Pvt. Ltd. All rights reserved.</p>
+                    <p className="menu-footer__copy">© {new Date().getFullYear()} Thambi Networks Pvt. Ltd. All rights reserved.</p>
                 </div>
             </footer>
 
@@ -412,7 +570,7 @@ export function MenuPage() {
                             <span className="cart-float__label">View Order</span>
                         </div>
                         <div className="cart-float__total">
-                            ₹{(cart.total * 1.05).toFixed(2)}
+                            ₹{cart.total.toFixed(2)}
                             <span className="cart-float__arrow">→</span>
                         </div>
                     </button>
@@ -432,6 +590,20 @@ export function MenuPage() {
                 onAdd={cart.add}
                 onRemove={cart.remove}
                 onClear={cart.clear}
+                onCheckout={handleCheckoutInit}
+                customerName={customer?.name}
+            />
+
+            <CustomerAuthModal
+                open={authOpen}
+                onClose={() => setAuthOpen(false)}
+                onSuccess={handleAuthSuccess}
+            />
+
+            <OrderTypeModal
+                open={orderTypeOpen}
+                onClose={() => setOrderTypeOpen(false)}
+                onSelect={handleOrderTypeSelect}
             />
 
             {/* ── Orders bottom sheet ────────────────────────────── */}
@@ -447,7 +619,7 @@ export function MenuPage() {
             <TableSelectorModal
                 open={tablesOpen}
                 onClose={() => setTablesOpen(false)}
-                tables={availableTables}
+                tables={availableTables.filter(t => String(t.table_number).toLowerCase() !== 'takeaway')}
                 currentTableId={tableId}
                 onSelect={handleTableSelect}
             />

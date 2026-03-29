@@ -77,7 +77,7 @@ export default function DashboardPage() {
                   {
                       label: "Today's Revenue",
                       value: `₹${summary.total_revenue.toFixed(2)}`,
-                      sub: 'before tax',
+                      sub: 'before fees',
                       icon: '₹',
                       accent: 'kpi-green',
                   },

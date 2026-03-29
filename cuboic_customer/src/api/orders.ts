@@ -8,6 +8,7 @@ export interface OrderItem {
 export interface PlaceOrderPayload {
     restaurantId: string;
     tableId: string;
+    customerId?: string;
     customerSessionId: string;
     notes?: string;
     items: OrderItem[];

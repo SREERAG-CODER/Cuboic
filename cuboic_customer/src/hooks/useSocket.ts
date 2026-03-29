@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? 'https://cuboic.onrender.com';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? 'https://cuboic-884m.onrender.com';
 
 export function useSocket(restaurantId: string | null) {
     const socketRef = useRef<Socket | null>(null);

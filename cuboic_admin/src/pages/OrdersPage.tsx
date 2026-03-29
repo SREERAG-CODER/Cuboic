@@ -16,6 +16,7 @@ interface OrderItem { name: string; quantity: number; unit_price: number }
 interface Order {
     id: string
     tableId: string | { table_number: string }
+    customer?: { name: string; phone: string }
     items: OrderItem[]
     notes?: string
     total: number
@@ -90,6 +91,7 @@ export default function OrdersPage() {
                             <tr>
                                 <th>Time</th>
                                 <th>Table</th>
+                                <th>Customer</th>
                                 <th>Details</th>
                                 <th>Total</th>
                                 <th>Status</th>
@@ -101,6 +103,16 @@ export default function OrdersPage() {
                                 <tr key={order.id}>
                                     <td className="cell-mono">{new Date(order.createdAt).toLocaleTimeString()}</td>
                                     <td>{typeof order.tableId === 'string' ? order.tableId.slice(-4) : order.tableId?.table_number ?? '—'}</td>
+                                    <td>
+                                        {order.customer ? (
+                                            <div>
+                                                <div style={{ fontWeight: 600 }}>{order.customer.name}</div>
+                                                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{order.customer.phone}</div>
+                                            </div>
+                                        ) : (
+                                            <span style={{ color: 'var(--text-muted)' }}>Guest</span>
+                                        )}
+                                    </td>
                                     <td>
                                         <div className="items-list">
                                             {order.items.map((it, i) => (

@@ -2,7 +2,7 @@ import './TableSelectorModal.css';
 
 interface Table {
     id: string;
-    table_number: number;
+    table_number: string;
 }
 
 interface TableSelectorModalProps {

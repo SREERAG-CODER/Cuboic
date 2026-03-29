@@ -1,17 +1,20 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsGateway } from '../events/events.gateway';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { OrderStatus } from '@prisma/client';
-
-const TAX_RATE = 0.05;
+import { PlatformFeesService } from '../platform-fees/platform-fees.service';
 
 @Injectable()
 export class OrdersService {
+    private readonly logger = new Logger(OrdersService.name);
+
     constructor(
         private prisma: PrismaService,
         private readonly eventsGateway: EventsGateway,
+        private readonly platformFeesService: PlatformFeesService,
     ) { }
 
     async create(dto: CreateOrderDto) {
@@ -31,13 +34,14 @@ export class OrdersService {
         });
 
         const subtotal = orderItems.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
-        const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
+        const tax = 0;
         const total = parseFloat((subtotal + tax).toFixed(2));
 
         const order = await this.prisma.order.create({
             data: {
                 restaurantId: dto.restaurantId,
                 tableId: dto.tableId,
+                customerId: dto.customerId,
                 customer_session_id: dto.customerSessionId,
                 notes: dto.notes,
                 items: orderItems,
@@ -47,23 +51,27 @@ export class OrdersService {
                 payment: {
                     create: {
                         amount: total,
-                        method: 'Gateway',
-                        status: 'Paid',
+                        method: 'Counter',
+                        status: 'Pending',
                         transaction_id: `txn_${Date.now()}`
                     }
                 }
             },
-            include: { payment: true }
+            include: { payment: true, customer: true, table: true }
         });
 
         this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
+
+        // Auto-create platform fee if order total > ₹100
+        await this.platformFeesService.createIfEligible(dto.restaurantId, order.id, total);
+
         return order;
     }
 
     findOne(id: string) {
         return this.prisma.order.findUnique({
             where: { id },
-            include: { table: true },
+            include: { table: true, payment: true, customer: true },
         });
     }
 
@@ -73,7 +81,7 @@ export class OrdersService {
                 restaurantId,
                 ...(status ? { status: status as OrderStatus } : {}),
             },
-            include: { table: true },
+            include: { table: true, payment: true, customer: true },
             orderBy: { createdAt: 'desc' },
         });
     }
@@ -96,7 +104,7 @@ export class OrdersService {
         const summary = todayOrders.reduce(
             (acc, order) => {
                 if (order.status === 'Pending') acc.pending++;
-                if (order.status === 'Preparing') acc.preparing++;
+                if (order.status === 'Confirmed' || order.status === 'Preparing') acc.preparing++;
                 if (order.status === 'Delivered') acc.completed++;
                 return acc;
             },
@@ -150,5 +158,58 @@ export class OrdersService {
         });
         if (!order) throw new NotFoundException('Order not found');
         return order;
+    }
+
+    async markAsPaid(id: string) {
+        const order = await this.prisma.order.update({
+            where: { id },
+            data: {
+                payment: {
+                    update: { status: 'Paid' }
+                }
+            },
+            include: { payment: true, table: true }
+        });
+        if (!order) throw new NotFoundException('Order not found');
+        this.eventsGateway.emitToRestaurant(order.restaurantId, 'order:updated', order);
+        return order;
+    }
+
+    @Cron(CronExpression.EVERY_HOUR)
+    async cleanupStaleOrders() {
+        this.logger.log('Running stale orders cleanup...');
+        const cutoff = new Date(Date.now() - 8 * 60 * 60 * 1000); // 8 hours ago
+
+        try {
+            // Find all pending orders older than 8 hours
+            const staleOrders = await this.prisma.order.findMany({
+                where: {
+                    status: 'Pending',
+                    createdAt: { lt: cutoff },
+                },
+                select: { id: true },
+            });
+
+            if (staleOrders.length === 0) {
+                this.logger.log('No stale orders to clean up.');
+                return;
+            }
+
+            const orderIds = staleOrders.map(o => o.id);
+
+            // Delete associated payments first (no cascade setup on DB currently)
+            await this.prisma.payment.deleteMany({
+                where: { orderId: { in: orderIds } },
+            });
+
+            // Delete the orders
+            const deleted = await this.prisma.order.deleteMany({
+                where: { id: { in: orderIds } },
+            });
+
+            this.logger.log(`Cleanup complete: Deleted ${deleted.count} stale pending order(s).`);
+        } catch (error) {
+            this.logger.error('Error during stale orders cleanup:', error);
+        }
     }
 }

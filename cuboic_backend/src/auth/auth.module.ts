@@ -12,7 +12,7 @@ import { UsersModule } from '../users/users.module';
         UsersModule,
         PassportModule,
         JwtModule.register({
-            secret: process.env.JWT_SECRET ?? 'cuboic-super-secret-key-change-in-prod',
+            secret: process.env.JWT_SECRET ?? 'thambi-super-secret-key-change-in-prod',
             signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN ?? '7d') as any },
         }),
     ],

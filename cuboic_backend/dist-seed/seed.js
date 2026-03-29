@@ -80,7 +80,7 @@ var bcrypt = __importStar(require("bcryptjs"));
 var dotenv = __importStar(require("dotenv"));
 dotenv.config();
 console.log('MONGODB_URI:', process.env.MONGODB_URI);
-var MONGO_URI = (_a = process.env.MONGODB_URI) !== null && _a !== void 0 ? _a : 'mongodb://localhost:27017/cuboic';
+var MONGO_URI = (_a = process.env.MONGODB_URI) !== null && _a !== void 0 ? _a : 'mongodb://localhost:27017/thambi';
 function generateSecretKey() {
     return "robot-".concat(Math.random().toString(36).substring(2, 12));
 }
@@ -158,7 +158,7 @@ function seed() {
                     restaurantId = new mongoose_1.default.Types.ObjectId();
                     return [4 /*yield*/, db.collection('restaurants').insertOne({
                             _id: restaurantId,
-                            name: 'Cuboic Kitchen',
+                            name: 'Thambi Kitchen',
                             description: 'Robot-delivered dining experience',
                             logo_url: '',
                             is_active: true,

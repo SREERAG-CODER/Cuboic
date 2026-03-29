@@ -63,8 +63,8 @@ const STEPS: { display: DisplayStatus; label: string; icon: ReactNode }[] = [
 
 function toDisplayStep(status: Order['status']): DisplayStatus {
     switch (status) {
-        case 'Pending':
-        case 'Confirmed': return 'OrderReceived';
+        case 'Pending': return 'OrderReceived';
+        case 'Confirmed':
         case 'Preparing': return 'Preparing';
         case 'Ready': return 'Ready';
         case 'Assigned': return 'Delivering';

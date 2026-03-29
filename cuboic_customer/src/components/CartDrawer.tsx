@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import type { CartItem } from '../hooks/useCart';
 import './CartDrawer.css';
 
@@ -14,6 +13,8 @@ interface CartDrawerProps {
     onAdd: (item: any) => void;
     onRemove: (itemId: string) => void;
     onClear: () => void;
+    onCheckout: () => void;
+    customerName?: string;
 }
 
 export function CartDrawer({
@@ -21,26 +22,20 @@ export function CartDrawer({
     onClose,
     items,
     total,
-    restaurantId,
     tableId,
     tableLabel,
-    sessionId,
     onAdd,
     onRemove,
+    onCheckout,
+    customerName,
 }: CartDrawerProps) {
-    const navigate = useNavigate();
-
     if (!open) return null;
 
-    const taxAmount = total * 0.05;
-    const grandTotal = total + taxAmount;
+    const grandTotal = total;
 
-    const handleCheckout = () => {
+    const handleCheckoutClick = () => {
         if (items.length === 0) return;
-        onClose();
-        navigate('/checkout', {
-            state: { items, total, restaurantId, tableId, tableLabel, sessionId },
-        });
+        onCheckout();
     };
 
     return (
@@ -52,7 +47,9 @@ export function CartDrawer({
 
                 {/* Header */}
                 <div className="cart-sheet__header">
-                    <h2 className="cart-sheet__title">Your Order</h2>
+                    <h2 className="cart-sheet__title">
+                        {customerName ? `Your Order, ${customerName.split(' ')[0]}` : 'Your Order'}
+                    </h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {tableId && (
                             <div className="cart-sheet__table">
@@ -95,14 +92,12 @@ export function CartDrawer({
                             <div className="cart-line">
                                 <span>Subtotal</span><span>₹{total.toFixed(2)}</span>
                             </div>
-                            <div className="cart-line">
-                                <span>GST (5%)</span><span>₹{taxAmount.toFixed(2)}</span>
-                            </div>
+
                             <div className="cart-line cart-line--grand">
                                 <span>Total</span><span>₹{grandTotal.toFixed(2)}</span>
                             </div>
                         </div>
-                        <button className="cart-cta" onClick={handleCheckout}>
+                        <button className="cart-cta" onClick={handleCheckoutClick}>
                             <span>Proceed to Payment</span>
                             <span className="cart-cta__total">₹{grandTotal.toFixed(2)} →</span>
                         </button>

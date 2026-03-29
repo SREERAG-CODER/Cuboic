@@ -1,0 +1,11 @@
+src/analytics/analytics.controller.ts(3,30): error TS2307: Cannot find module '../auth/jwt-auth.guard' or its corresponding type declarations.
+src/analytics/analytics.controller.ts(4,28): error TS2307: Cannot find module '../auth/roles.guard' or its corresponding type declarations.
+src/analytics/analytics.controller.ts(5,23): error TS2307: Cannot find module '../common/decorators/roles.decorator' or its corresponding type declarations.
+src/analytics/analytics.service.ts(117,27): error TS2345: Argument of type '{ name: string; quantity: number; revenue: number; categoryId?: string; id: string; }' is not assignable to parameter of type 'never'.
+src/analytics/analytics.service.ts(126,18): error TS2339: Property 'quantity' does not exist on type 'never'.
+src/analytics/analytics.service.ts(126,48): error TS2339: Property 'revenue' does not exist on type 'never'.
+src/analytics/analytics.service.ts(127,23): error TS2339: Property 'quantity' does not exist on type 'never'.
+src/analytics/analytics.service.ts(127,53): error TS2339: Property 'revenue' does not exist on type 'never'.
+src/analytics/analytics.service.ts(128,23): error TS2339: Property 'quantity' does not exist on type 'never'.
+src/analytics/analytics.service.ts(128,52): error TS2339: Property 'revenue' does not exist on type 'never'.
+src/analytics/analytics.service.ts(130,18): error TS2698: Spread types may only be created from object types.

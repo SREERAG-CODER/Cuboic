@@ -3,13 +3,16 @@ export const COLORS = {
     surface: '#18181f',
     surface2: '#222230',
     border: '#2e2e3d',
-    accent: '#f5a623',
-    accentDark: '#c4831a',
+    accent: '#65a30d',
+    accentDark: '#4d7c0f',
     text: '#f0eff5',
     textMuted: '#8b8aa0',
     textDim: '#5a5974',
     green: '#22c55e',
     red: '#ef4444',
+    blue: '#38bdf8',
+    purple: '#a78bfa',
+    amber: '#f5a623',
 };
 
 export const FONT = {
@@ -23,6 +26,7 @@ export const S = {
     screen: {
         flex: 1 as const,
         backgroundColor: COLORS.bg,
+        width: '100%' as const,
     },
     card: {
         backgroundColor: COLORS.surface,
@@ -69,19 +73,31 @@ export const S = {
 
 export function statusColor(status: string): string {
     const map: Record<string, string> = {
-        Received: '#f5a623',
+        // Order statuses
+        Pending: '#f5a623',
+        Confirmed: '#38bdf8',
         Preparing: '#a78bfa',
         Ready: '#22c55e',
         Assigned: '#38bdf8',
         Delivered: '#6b7280',
+        Cancelled: '#ef4444',
+        // Delivery statuses
+        InTransit: '#f5a623',
+        'In-Transit': '#f5a623',
+        Completed: '#22c55e',
+        // Robot status
         Idle: '#22c55e',
         Delivering: '#f5a623',
         Charging: '#38bdf8',
         Error: '#ef4444',
-        Pending: '#f5a623',
+        // Payment
         Paid: '#22c55e',
-        Completed: '#22c55e',
-        'In-Transit': '#f5a623',
+        Received: '#f5a623',
+        // Other
+        Online: '#22c55e',
+        Offline: '#6b7280',
+        Free: '#22c55e',
+        Occupied: '#f5a623',
     };
     return map[status] ?? COLORS.textMuted;
 }

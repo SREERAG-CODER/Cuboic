@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   Cuboic Customer — Design System v2 (Immersive)
+   Thambi Customer — Design System v2 (Immersive)
    Font: Plus Jakarta Sans
 ═══════════════════════════════════════════════════════════ */
 
@@ -13,10 +13,10 @@
   --surface3: #e8e8ee;
   --border: rgba(0, 0, 0, 0.08);
   --border2: rgba(0, 0, 0, 0.14);
-  --accent: #d4861a;
-  --accent-dim: rgba(212, 134, 26, 0.12);
-  --accent-dark: #b36e14;
-  --accent-glow: rgba(212, 134, 26, 0.2);
+  --accent: #65a30d;
+  --accent-dim: rgba(101, 163, 13, 0.12);
+  --accent-dark: #4d7c0f;
+  --accent-glow: rgba(101, 163, 13, 0.2);
   --text: #1a1a2e;
   --text-muted: #6b6b80;
   --text-dim: #9898aa;
@@ -50,8 +50,8 @@ html {
 body {
   font-family: var(--font);
   background: var(--bg);
-  background-image: radial-gradient(at 0% 0%, rgba(212, 134, 26, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(212, 134, 26, 0.05) 0px, transparent 50%);
+  background-image: radial-gradient(at 0% 0%, rgba(101, 163, 13, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(101, 163, 13, 0.05) 0px, transparent 50%);
   color: var(--text);
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
@@ -134,22 +134,22 @@ input {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #eb9d28 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #84cc16 100%);
   color: #ffffff;
-  box-shadow: 0 4px 20px rgba(212, 134, 26, 0.25);
+  box-shadow: 0 4px 20px rgba(101, 163, 13, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.3);
   /* The glass inner glow */
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #f0a02a 0%, #f7b340 100%);
+  background: linear-gradient(135deg, #74b916 0%, #90d820 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(245, 166, 35, 0.45);
+  box-shadow: 0 8px 28px rgba(101, 163, 13, 0.45);
 }
 
 .btn-primary:active {
   transform: translateY(1px);
-  box-shadow: 0 2px 10px rgba(212, 134, 26, 0.3);
+  box-shadow: 0 2px 10px rgba(101, 163, 13, 0.3);
 }
 
 .btn-primary:disabled {
@@ -272,4 +272,72 @@ input {
 ::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 2px;
+}
+
+/* ── Modals ─────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--surface);
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.modal-header h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 24px;
+  background: var(--surface);
+  max-height: 70vh;
+  overflow-y: auto;
 }

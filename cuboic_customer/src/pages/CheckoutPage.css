@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────
-   CheckoutPage styles — Cuboic Customer
+   CheckoutPage styles — Thambi Customer
 ─────────────────────────────────────────────── */
 
 .checkout-page {
@@ -35,7 +35,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: var(--text-muted);
+    color: var(--accent);
 }
 
 /* Body Layout – Bento Grid */
@@ -71,6 +71,10 @@
     background: linear-gradient(135deg, var(--surface) 0%, rgba(240, 240, 245, 0.4) 100%);
 }
 
+.bento-notes {
+    grid-column: span 2;
+}
+
 .bento-payment {
     grid-column: span 2;
 }
@@ -92,6 +96,7 @@
         grid-template-columns: 1fr 1fr;
         grid-template-areas:
             "items totals"
+            "notes notes"
             "payment action";
     }
 
@@ -101,6 +106,10 @@
 
     .bento-totals {
         grid-area: totals;
+    }
+
+    .bento-notes {
+        grid-area: notes;
     }
 
     .bento-payment {
@@ -255,6 +264,30 @@
 
 .co-method-icon {
     font-size: 1.5rem;
+}
+
+/* Notes Input */
+.checkout-notes-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    color: var(--text);
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+.checkout-notes-input:focus {
+    border-color: var(--accent);
+    background: var(--bg);
+    box-shadow: 0 0 0 4px var(--accent-dim);
 }
 
 /* Card fields */

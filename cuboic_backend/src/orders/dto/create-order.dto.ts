@@ -26,6 +26,10 @@ export class CreateOrderDto {
 
     @IsString()
     @IsOptional()
+    customerId?: string;
+
+    @IsString()
+    @IsOptional()
     notes?: string;
 
     @IsArray()

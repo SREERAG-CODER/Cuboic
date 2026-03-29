@@ -26,8 +26,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     return (
         <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-logo">
-                <img src="/logo1.png" className="logo-cube" alt="Cuboic Logo" />
-                <span className="logo-text">Cuboic</span>
+                <img src="/pic1.png" className="logo-cube" alt="Thambi Logo" />
+                <span className="logo-text">Thambi</span>
                 <span className="logo-sub">{user?.role}</span>
                 <button className="mobile-close-btn" onClick={onClose} aria-label="Close menu">×</button>
             </div>

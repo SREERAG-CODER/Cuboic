@@ -27,8 +27,8 @@ export default function AppLayout() {
                         ☰
                     </button>
                     <div className="mobile-logo">
-                        <img src="/logo1.png" className="logo-cube" alt="Cuboic Logo" />
-                        <span className="logo-text">Cuboic</span>
+                        <img src="/pic1.png" className="logo-cube" alt="Thambi Logo" />
+                        <span className="logo-text">Thambi</span>
                     </div>
                 </div>
 

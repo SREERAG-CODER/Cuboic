@@ -5,6 +5,7 @@ import { getRestaurant } from '../api/menu';
 import { useSocket } from '../hooks/useSocket';
 import { StatusTimeline } from '../components/StatusTimeline';
 import { ConfirmCancelModal } from '../components/ConfirmCancelModal';
+import { getCustomer } from '../utils/auth';
 import './OrderTrackerPage.css';
 
 const TERMINAL = new Set<Order['status']>(['Delivered', 'Cancelled']);
@@ -18,6 +19,12 @@ export function OrderTrackerPage() {
     const [tableLabel, setTableLabel] = useState<string>('—');
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
     const [cancelling, setCancelling] = useState(false);
+    const [customerName, setCustomerName] = useState('');
+
+    useEffect(() => {
+        const c = getCustomer();
+        if (c?.name) setCustomerName(c.name.split(' ')[0]);
+    }, []);
 
     const fetchOrder = useCallback(() => {
         if (!orderId) return;
@@ -70,16 +77,17 @@ export function OrderTrackerPage() {
     const socketRef = useSocket(order?.restaurantId?.toString() ?? null);
     useEffect(() => {
         const socket = socketRef.current;
-        if (!socket || !orderId) return;
+        if (!socket || !orderId || !order?.restaurantId) return;
 
+        const eventName = `order:updated:${order.restaurantId}`;
         const handler = (data: { id: string; status: Order['status'] }) => {
             if (data.id === orderId || data.id?.toString() === orderId) {
                 setOrder(prev => prev ? { ...prev, status: data.status } : prev);
                 setLastUpdated(new Date());
             }
         };
-        socket.on('order:updated', handler);
-        return () => { socket.off('order:updated', handler); };
+        socket.on(eventName, handler);
+        return () => { socket.off(eventName, handler); };
     }, [socketRef, orderId, order?.restaurantId]);
 
     if (loading) return <div className="tracker-page"><div className="spinner-center"><div className="spinner" /></div></div>;
@@ -93,7 +101,7 @@ export function OrderTrackerPage() {
     // `tableLabel` manages the resolved state
 
     const isCancelled = order.status === 'Cancelled';
-    const canCancel = ['Pending', 'Confirmed', 'Preparing'].includes(order.status);
+    const canCancel = order.status === 'Pending';
 
     const handleCancel = async () => {
         if (!orderId) return;
@@ -116,7 +124,7 @@ export function OrderTrackerPage() {
             <header className="tracker-header">
                 <div className="container">
                     <Link to={`/?r=${order.restaurantId}&t=${typeof order.tableId === 'string' ? order.tableId : order.tableId.id}`} className="tracker-back">← Menu</Link>
-                    <p className="tracker-brand">Cuboic</p>
+                    <p className="tracker-brand">Thambi</p>
                     {lastUpdated && (
                         <span className="tracker-updated">
                             Updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
@@ -132,10 +140,20 @@ export function OrderTrackerPage() {
                         {isCancelled
                             ? 'Order Cancelled'
                             : order.status === 'Delivered'
-                                ? 'Enjoy your meal!'
+                                ? `Hope you enjoyed it, ${customerName}!`
                                 : 'Tracking your order…'}
                     </div>
-                    <h1 className="tracker-hero__status">{getStatusMessage(order.status)}</h1>
+                    <h1 className="tracker-hero__status">
+                        {customerName && !isCancelled && order.status !== 'Delivered' ? (
+                            <>
+                                {customerName},
+                                <br />
+                                {getStatusMessage(order.status)}
+                            </>
+                        ) : (
+                            getStatusMessage(order.status)
+                        )}
+                    </h1>
                     <p className="tracker-table">Table {tableLabel}</p>
                 </div>
 
@@ -160,8 +178,6 @@ export function OrderTrackerPage() {
                     </div>
                     <hr className="divider" />
                     <div className="order-totals">
-                        <div className="order-total-row"><span>Subtotal</span><span>₹{order.subtotal.toFixed(2)}</span></div>
-                        <div className="order-total-row"><span>Tax (5%)</span><span>₹{order.tax.toFixed(2)}</span></div>
                         <div className="order-total-row order-total-row--grand">
                             <span>Total</span><span>₹{order.total.toFixed(2)}</span>
                         </div>
@@ -196,7 +212,7 @@ export function OrderTrackerPage() {
 function getStatusMessage(status: Order['status']): string {
     const map: Record<Order['status'], string> = {
         Pending: 'Order Received',
-        Confirmed: 'Order Confirmed',
+        Confirmed: 'Being Prepared',
         Preparing: 'Being Prepared',
         Ready: 'Ready to Serve',
         Assigned: 'Robot on the Way',

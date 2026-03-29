@@ -55,4 +55,11 @@ export class OrdersController {
     confirmDelivery(@Param('id') id: string) {
         return this.ordersService.confirmDelivery(id);
     }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Owner')
+    @Patch(':id/pay')
+    markAsPaid(@Param('id') id: string) {
+        return this.ordersService.markAsPaid(id);
+    }
 }

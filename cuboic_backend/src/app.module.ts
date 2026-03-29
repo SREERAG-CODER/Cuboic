@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { MenuModule } from './menu/menu.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -14,10 +16,18 @@ import { EventsModule } from './events/events.module';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { RobotRuntimeModule } from './robot-runtime/robot-runtime.module';
 import { HealthModule } from './health/health.module';
-
+import { ScheduleModule } from '@nestjs/schedule';
+import { TablesModule } from './tables/tables.module';
+import { CustomersModule } from './customers/customers.module';
+import { PlatformFeesModule } from './platform-fees/platform-fees.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 100,
+    }]),
     PrismaModule,
     MenuModule,
     CategoriesModule,
@@ -32,6 +42,17 @@ import { HealthModule } from './health/health.module';
     RestaurantsModule,
     RobotRuntimeModule,
     HealthModule,
+    ScheduleModule.forRoot(),
+    TablesModule,
+    CustomersModule,
+    PlatformFeesModule,
+    AnalyticsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule { }

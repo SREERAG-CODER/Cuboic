@@ -1,0 +1,119 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+const prisma = new client_1.PrismaClient();
+const RESTAURANT_ID = 'clrzmockrest000000test000';
+const TABLE_IDS = [
+    'clrzmocktab00001test000',
+    'clrzmocktab00002test000',
+    'clrzmocktab00003test000',
+    'clrzmocktab00004test000',
+];
+const MENU_DATA = [
+    {
+        category: "MOCK STARTERS",
+        items: [
+            { name: "MOCK SOUP", price: 120, image: "https://example.com/soup.jpg" },
+            { name: "SPRING ROLLS", price: 150, image: "https://example.com/springrolls.jpg" }
+        ]
+    },
+    {
+        category: "MOCK MAIN COURSE",
+        items: [
+            { name: "MOCK CHICKEN CURRY", price: 250, image: "https://example.com/chicken.jpg" },
+            { name: "MOCK VEG BIRYANI", price: 220, image: "https://example.com/paneer.jpg" }
+        ]
+    }
+];
+async function addMockRestaurant() {
+    console.log('🔗 Connecting to DB...');
+    console.log(`🏗️ Creating restaurant with ID ${RESTAURANT_ID}...`);
+    const restaurant = await prisma.restaurant.create({
+        data: {
+            id: RESTAURANT_ID,
+            name: 'THE MOCK RESTAURANT',
+            description: 'A mock restaurant for testing purposes',
+            is_active: true
+        }
+    });
+    console.log(`📍 Created Restaurant: ${restaurant.name} (${restaurant.id})`);
+    console.log('🪑 Creating mock tables...');
+    for (let i = 0; i < TABLE_IDS.length; i++) {
+        const tableId = TABLE_IDS[i];
+        const tableNumber = `T${i + 1}`;
+        await prisma.table.create({
+            data: { id: tableId, restaurantId: restaurant.id, table_number: tableNumber, is_active: true }
+        });
+    }
+    console.log('🚀 Populating mock menu...');
+    for (let i = 0; i < MENU_DATA.length; i++) {
+        const catData = MENU_DATA[i];
+        const category = await prisma.category.create({
+            data: {
+                restaurantId: restaurant.id,
+                name: catData.category,
+                display_order: i,
+                is_active: true
+            }
+        });
+        for (let j = 0; j < catData.items.length; j++) {
+            const itemData = catData.items[j];
+            await prisma.menuItem.create({
+                data: {
+                    restaurantId: restaurant.id,
+                    categoryId: category.id,
+                    name: itemData.name,
+                    price: itemData.price,
+                    image_url: itemData.image,
+                    is_available: true,
+                    display_order: j
+                }
+            });
+        }
+    }
+    console.log('✅ Mock restaurant, tables, and menu added successfully!');
+}
+addMockRestaurant()
+    .catch(e => {
+    console.error('❌ Error adding mock restaurant:', e);
+    process.exit(1);
+})
+    .finally(async () => {
+    await prisma.$disconnect();
+});
+//# sourceMappingURL=add_new_restaurant.js.map

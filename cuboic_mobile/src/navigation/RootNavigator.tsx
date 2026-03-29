@@ -2,68 +2,120 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { LoginScreen } from '../screens/auth/LoginScreen';
-import { OrdersScreen } from '../screens/staff/OrdersScreen';
-import { OrderDetailScreen } from '../screens/staff/OrderDetailScreen';
-import { CreateDeliveryScreen } from '../screens/staff/CreateDeliveryScreen';
-import { DashboardScreen } from '../screens/owner/DashboardScreen';
-import { PaymentsScreen } from '../screens/owner/PaymentsScreen';
-import { RobotsScreen } from '../screens/owner/RobotsScreen';
+import { DashboardScreen } from '../screens/shared/DashboardScreen';
+import { OrdersScreen } from '../screens/shared/OrdersScreen';
+import { KanbanOrdersScreen } from '../screens/staff/KanbanOrdersScreen';
+import { MenuScreen } from '../screens/shared/MenuScreen';
+import { DeliveriesScreen } from '../screens/shared/DeliveriesScreen';
+import { RobotsScreen } from '../screens/shared/RobotsScreen';
+import { PaymentsScreen } from '../screens/shared/PaymentsScreen';
+import { ProfileScreen } from '../screens/shared/ProfileScreen';
+import { StaffScreen } from '../screens/owner/StaffScreen';
+import { TablesScreen } from '../screens/owner/TablesScreen';
+import { AnalyticsScreen } from '../screens/owner/AnalyticsScreen';
+import { ManagementScreen } from '../screens/owner/ManagementScreen';
 import { COLORS } from '../theme';
 
 export type RootStackParamList = {
     Login: undefined;
     Main: undefined;
-    OrderDetail: { orderId: string };
-    CreateDelivery: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-type StaffTabParamList = { Orders: undefined; Deliveries: undefined };
-type OwnerTabParamList = { Dashboard: undefined; Payments: undefined; Robots: undefined };
+type MainTabParamList = {
+    Dashboard: undefined;
+    Orders: undefined;
+    Analytics: undefined;
+    Manage: undefined;
+    Profile: undefined;
+};
 
-const StaffTab = createBottomTabNavigator<StaffTabParamList>();
-const OwnerTab = createBottomTabNavigator<OwnerTabParamList>();
+type ManageStackParamList = {
+    ManagementMain: undefined;
+    Menu: undefined;
+    Staff: undefined;
+    Tables: undefined;
+    Payments: undefined;
+};
 
-function StaffTabs() {
+const Tab = createBottomTabNavigator<MainTabParamList>();
+const MStack = createNativeStackNavigator<ManageStackParamList>();
+
+function ManageStack() {
     return (
-        <StaffTab.Navigator
+        <MStack.Navigator
             screenOptions={{
                 headerShown: false,
-                tabBarStyle: { backgroundColor: COLORS.surface, borderTopColor: COLORS.border },
-                tabBarActiveTintColor: COLORS.accent,
-                tabBarInactiveTintColor: COLORS.textMuted,
+                contentStyle: { backgroundColor: COLORS.bg },
             }}
         >
-            <StaffTab.Screen name="Orders" component={OrdersScreen} options={{ tabBarLabel: '🍽️ Orders' }} />
-            <StaffTab.Screen name="Deliveries" component={CreateDeliveryScreen} options={{ tabBarLabel: '🤖 Deliveries' }} />
-        </StaffTab.Navigator>
-    );
-}
-
-function OwnerTabs() {
-    return (
-        <OwnerTab.Navigator
-            screenOptions={{
-                headerShown: false,
-                tabBarStyle: { backgroundColor: COLORS.surface, borderTopColor: COLORS.border },
-                tabBarActiveTintColor: COLORS.accent,
-                tabBarInactiveTintColor: COLORS.textMuted,
-            }}
-        >
-            <OwnerTab.Screen name="Dashboard" component={DashboardScreen} options={{ tabBarLabel: '📊 Dashboard' }} />
-            <OwnerTab.Screen name="Payments" component={PaymentsScreen} options={{ tabBarLabel: '💳 Payments' }} />
-            <OwnerTab.Screen name="Robots" component={RobotsScreen} options={{ tabBarLabel: '🤖 Robots' }} />
-        </OwnerTab.Navigator>
+            <MStack.Screen 
+                name="ManagementMain" 
+                component={ManagementScreen} 
+                options={{ title: 'Manage' }} 
+            />
+            <MStack.Screen name="Menu" component={MenuScreen} />
+            <MStack.Screen name="Staff" component={StaffScreen} />
+            <MStack.Screen name="Tables" component={TablesScreen} />
+            <MStack.Screen name="Payments" component={PaymentsScreen} />
+        </MStack.Navigator>
     );
 }
 
 function MainTabs() {
     const { user } = useAuth();
-    return user?.role === 'Owner' ? <OwnerTabs /> : <StaffTabs />;
+    const isOwner = user?.role === 'Owner';
+    const isStaff = user?.role === 'Staff';
+    const insets = useSafeAreaInsets();
+
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                headerShown: false,
+                tabBarStyle: {
+                    backgroundColor: COLORS.surface,
+                    borderTopColor: COLORS.border,
+                    borderTopWidth: 1,
+                    paddingBottom: Math.max(insets.bottom, 8), // Increased padding
+                    paddingTop: 8, // Increased padding
+                    paddingLeft: Math.max(insets.left, 0),
+                    paddingRight: Math.max(insets.right, 0),
+                    height: 64 + insets.bottom, // Slightly taller
+                },
+                tabBarActiveTintColor: COLORS.accent,
+                tabBarInactiveTintColor: COLORS.textMuted,
+                tabBarLabel: ({ color, focused }) => (
+                    <Text style={{ color, fontSize: 10, fontWeight: focused ? '700' : '500' }}>
+                        {route.name}
+                    </Text>
+                ),
+                tabBarIcon: ({ color, size }) => {
+                    let iconName: any = 'circle';
+                    if (route.name === 'Dashboard') iconName = 'pie-chart';
+                    else if (route.name === 'Orders') iconName = 'list';
+                    else if (route.name === 'Analytics') iconName = 'bar-chart-2';
+                    else if (route.name === 'Manage') iconName = 'settings';
+                    else if (route.name === 'Profile') iconName = 'user';
+
+                    return <Feather name={iconName} size={22} color={color} />; // Reduced size from 24 (default size param was likely 24)
+                },
+            })}
+        >
+            <Tab.Screen name="Dashboard" component={DashboardScreen} />
+            <Tab.Screen name="Orders" component={isStaff ? KanbanOrdersScreen : OrdersScreen} />
+            {isOwner && (
+                <Tab.Screen name="Analytics" component={AnalyticsScreen} />
+            )}
+            <Tab.Screen name="Manage" component={ManageStack} />
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
+    );
 }
 
 export function RootNavigator() {
@@ -84,16 +136,21 @@ export function RootNavigator() {
                     headerStyle: { backgroundColor: COLORS.surface },
                     headerTintColor: COLORS.text,
                     headerTitleStyle: { fontWeight: '700' },
+                    contentStyle: { backgroundColor: COLORS.bg },
                 }}
             >
                 {!user ? (
-                    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+                    <Stack.Screen
+                        name="Login"
+                        component={LoginScreen}
+                        options={{ headerShown: false }}
+                    />
                 ) : (
-                    <>
-                        <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-                        <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Detail' }} />
-                        <Stack.Screen name="CreateDelivery" component={CreateDeliveryScreen} options={{ title: 'New Delivery' }} />
-                    </>
+                    <Stack.Screen
+                        name="Main"
+                        component={MainTabs}
+                        options={{ headerShown: false }}
+                    />
                 )}
             </Stack.Navigator>
         </NavigationContainer>

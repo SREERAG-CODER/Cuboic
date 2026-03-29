@@ -21,7 +21,7 @@ export interface Restaurant {
     name: string;
     slug: string;
     settings?: { tax_percentage: number };
-    tables?: Array<{ id: string; table_number: number }>;
+    tables?: Array<{ id: string; table_number: string }>;
 }
 
 export const getRestaurant = (id: string) =>

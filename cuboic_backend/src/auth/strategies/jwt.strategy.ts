@@ -8,7 +8,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET ?? 'cuboic-super-secret-key-change-in-prod',
+            secretOrKey: process.env.JWT_SECRET ?? 'thambi-super-secret-key-change-in-prod',
         });
     }
 
