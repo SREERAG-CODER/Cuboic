@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import electron from 'vite-plugin-electron/simple'
+import renderer from 'vite-plugin-electron-renderer'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
@@ -15,9 +16,7 @@ export default defineConfig({
       preload: {
         input: 'electron/preload.ts',
       },
-      renderer: process.env.NODE_ENV === 'test'
-        ? undefined
-        : {},
     }),
+    renderer(),
   ],
 })

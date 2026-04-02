@@ -1,11 +1,8 @@
 import { app, BrowserWindow, ipcMain, safeStorage } from 'electron'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import fs from 'node:fs'
 import { PosPrinter } from 'electron-pos-printer'
-// import { init } from 'electron-pos-printer'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
 
 // The built directory structure
 //
