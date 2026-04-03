@@ -1,11 +1,11 @@
-export const COLORS = {
+export const DARK_COLORS = {
     bg: '#0f0f13',
     surface: '#18181f',
     surface2: '#222230',
-    border: '#2e2e3d',
+    border: '#3f6212', // Distinct dark green border
     accent: '#65a30d',
     accentDark: '#4d7c0f',
-    text: '#f0eff5',
+    text: '#ffffff',
     textMuted: '#8b8aa0',
     textDim: '#5a5974',
     green: '#22c55e',
@@ -14,6 +14,26 @@ export const COLORS = {
     purple: '#a78bfa',
     amber: '#f5a623',
 };
+
+export const LIGHT_COLORS = {
+    bg: '#f8fafc',
+    surface: '#ffffff',
+    surface2: '#f1f5f9',
+    border: '#bbf7d0', // Distinct light green border
+    accent: '#65a30d',      // Keeping the brand green
+    accentDark: '#4d7c0f',
+    text: '#0f172a',
+    textMuted: '#64748b',
+    textDim: '#94a3b8',
+    green: '#16a34a',
+    red: '#dc2626',
+    blue: '#0284c7',
+    purple: '#7c3aed',
+    amber: '#d97706',
+};
+
+export type ThemeColors = typeof DARK_COLORS;
+export const COLORS = DARK_COLORS; // Default to dark for backwards compatibility during migration
 
 export const FONT = {
     regular: { fontWeight: '400' as const },
@@ -71,33 +91,33 @@ export const S = {
     },
 };
 
-export function statusColor(status: string): string {
+export function getStatusColor(status: string, colors: ThemeColors): string {
     const map: Record<string, string> = {
         // Order statuses
-        Pending: '#f5a623',
-        Confirmed: '#38bdf8',
-        Preparing: '#a78bfa',
-        Ready: '#22c55e',
-        Assigned: '#38bdf8',
-        Delivered: '#6b7280',
-        Cancelled: '#ef4444',
+        Pending: colors.amber,
+        Confirmed: colors.blue,
+        Preparing: colors.purple,
+        Ready: colors.green,
+        Assigned: colors.blue,
+        Delivered: colors.textDim,
+        Cancelled: colors.red,
         // Delivery statuses
-        InTransit: '#f5a623',
-        'In-Transit': '#f5a623',
-        Completed: '#22c55e',
+        InTransit: colors.amber,
+        'In-Transit': colors.amber,
+        Completed: colors.green,
         // Robot status
-        Idle: '#22c55e',
-        Delivering: '#f5a623',
-        Charging: '#38bdf8',
-        Error: '#ef4444',
+        Idle: colors.green,
+        Delivering: colors.amber,
+        Charging: colors.blue,
+        Error: colors.red,
         // Payment
-        Paid: '#22c55e',
-        Received: '#f5a623',
+        Paid: colors.green,
+        Received: colors.amber,
         // Other
-        Online: '#22c55e',
-        Offline: '#6b7280',
-        Free: '#22c55e',
-        Occupied: '#f5a623',
+        Online: colors.green,
+        Offline: colors.textDim,
+        Free: colors.green,
+        Occupied: colors.amber,
     };
-    return map[status] ?? COLORS.textMuted;
+    return map[status] ?? colors.textMuted;
 }

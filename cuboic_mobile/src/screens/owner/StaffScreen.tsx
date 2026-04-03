@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, TextInput, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { usersApi, type User } from '../../api/users';
-import { COLORS, S } from '../../theme';
+import { S, FONT } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 
 export function StaffScreen() {
     const { user } = useAuth();
+    const { colors, isDark } = useTheme();
     const navigation = useNavigation();
     const [staff, setStaff] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -112,51 +114,53 @@ export function StaffScreen() {
     };
 
     if (loading) return (
-        <View style={S.screen}><ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 80 }} /></View>
+        <View style={[S.screen, { backgroundColor: colors.bg }]}>
+            <ActivityIndicator color={colors.accent} size="large" style={{ marginTop: 80 }} />
+        </View>
     );
 
     if (isEditing) {
         return (
-            <ScrollView style={S.screen} contentContainerStyle={{ padding: 16, paddingBottom: 40, paddingTop: 48 }}>
+            <ScrollView style={[S.screen, { backgroundColor: colors.bg }]} contentContainerStyle={{ padding: 16, paddingBottom: 40, paddingTop: 48 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
                     <TouchableOpacity onPress={() => setIsEditing(false)} style={{ marginRight: 12 }}>
-                        <Feather name="arrow-left" size={24} color={COLORS.text} />
+                        <Feather name="arrow-left" size={24} color={colors.text} />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 24, fontWeight: '800', color: COLORS.text }}>
+                    <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text }}>
                         {selectedUser ? 'Edit Staff' : 'Add Staff'}
                     </Text>
                 </View>
 
-                <View style={styles.card}>
-                    <Text style={styles.label}>Name</Text>
-                    <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="John Doe" placeholderTextColor={COLORS.textDim} />
+                <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                    <Text style={[styles.label, { color: colors.textMuted }]}>Name</Text>
+                    <TextInput style={[styles.input, { backgroundColor: colors.surface2, borderColor: colors.border, color: colors.text }]} value={name} onChangeText={setName} placeholder="John Doe" placeholderTextColor={colors.textDim} />
 
-                    <Text style={styles.label}>User ID (Login)</Text>
-                    <TextInput style={styles.input} value={userId} onChangeText={setUserId} editable={!selectedUser} placeholder="john123" placeholderTextColor={COLORS.textDim} autoCapitalize="none" />
+                    <Text style={[styles.label, { color: colors.textMuted }]}>User ID (Login)</Text>
+                    <TextInput style={[styles.input, { backgroundColor: colors.surface2, borderColor: colors.border, color: colors.text }]} value={userId} onChangeText={setUserId} editable={!selectedUser} placeholder="john123" placeholderTextColor={colors.textDim} autoCapitalize="none" />
 
-                    <Text style={styles.label}>{selectedUser ? 'New Password (leave blank to keep)' : 'Password'}</Text>
-                    <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry placeholder="***" placeholderTextColor={COLORS.textDim} />
+                    <Text style={[styles.label, { color: colors.textMuted }]}>{selectedUser ? 'New Password (leave blank to keep)' : 'Password'}</Text>
+                    <TextInput style={[styles.input, { backgroundColor: colors.surface2, borderColor: colors.border, color: colors.text }]} value={password} onChangeText={setPassword} secureTextEntry placeholder="***" placeholderTextColor={colors.textDim} />
 
-                    <Text style={styles.label}>Role</Text>
+                    <Text style={[styles.label, { color: colors.textMuted }]}>Role</Text>
                     <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12, marginTop: 4 }}>
                         {['Staff', 'Owner'].map(r => (
                             <TouchableOpacity 
                                 key={r} 
-                                style={[styles.roleBtn, role === r && styles.roleBtnActive]}
+                                style={[styles.roleBtn, { backgroundColor: colors.surface2, borderColor: colors.border }, role === r && { backgroundColor: colors.accent, borderColor: colors.accent }]}
                                 onPress={() => setRole(r as any)}
                             >
-                                <Text style={[styles.roleBtnText, role === r && { color: '#000' }]}>{r}</Text>
+                                <Text style={[styles.roleBtnText, { color: colors.textMuted }, role === r && { color: '#000' }]}>{r}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
 
-                    <TouchableOpacity style={[S.btnPrimary, { marginTop: 16 }]} onPress={handleSave}>
-                        <Text style={S.btnPrimaryText}>{selectedUser ? 'Save Changes' : 'Create Staff'}</Text>
+                    <TouchableOpacity style={[S.btnPrimary, { marginTop: 16, backgroundColor: colors.accent }]} onPress={handleSave}>
+                        <Text style={[S.btnPrimaryText, { color: '#000' }]}>{selectedUser ? 'Save Changes' : 'Create Staff'}</Text>
                     </TouchableOpacity>
 
                     {selectedUser && (
-                        <TouchableOpacity style={styles.deactivateBtn} onPress={handleDeactivate}>
-                            <Text style={styles.deactivateText}>Deactivate User</Text>
+                        <TouchableOpacity style={[styles.deactivateBtn, { backgroundColor: colors.red + '15', borderColor: colors.red + '33' }]} onPress={handleDeactivate}>
+                            <Text style={[styles.deactivateText, { color: colors.red }]}>Deactivate User</Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -165,18 +169,18 @@ export function StaffScreen() {
     }
 
     return (
-        <View style={S.screen}>
-            <View style={styles.header}>
+        <View style={[S.screen, { backgroundColor: colors.bg }]}>
+            <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                        <Feather name="arrow-left" size={20} color={COLORS.text} />
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: colors.surface2 }]}>
+                        <Feather name="arrow-left" size={20} color={colors.text} />
                     </TouchableOpacity>
                     <View>
-                        <Text style={styles.title}>Staff</Text>
-                        <Text style={styles.sub}>Manage restaurant team</Text>
+                        <Text style={[styles.title, { color: colors.text }]}>Staff</Text>
+                        <Text style={[styles.sub, { color: colors.textMuted }]}>Manage restaurant team</Text>
                     </View>
                 </View>
-                <TouchableOpacity onPress={openCreate} style={styles.addBtn}>
+                <TouchableOpacity onPress={openCreate} style={[styles.addBtn, { backgroundColor: colors.accent }]}>
                     <Feather name="plus" size={20} color="#000" />
                 </TouchableOpacity>
             </View>
@@ -188,17 +192,17 @@ export function StaffScreen() {
                 refreshing={refreshing}
                 onRefresh={handleRefresh}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.card} onPress={() => openEdit(item)} activeOpacity={0.7}>
+                    <TouchableOpacity style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={() => openEdit(item)} activeOpacity={0.7}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                             <View>
-                                <Text style={styles.staffName}>{item.name} {!item.is_active && '(Inactive)'}</Text>
-                                <Text style={styles.staffSub}>{item.user_id} • {item.role}</Text>
+                                <Text style={[styles.staffName, { color: colors.text }]}>{item.name} {!item.is_active && '(Inactive)'}</Text>
+                                <Text style={[styles.staffSub, { color: colors.textMuted }]}>{item.user_id} • {item.role}</Text>
                             </View>
-                            <Feather name="chevron-right" size={20} color={COLORS.textMuted} />
+                            <Feather name="chevron-right" size={20} color={colors.textMuted} />
                         </View>
                     </TouchableOpacity>
                 )}
-                ListEmptyComponent={<Text style={styles.empty}>No staff members found.</Text>}
+                ListEmptyComponent={<Text style={[styles.empty, { color: colors.textMuted }]}>No staff members found.</Text>}
             />
         </View>
     );
@@ -208,28 +212,27 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
         paddingTop: 48, paddingHorizontal: 16, paddingBottom: 16,
-        backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.border
+        borderBottomWidth: 1,
     },
-    title: { fontSize: 24, fontWeight: '800', color: COLORS.text },
-    sub: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
-    addBtn: { backgroundColor: COLORS.accent, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.surface2 },
-    card: { backgroundColor: COLORS.surface, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: COLORS.border },
-    staffName: { fontSize: 16, fontWeight: '700', color: COLORS.text },
-    staffSub: { fontSize: 13, color: COLORS.textMuted, marginTop: 4 },
-    empty: { textAlign: 'center', color: COLORS.textMuted, marginTop: 40 },
+    title: { fontSize: 24, fontWeight: '800' },
+    sub: { fontSize: 13, marginTop: 2 },
+    addBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    card: { borderRadius: 12, padding: 16, borderWidth: 1 },
+    staffName: { fontSize: 16, fontWeight: '700' },
+    staffSub: { fontSize: 13, marginTop: 4 },
+    empty: { textAlign: 'center', marginTop: 40 },
     
-    label: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted, marginBottom: 4, marginTop: 8 },
+    label: { fontSize: 12, fontWeight: '600', marginBottom: 4, marginTop: 8 },
     input: {
-        backgroundColor: COLORS.surface2, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12,
-        color: COLORS.text, borderWidth: 1, borderColor: COLORS.border, fontSize: 16,
+        borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12,
+        borderWidth: 1, fontSize: 16,
     },
     roleBtn: {
         flex: 1, paddingVertical: 12, alignItems: 'center', borderRadius: 8,
-        borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.surface2
+        borderWidth: 1,
     },
-    roleBtnActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-    roleBtnText: { color: COLORS.textMuted, fontWeight: '600' },
-    deactivateBtn: { marginTop: 16, padding: 14, alignItems: 'center', borderRadius: 8, backgroundColor: '#ef444415', borderWidth: 1, borderColor: '#ef444433' },
-    deactivateText: { color: '#ef4444', fontWeight: '700' }
+    roleBtnText: { fontWeight: '600' },
+    deactivateBtn: { marginTop: 16, padding: 14, alignItems: 'center', borderRadius: 8, borderWidth: 1 },
+    deactivateText: { fontWeight: '700' }
 });

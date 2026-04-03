@@ -8,14 +8,16 @@ import { Feather } from '@expo/vector-icons';
 import { deliveriesApi, robotsApi, type Delivery, type Robot } from '../../api/deliveries';
 import { ordersApi, type Order } from '../../api/orders';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useSocket } from '../../hooks/useSocket';
 import { StatusBadge } from '../../components/StatusBadge';
-import { COLORS, S } from '../../theme';
+import { FONT, S } from '../../theme';
 
 interface CreateStop { orderId: string; tableId: string; cabinets: string[]; sequence: number; }
 
 export function DeliveriesScreen() {
     const { user } = useAuth();
+    const { colors, isDark } = useTheme();
     const restaurantId = user?.restaurantId ?? '';
 
     const [tab, setTab] = useState<'active' | 'history'>('active');
@@ -116,19 +118,19 @@ export function DeliveriesScreen() {
     const displayList = tab === 'active' ? active : history;
 
     if (loading) return (
-        <View style={S.screen}>
-            <ActivityIndicator style={{ marginTop: 80 }} color={COLORS.accent} size="large" />
+        <View style={[S.screen, { backgroundColor: colors.bg }]}>
+            <ActivityIndicator style={{ marginTop: 80 }} color={colors.accent} size="large" />
         </View>
     );
 
     return (
-        <View style={S.screen}>
+        <View style={[S.screen, { backgroundColor: colors.bg }]}>
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.title}>Deliveries</Text>
+            <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+                <Text style={[styles.title, { color: colors.text }]}>Deliveries</Text>
                 {user?.role === 'Staff' && (
                     <TouchableOpacity
-                        style={styles.newBtn}
+                        style={[styles.newBtn, { backgroundColor: colors.accent }]}
                         onPress={() => setShowCreate(true)}
                         activeOpacity={0.8}
                     >
@@ -138,20 +140,20 @@ export function DeliveriesScreen() {
             </View>
 
             {/* Tab bar */}
-            <View style={styles.tabBar}>
+            <View style={[styles.tabBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
                 <TouchableOpacity
-                    style={[styles.tabBtn, tab === 'active' && styles.tabBtnActive]}
+                    style={[styles.tabBtn, { backgroundColor: colors.surface2 }, tab === 'active' && { backgroundColor: colors.accent }]}
                     onPress={() => setTab('active')}
                 >
-                    <Text style={[styles.tabBtnText, tab === 'active' && styles.tabBtnTextActive]}>
+                    <Text style={[styles.tabBtnText, { color: colors.textMuted }, tab === 'active' && { color: '#0f0f13' }]}>
                         Active ({active.length})
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.tabBtn, tab === 'history' && styles.tabBtnActive]}
+                    style={[styles.tabBtn, { backgroundColor: colors.surface2 }, tab === 'history' && { backgroundColor: colors.accent }]}
                     onPress={() => setTab('history')}
                 >
-                    <Text style={[styles.tabBtnText, tab === 'history' && styles.tabBtnTextActive]}>
+                    <Text style={[styles.tabBtnText, { color: colors.textMuted }, tab === 'history' && { color: '#0f0f13' }]}>
                         History ({history.length})
                     </Text>
                 </TouchableOpacity>
@@ -161,23 +163,23 @@ export function DeliveriesScreen() {
                 data={displayList}
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.list}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
                 renderItem={({ item }) => (
-                    <View style={styles.delivCard}>
+                    <View style={[styles.delivCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                         <View style={styles.delivHeader}>
-                            <Text style={styles.delivId}>#{item.id.slice(-6).toUpperCase()}</Text>
+                            <Text style={[styles.delivId, { color: colors.text }]}>#{item.id.slice(-6).toUpperCase()}</Text>
                             <StatusBadge status={item.status} />
-                            <Text style={styles.delivTime}>{new Date(item.createdAt).toLocaleTimeString()}</Text>
+                            <Text style={[styles.delivTime, { color: colors.textDim }]}>{new Date(item.createdAt).toLocaleTimeString()}</Text>
                         </View>
                         {item.stops.map((stop, si) => (
-                            <View key={si} style={styles.stop}>
+                            <View key={si} style={[styles.stop, { borderTopColor: colors.border }]}>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={styles.stopText}>Stop {stop.sequence} · {stop.cabinets.join(', ')}</Text>
+                                    <Text style={[styles.stopText, { color: colors.text }]}>Stop {stop.sequence} · {stop.cabinets.join(', ')}</Text>
                                     <StatusBadge status={stop.status} size="sm" />
                                 </View>
                                 {tab === 'active' && stop.status === 'Pending' && user?.role === 'Staff' && (
                                     <TouchableOpacity
-                                        style={styles.confirmBtn}
+                                        style={[styles.confirmBtn, { backgroundColor: colors.accent }]}
                                         onPress={() => handleConfirmStop(item.id, si)}
                                         activeOpacity={0.8}
                                     >
@@ -191,8 +193,8 @@ export function DeliveriesScreen() {
                 )}
                 ListEmptyComponent={
                     <View style={styles.empty}>
-                        <Feather name="cpu" size={48} color={COLORS.textMuted} />
-                        <Text style={styles.emptyText}>No {tab === 'active' ? 'active' : 'past'} deliveries</Text>
+                        <Feather name="cpu" size={48} color={colors.textMuted} />
+                        <Text style={[styles.emptyText, { color: colors.textMuted }]}>No {tab === 'active' ? 'active' : 'past'} deliveries</Text>
                     </View>
                 }
             />
@@ -200,31 +202,31 @@ export function DeliveriesScreen() {
             {/* Create Delivery Modal */}
             <Modal visible={showCreate} animationType="slide" presentationStyle="pageSheet">
                 <KeyboardAvoidingView
-                    style={{ flex: 1, backgroundColor: COLORS.bg }}
+                    style={{ flex: 1, backgroundColor: colors.bg }}
                     behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 >
                     <ScrollView contentContainerStyle={styles.modal} keyboardShouldPersistTaps="handled">
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Create Delivery</Text>
+                            <Text style={[styles.modalTitle, { color: colors.text }]}>Create Delivery</Text>
                             <TouchableOpacity onPress={() => setShowCreate(false)}>
-                                <Text style={styles.modalClose}>✕</Text>
+                                <Text style={[styles.modalClose, { color: colors.textMuted }]}>✕</Text>
                             </TouchableOpacity>
                         </View>
 
                         {/* Robot Picker */}
-                        <Text style={styles.fieldLabel}>Select Robot</Text>
+                        <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>Select Robot</Text>
                         {idleRobots.length === 0 ? (
-                            <Text style={styles.noRobotsText}>No idle robots available</Text>
+                            <Text style={[styles.noRobotsText, { color: colors.red }]}>No idle robots available</Text>
                         ) : (
                             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
                                 {idleRobots.map(r => (
                                     <TouchableOpacity
                                         key={r.id}
-                                        style={[styles.robotOption, selectedRobot === r.id && styles.robotOptionActive]}
+                                        style={[styles.robotOption, { backgroundColor: colors.surface2, borderColor: colors.border }, selectedRobot === r.id && { backgroundColor: colors.accent, borderColor: colors.accent }]}
                                         onPress={() => setSelectedRobot(r.id)}
                                     >
-                                        <Feather name="cpu" size={22} color={selectedRobot === r.id ? '#000' : COLORS.textMuted} style={{ marginBottom: 4 }} />
-                                        <Text style={[styles.robotOptionText, selectedRobot === r.id && { color: '#000' }]}>
+                                        <Feather name="cpu" size={22} color={selectedRobot === r.id ? '#000' : colors.textMuted} style={{ marginBottom: 4 }} />
+                                        <Text style={[styles.robotOptionText, { color: colors.textMuted }, selectedRobot === r.id && { color: '#000' }]}>
                                             {r.name}
                                         </Text>
                                     </TouchableOpacity>
@@ -234,10 +236,10 @@ export function DeliveriesScreen() {
 
                         {/* Stops */}
                         {stops.map((stop, si) => (
-                            <View key={si} style={styles.stopBlock}>
-                                <Text style={styles.stopBlockTitle}>Stop {stop.sequence}</Text>
+                            <View key={si} style={[styles.stopBlock, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                                <Text style={[styles.stopBlockTitle, { color: colors.text }]}>Stop {stop.sequence}</Text>
 
-                                <Text style={styles.fieldLabelSm}>Order (Ready)</Text>
+                                <Text style={[styles.fieldLabelSm, { color: colors.textDim }]}>Order (Ready)</Text>
                                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
                                     {readyOrders.map(o => {
                                         const tableNum = typeof o.tableId === 'object'
@@ -246,10 +248,10 @@ export function DeliveriesScreen() {
                                         return (
                                             <TouchableOpacity
                                                 key={o.id}
-                                                style={[styles.orderOption, stop.orderId === o.id && styles.orderOptionActive]}
+                                                style={[styles.orderOption, { backgroundColor: colors.surface2, borderColor: colors.border }, stop.orderId === o.id && { backgroundColor: colors.accent, borderColor: colors.accent }]}
                                                 onPress={() => handleStopOrderChange(si, o.id)}
                                             >
-                                                <Text style={[styles.orderOptionText, stop.orderId === o.id && { color: '#000' }]}>
+                                                <Text style={[styles.orderOptionText, { color: colors.textMuted }, stop.orderId === o.id && { color: '#000' }]}>
                                                     Table {tableNum} · ₹{o.total.toFixed(0)}
                                                 </Text>
                                             </TouchableOpacity>
@@ -257,15 +259,15 @@ export function DeliveriesScreen() {
                                     })}
                                 </ScrollView>
 
-                                <Text style={styles.fieldLabelSm}>Cabinets</Text>
+                                <Text style={[styles.fieldLabelSm, { color: colors.textDim }]}>Cabinets</Text>
                                 <View style={styles.cabinetsRow}>
                                     {(selectedRobotObj?.cabinets ?? [{ id: 'C1' }, { id: 'C2' }, { id: 'C3' }]).map(cab => (
                                         <TouchableOpacity
                                             key={cab.id}
-                                            style={[styles.cabBtn, stop.cabinets.includes(cab.id) && styles.cabBtnActive]}
+                                            style={[styles.cabBtn, { backgroundColor: colors.surface2, borderColor: colors.border }, stop.cabinets.includes(cab.id) && { backgroundColor: colors.accent, borderColor: colors.accent }]}
                                             onPress={() => handleCabinetToggle(si, cab.id)}
                                         >
-                                            <Text style={[styles.cabBtnText, stop.cabinets.includes(cab.id) && { color: '#000' }]}>
+                                            <Text style={[styles.cabBtnText, { color: colors.textMuted }, stop.cabinets.includes(cab.id) && { color: '#000' }]}>
                                                 {cab.id}
                                             </Text>
                                         </TouchableOpacity>
@@ -275,14 +277,14 @@ export function DeliveriesScreen() {
                         ))}
 
                         <TouchableOpacity
-                            style={styles.addStopBtn}
+                            style={[styles.addStopBtn, { backgroundColor: colors.surface2, borderColor: colors.border }]}
                             onPress={() => setStops(prev => [...prev, { orderId: '', tableId: '', cabinets: [], sequence: prev.length + 1 }])}
                         >
-                            <Text style={styles.addStopBtnText}>+ Add Stop</Text>
+                            <Text style={[styles.addStopBtnText, { color: colors.textMuted }]}>+ Add Stop</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[styles.dispatchBtn, creating && { opacity: 0.6 }]}
+                            style={[styles.dispatchBtn, { backgroundColor: colors.accent }, creating && { opacity: 0.6 }]}
                             onPress={handleCreateDelivery}
                             disabled={creating}
                             activeOpacity={0.8}
@@ -300,81 +302,67 @@ export function DeliveriesScreen() {
 const styles = StyleSheet.create({
     header: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-        padding: 16, paddingTop: 48, backgroundColor: COLORS.surface,
-        borderBottomWidth: 1, borderBottomColor: COLORS.border,
+        padding: 16, paddingTop: 48, borderBottomWidth: 1,
     },
-    title: { fontSize: 26, fontWeight: '800', color: COLORS.text },
-    newBtn: { backgroundColor: COLORS.accent, paddingHorizontal: 16, paddingVertical: 9, borderRadius: 10 },
+    title: { fontSize: 26, fontWeight: '800' },
+    newBtn: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 10 },
     newBtnText: { color: '#0f0f13', fontWeight: '700', fontSize: 14 },
     tabBar: {
-        flexDirection: 'row', backgroundColor: COLORS.surface,
-        borderBottomWidth: 1, borderBottomColor: COLORS.border, padding: 12, gap: 8,
+        flexDirection: 'row', borderBottomWidth: 1, padding: 12, gap: 8,
     },
     tabBtn: {
-        flex: 1, paddingVertical: 8, borderRadius: 10,
-        backgroundColor: COLORS.surface2, alignItems: 'center',
+        flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center',
     },
-    tabBtnActive: { backgroundColor: COLORS.accent },
-    tabBtnText: { fontWeight: '600', color: COLORS.textMuted, fontSize: 14 },
-    tabBtnTextActive: { color: '#0f0f13' },
+    tabBtnText: { fontWeight: '600', fontSize: 14 },
     list: { padding: 16, gap: 12, paddingBottom: 32 },
     delivCard: {
-        backgroundColor: COLORS.surface, borderRadius: 14,
-        borderWidth: 1, borderColor: COLORS.border, padding: 14, gap: 10,
+        borderRadius: 14, borderWidth: 1, padding: 14, gap: 10,
     },
     delivHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    delivId: { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.text, fontVariant: ['tabular-nums'] },
-    delivTime: { fontSize: 11, color: COLORS.textDim },
+    delivId: { flex: 1, fontSize: 13, fontWeight: '700', fontVariant: ['tabular-nums'] },
+    delivTime: { fontSize: 11 },
     stop: {
         flexDirection: 'row', alignItems: 'center', gap: 10,
-        paddingTop: 10, borderTopWidth: 1, borderTopColor: COLORS.border,
+        paddingTop: 10, borderTopWidth: 1,
     },
-    stopText: { fontSize: 13, color: COLORS.text, fontWeight: '500', marginBottom: 4 },
-    confirmBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.accent, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8, gap: 4 },
+    stopText: { fontSize: 13, fontWeight: '500', marginBottom: 4 },
+    confirmBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8, gap: 4 },
     confirmBtnText: { color: '#000', fontWeight: '700', fontSize: 13 },
     empty: { alignItems: 'center', paddingTop: 80, gap: 12 },
-    emptyIcon: { fontSize: 48 },
-    emptyText: { color: COLORS.textMuted, fontSize: 14 },
+    emptyText: { fontSize: 14 },
     // Modal
     modal: { padding: 20, paddingBottom: 48 },
     modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingTop: 12 },
-    modalTitle: { fontSize: 22, fontWeight: '800', color: COLORS.text },
-    modalClose: { fontSize: 22, color: COLORS.textMuted },
-    fieldLabel: { fontSize: 12, fontWeight: '700', color: COLORS.textMuted, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 },
-    fieldLabelSm: { fontSize: 11, fontWeight: '700', color: COLORS.textDim, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
-    noRobotsText: { color: COLORS.red, marginBottom: 16, fontSize: 13 },
+    modalTitle: { fontSize: 22, fontWeight: '800' },
+    modalClose: { fontSize: 22 },
+    fieldLabel: { fontSize: 12, fontWeight: '700', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 },
+    fieldLabelSm: { fontSize: 11, fontWeight: '700', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
+    noRobotsText: { marginBottom: 16, fontSize: 13 },
     robotOption: {
         paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12,
-        backgroundColor: COLORS.surface2, borderWidth: 1, borderColor: COLORS.border,
-        marginRight: 10, alignItems: 'center', minWidth: 80,
+        borderWidth: 1, marginRight: 10, alignItems: 'center', minWidth: 80,
     },
-    robotOptionActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-    robotOptionIcon: { fontSize: 22, marginBottom: 4 },
-    robotOptionText: { fontSize: 12, color: COLORS.textMuted, fontWeight: '600' },
+    robotOptionText: { fontSize: 12, fontWeight: '600' },
     stopBlock: {
-        backgroundColor: COLORS.surface, borderRadius: 12,
-        borderWidth: 1, borderColor: COLORS.border,
-        padding: 14, marginBottom: 12,
+        borderRadius: 12, borderWidth: 1, padding: 14, marginBottom: 12,
     },
-    stopBlockTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text, marginBottom: 12 },
+    stopBlockTitle: { fontSize: 15, fontWeight: '700', marginBottom: 12 },
     orderOption: {
         paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8,
-        backgroundColor: COLORS.surface2, borderWidth: 1, borderColor: COLORS.border, marginRight: 8,
+        borderWidth: 1, marginRight: 8,
     },
-    orderOptionActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-    orderOptionText: { fontSize: 13, color: COLORS.textMuted, fontWeight: '500' },
+    orderOptionText: { fontSize: 13, fontWeight: '500' },
     cabinetsRow: { flexDirection: 'row', gap: 10 },
     cabBtn: {
         paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10,
-        backgroundColor: COLORS.surface2, borderWidth: 1, borderColor: COLORS.border,
+        borderWidth: 1,
     },
-    cabBtnActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-    cabBtnText: { color: COLORS.textMuted, fontWeight: '700', fontSize: 15 },
+    cabBtnText: { fontWeight: '700', fontSize: 15 },
     addStopBtn: {
-        backgroundColor: COLORS.surface2, borderRadius: 12, padding: 14,
-        alignItems: 'center', borderWidth: 1, borderColor: COLORS.border, marginBottom: 12,
+        borderRadius: 12, padding: 14,
+        alignItems: 'center', borderWidth: 1, marginBottom: 12,
     },
-    addStopBtnText: { color: COLORS.textMuted, fontWeight: '700', fontSize: 14 },
-    dispatchBtn: { flexDirection: 'row', justifyContent: 'center', backgroundColor: COLORS.accent, borderRadius: 12, padding: 16, alignItems: 'center' },
+    addStopBtnText: { fontWeight: '700', fontSize: 14 },
+    dispatchBtn: { flexDirection: 'row', justifyContent: 'center', borderRadius: 12, padding: 16, alignItems: 'center' },
     dispatchBtnText: { color: '#0f0f13', fontWeight: '800', fontSize: 16 },
 });

@@ -10,11 +10,12 @@ import { paymentsApi } from '../../api/payments';
 import { deliveriesApi, robotsApi } from '../../api/deliveries';
 import { useSocket } from '../../hooks/useSocket';
 import { KpiCard } from '../../components/KpiCard';
-import { COLORS } from '../../theme';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 
 export function DashboardScreen() {
     const { user } = useAuth();
+    const { colors } = useTheme();
     const navigation = useNavigation<any>();
     const restaurantId = user?.restaurantId ?? '';
 
@@ -24,6 +25,15 @@ export function DashboardScreen() {
     const [robotsOnline, setRobotsOnline] = useState(0);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+
+    // Dynamic styles
+    const thematicStyles = {
+        screen: { backgroundColor: colors.bg },
+        greeting: { color: colors.textMuted },
+        restaurantName: { color: colors.text },
+        role: { color: colors.textDim },
+        hint: { color: colors.textDim }
+    };
 
     const load = useCallback(async () => {
         if (!restaurantId) return;
@@ -78,72 +88,72 @@ export function DashboardScreen() {
     const kpis = [
         ...(user?.role === 'Owner' ? [
             { 
-                icon: <Feather name="dollar-sign" size={24} color={COLORS.green} />, 
+                icon: <Feather name="dollar-sign" size={24} color={colors.green} />, 
                 value: `₹${summary.total_revenue.toFixed(0)}`, 
                 label: "Today's Revenue", 
                 sub: 'Total gross revenue today', 
-                color: COLORS.green,
+                color: colors.green,
                 fullWidth: true 
             },
             { 
-                icon: <Feather name="hash" size={24} color={COLORS.blue} />, 
+                icon: <Feather name="hash" size={24} color={colors.blue} />, 
                 value: summary.order_count, 
                 label: "Today's Orders", 
                 sub: 'Total orders processed', 
-                color: COLORS.blue,
+                color: colors.blue,
                 fullWidth: true 
             },
         ] : []),
         { 
-            icon: <Feather name="alert-circle" size={24} color={COLORS.amber} />, 
+            icon: <Feather name="alert-circle" size={24} color={colors.amber} />, 
             value: orderSummary.pending, 
             label: 'Pending Orders', 
             sub: 'Requires attention', 
-            color: COLORS.amber, // Kept amber as it represents warning/action
+            color: colors.amber,
             onPress: () => handleDrillDown('Pending')
         },
         { 
-            icon: <Feather name="coffee" size={24} color={COLORS.purple} />, 
+            icon: <Feather name="coffee" size={24} color={colors.purple} />, 
             value: orderSummary.preparing, 
             label: 'Preparing', 
             sub: 'Being cooked', 
-            color: COLORS.purple,
-            onPress: () => handleDrillDown('Confirmed') // Assuming Confirmed shows preparing items
+            color: colors.purple,
+            onPress: () => handleDrillDown('Confirmed')
         },
         { 
-            icon: <Feather name="check-circle" size={24} color="#a7f3d0" />, // Softer green
+            icon: <Feather name="check-circle" size={24} color={colors.accent} />, 
             value: orderSummary.completed, 
             label: 'Completed', 
             sub: 'Ready / Delivered', 
-            color: '#059669', // Stronger label color, soft icon
+            color: colors.accent,
             onPress: () => handleDrillDown('Ready')
         },
         { 
-            icon: <Feather name="cpu" size={24} color={COLORS.blue} />, 
+            icon: <Feather name="cpu" size={24} color={colors.blue} />, 
             value: robotsOnline, 
             label: 'Robots', 
             sub: 'Online now', 
-            color: COLORS.blue 
+            color: colors.blue 
         },
     ];
 
     return (
         <ScrollView
-            style={styles.screen}
+            style={thematicStyles.screen}
             contentContainerStyle={styles.body}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
         >
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.greeting}>Welcome back,</Text>
-                    <Text style={styles.restaurantName}>{user?.name || 'Administrator'}</Text>
-                    <Text style={styles.role}>{user?.role} Overview</Text>
+                    <Text style={[styles.greeting, thematicStyles.greeting]}>Welcome back,</Text>
+                    <Text style={[styles.restaurantName, thematicStyles.restaurantName]}>{user?.name || 'Administrator'}</Text>
+                    <Text style={[styles.role, thematicStyles.role]}>{user?.role} Overview</Text>
                 </View>
             </View>
 
             {loading ? (
-                <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 40 }} />
+                <ActivityIndicator color={colors.accent} size="large" style={{ marginTop: 40 }} />
             ) : (
                 <View style={styles.grid}>
                     {kpis.map(k => (
@@ -161,7 +171,7 @@ export function DashboardScreen() {
                 </View>
             )}
 
-            <Text style={styles.hint}>
+            <Text style={[styles.hint, thematicStyles.hint]}>
                 Real-time updates active — pull to refresh manually
             </Text>
         </ScrollView>
@@ -169,7 +179,6 @@ export function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: COLORS.bg },
     body: { padding: 16, paddingBottom: 40 },
     header: {
         flexDirection: 'row',
@@ -178,13 +187,12 @@ const styles = StyleSheet.create({
         paddingTop: 48,
         paddingBottom: 24,
     },
-    greeting: { fontSize: 16, fontWeight: '600', color: COLORS.textMuted },
-    restaurantName: { fontSize: 26, fontWeight: '800', color: COLORS.text, marginTop: 4 },
-    role: { fontSize: 13, color: COLORS.textDim, marginTop: 4, textTransform: 'uppercase', letterSpacing: 1 },
+    greeting: { fontSize: 16, fontWeight: '600' },
+    restaurantName: { fontSize: 26, fontWeight: '800', marginTop: 4 },
+    role: { fontSize: 13, marginTop: 4, textTransform: 'uppercase', letterSpacing: 1 },
     grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 24 },
     hint: {
         textAlign: 'center',
-        color: COLORS.textDim,
         fontSize: 12,
         paddingHorizontal: 16,
     },

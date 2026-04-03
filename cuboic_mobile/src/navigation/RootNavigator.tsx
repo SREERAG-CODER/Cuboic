@@ -6,6 +6,7 @@ import { ActivityIndicator, View, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { DashboardScreen } from '../screens/shared/DashboardScreen';
 import { OrdersScreen } from '../screens/shared/OrdersScreen';
@@ -19,7 +20,7 @@ import { StaffScreen } from '../screens/owner/StaffScreen';
 import { TablesScreen } from '../screens/owner/TablesScreen';
 import { AnalyticsScreen } from '../screens/owner/AnalyticsScreen';
 import { ManagementScreen } from '../screens/owner/ManagementScreen';
-import { COLORS } from '../theme';
+import { S } from '../theme';
 
 export type RootStackParamList = {
     Login: undefined;
@@ -48,11 +49,12 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 const MStack = createNativeStackNavigator<ManageStackParamList>();
 
 function ManageStack() {
+    const { colors } = useTheme();
     return (
         <MStack.Navigator
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: COLORS.bg },
+                contentStyle: { backgroundColor: colors.bg },
             }}
         >
             <MStack.Screen 
@@ -70,6 +72,7 @@ function ManageStack() {
 
 function MainTabs() {
     const { user } = useAuth();
+    const { colors } = useTheme();
     const isOwner = user?.role === 'Owner';
     const isStaff = user?.role === 'Staff';
     const insets = useSafeAreaInsets();
@@ -79,17 +82,17 @@ function MainTabs() {
             screenOptions={({ route }) => ({
                 headerShown: false,
                 tabBarStyle: {
-                    backgroundColor: COLORS.surface,
-                    borderTopColor: COLORS.border,
+                    backgroundColor: colors.surface,
+                    borderTopColor: colors.border,
                     borderTopWidth: 1,
-                    paddingBottom: Math.max(insets.bottom, 8), // Increased padding
-                    paddingTop: 8, // Increased padding
+                    paddingBottom: Math.max(insets.bottom, 8),
+                    paddingTop: 8,
                     paddingLeft: Math.max(insets.left, 0),
                     paddingRight: Math.max(insets.right, 0),
-                    height: 64 + insets.bottom, // Slightly taller
+                    height: 64 + insets.bottom,
                 },
-                tabBarActiveTintColor: COLORS.accent,
-                tabBarInactiveTintColor: COLORS.textMuted,
+                tabBarActiveTintColor: colors.accent,
+                tabBarInactiveTintColor: colors.textDim,
                 tabBarLabel: ({ color, focused }) => (
                     <Text style={{ color, fontSize: 10, fontWeight: focused ? '700' : '500' }}>
                         {route.name}
@@ -103,7 +106,7 @@ function MainTabs() {
                     else if (route.name === 'Manage') iconName = 'settings';
                     else if (route.name === 'Profile') iconName = 'user';
 
-                    return <Feather name={iconName} size={22} color={color} />; // Reduced size from 24 (default size param was likely 24)
+                    return <Feather name={iconName} size={22} color={color} />;
                 },
             })}
         >
@@ -120,11 +123,12 @@ function MainTabs() {
 
 export function RootNavigator() {
     const { user, loading } = useAuth();
+    const { colors } = useTheme();
 
     if (loading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.bg }}>
-                <ActivityIndicator color={COLORS.accent} size="large" />
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bg }}>
+                <ActivityIndicator color={colors.accent} size="large" />
             </View>
         );
     }
@@ -133,10 +137,10 @@ export function RootNavigator() {
         <NavigationContainer>
             <Stack.Navigator
                 screenOptions={{
-                    headerStyle: { backgroundColor: COLORS.surface },
-                    headerTintColor: COLORS.text,
+                    headerStyle: { backgroundColor: colors.surface },
+                    headerTintColor: colors.text,
                     headerTitleStyle: { fontWeight: '700' },
-                    contentStyle: { backgroundColor: COLORS.bg },
+                    contentStyle: { backgroundColor: colors.bg },
                 }}
             >
                 {!user ? (
