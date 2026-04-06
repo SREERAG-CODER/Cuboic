@@ -17,6 +17,10 @@ export class CreateOrderDto {
     restaurantId: string;
 
     @IsString()
+    @IsOptional()
+    outletId?: string;
+
+    @IsString()
     @IsNotEmpty()
     tableId: string;
 
@@ -27,6 +31,10 @@ export class CreateOrderDto {
     @IsString()
     @IsOptional()
     customerId?: string;
+
+    @IsString()
+    @IsOptional()
+    orderType?: string; // DineIn | Takeaway | Delivery
 
     @IsString()
     @IsOptional()

@@ -1,0 +1,1 @@
+﻿src/screens/shared/DashboardScreen.tsx(184,12): error TS2304: Cannot find name 'S'.

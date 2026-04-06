@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { COLORS } from '../theme';
+import { useTheme } from '../context/ThemeContext';
+import { S } from '../theme';
 
 interface KpiCardProps {
     icon: React.ReactNode;
@@ -17,34 +18,39 @@ export function KpiCard({
     value, 
     label, 
     sub, 
-    accentColor = COLORS.accent, 
+    accentColor, 
     fullWidth = false,
     onPress 
 }: KpiCardProps) {
+    const { colors } = useTheme();
     const Container = onPress ? TouchableOpacity : View;
+    const finalAccentColor = accentColor || colors.accent;
 
     return (
         <Container 
             style={[
                 styles.card, 
-                { borderColor: accentColor + '33' },
-                fullWidth && styles.fullWidth
+                { 
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                    ...(fullWidth && styles.fullWidth)
+                }
             ]}
             onPress={onPress}
             activeOpacity={0.7}
         >
             <View style={styles.content}>
-                <View style={[styles.iconWrapper, { backgroundColor: accentColor + '15' }]}>
+                <View style={[styles.iconWrapper, { backgroundColor: finalAccentColor + '15' }]}>
                     {typeof icon === 'string' ? <Text style={styles.icon}>{icon}</Text> : icon}
                 </View>
                 <View style={styles.info}>
-                    <Text style={[styles.value, { color: accentColor }]}>{value}</Text>
-                    <Text style={styles.label}>{label}</Text>
-                    {sub && <Text style={styles.sub}>{sub}</Text>}
+                    <Text style={[styles.value, { color: finalAccentColor }]}>{value}</Text>
+                    <Text style={[styles.label, { color: colors.textMuted }]}>{label}</Text>
+                    {sub && <Text style={[styles.sub, { color: colors.textDim }]}>{sub}</Text>}
                 </View>
                 {onPress && (
                     <View style={styles.chevron}>
-                        <Text style={{ color: COLORS.textDim }}>{'>'}</Text>
+                        <Text style={{ color: colors.textDim }}>{'>'}</Text>
                     </View>
                 )}
             </View>
@@ -54,7 +60,7 @@ export function KpiCard({
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: COLORS.surface,
+        ...S.shadow,
         borderRadius: 20,
         borderWidth: 1,
         padding: 16,
@@ -81,8 +87,8 @@ const styles = StyleSheet.create({
     },
     icon: { fontSize: 24 },
     value: { fontSize: 22, fontWeight: '800' },
-    label: { fontSize: 13, color: COLORS.textMuted, fontWeight: '600' },
-    sub: { fontSize: 11, color: COLORS.textDim, marginTop: 2 },
+    label: { fontSize: 13, fontWeight: '600' },
+    sub: { fontSize: 11, marginTop: 2 },
     chevron: {
         paddingLeft: 8,
     }

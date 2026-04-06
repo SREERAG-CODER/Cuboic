@@ -16,15 +16,18 @@ const schedule_1 = require("@nestjs/schedule");
 const prisma_service_1 = require("../prisma/prisma.service");
 const events_gateway_1 = require("../events/events.gateway");
 const platform_fees_service_1 = require("../platform-fees/platform-fees.service");
+const inventory_service_1 = require("../inventory/inventory.service");
 let OrdersService = OrdersService_1 = class OrdersService {
     prisma;
     eventsGateway;
     platformFeesService;
+    inventoryService;
     logger = new common_1.Logger(OrdersService_1.name);
-    constructor(prisma, eventsGateway, platformFeesService) {
+    constructor(prisma, eventsGateway, platformFeesService, inventoryService) {
         this.prisma = prisma;
         this.eventsGateway = eventsGateway;
         this.platformFeesService = platformFeesService;
+        this.inventoryService = inventoryService;
     }
     async create(dto) {
         console.log('[DEBUG] createOrder DTO:', JSON.stringify(dto, null, 2));
@@ -66,6 +69,14 @@ let OrdersService = OrdersService_1 = class OrdersService {
         });
         this.eventsGateway.emitToRestaurant(dto.restaurantId, 'order:new', order);
         await this.platformFeesService.createIfEligible(dto.restaurantId, order.id, total);
+        if (dto.outletId) {
+            try {
+                await this.inventoryService.deductForOrder(dto.outletId, order.id, dto.items.map((i) => ({ itemId: i.itemId, quantity: i.quantity })));
+            }
+            catch (e) {
+                this.logger.warn(`Inventory deduction failed for order ${order.id}: ${e.message}`);
+            }
+        }
         return order;
     }
     findOne(id) {
@@ -206,6 +217,7 @@ exports.OrdersService = OrdersService = OrdersService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         events_gateway_1.EventsGateway,
-        platform_fees_service_1.PlatformFeesService])
+        platform_fees_service_1.PlatformFeesService,
+        inventory_service_1.InventoryService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

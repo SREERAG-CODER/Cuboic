@@ -7,10 +7,12 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../context/AuthContext';
-import { COLORS } from '../../theme';
+import { useTheme } from '../../context/ThemeContext';
+import { S, FONT } from '../../theme';
 
 export function LoginScreen() {
     const { login } = useAuth();
+    const { colors, isDark } = useTheme();
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -28,13 +30,11 @@ export function LoginScreen() {
     }
 
     return (
-        <LinearGradient
-            colors={['#ffffffff', '#ffffffff', '#121212', '#121212ff']}
-            locations={[0, 0.5, 0.5, 1]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.screen}
-        >
+        <View style={[S.screen, { backgroundColor: colors.bg }]}>
+            <LinearGradient
+                colors={isDark ? [colors.bg, colors.surface] : ['#f8fafc', '#f1f5f9']}
+                style={StyleSheet.absoluteFill}
+            />
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -46,95 +46,95 @@ export function LoginScreen() {
                             source={require('../../../assets/bg.png')}
                             style={styles.logoImage}
                         />
-                        <Text style={styles.logoSub}>Restaurant Admin</Text>
+                        <Text style={[styles.logoSub, { color: colors.textMuted }]}>Restaurant Admin</Text>
                     </View>
 
                     {/* Form */}
-                    <View style={styles.form}>
-                        <Text style={styles.label}>User ID</Text>
+                    <View style={[styles.form, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                        <Text style={[styles.label, { color: colors.text }]}>User ID</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { backgroundColor: colors.surface2, borderColor: colors.border, color: colors.text }]}
                             value={userId}
                             onChangeText={setUserId}
                             placeholder="e.g. owner01"
-                            placeholderTextColor={COLORS.textDim}
+                            placeholderTextColor={colors.textDim}
                             autoCapitalize="none"
                             autoCorrect={false}
                             returnKeyType="next"
                         />
 
-                        <Text style={[styles.label, { marginTop: 16 }]}>Password</Text>
+                        <Text style={[styles.label, { marginTop: 16, color: colors.text }]}>Password</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { backgroundColor: colors.surface2, borderColor: colors.border, color: colors.text }]}
                             value={password}
                             onChangeText={setPassword}
                             placeholder="••••••••"
-                            placeholderTextColor={COLORS.textDim}
+                            placeholderTextColor={colors.textDim}
                             secureTextEntry
                             returnKeyType="done"
                             onSubmitEditing={handleLogin}
                         />
 
                         <TouchableOpacity
-                            style={[styles.btn, loading && styles.btnDisabled]}
+                            style={[styles.btn, { backgroundColor: colors.accent }, loading && styles.btnDisabled]}
                             onPress={handleLogin}
                             disabled={loading}
                             activeOpacity={0.8}
                         >
                             {loading
                                 ? <ActivityIndicator color="#000" />
-                                : <Text style={styles.btnText}>Sign In →</Text>
+                                : <Text style={[styles.btnText, { color: '#000' }]}>Sign In →</Text>
                             }
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.hint}>
+                    <Text style={[styles.hint, { color: colors.textDim }]}>
                         Sign in with your Staff or Owner credentials
                     </Text>
                 </ScrollView>
             </KeyboardAvoidingView>
-        </LinearGradient>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    screen: { flex: 1 },
-    inner: { flexGrow: 1, justifyContent: 'flex-start', padding: 28, paddingTop: 60, width: '100%', maxWidth: 480, alignSelf: 'center' },
+    inner: { flexGrow: 1, justifyContent: 'center', padding: 28, paddingTop: 60, width: '100%', maxWidth: 480, alignSelf: 'center' },
     logoArea: { alignItems: 'center', marginBottom: 38 },
-    logoImage: { width: 200, height: 200, marginBottom: -30, borderRadius: 30 },
-    logoTitle: { fontSize: 36, fontWeight: '800', color: '#e76837ff', letterSpacing: 1, textShadowColor: 'rgba(0,0,0,0.1)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 2 },
-    logoSub: { fontSize: 14, color: '#8b8aa0', marginTop: 4, fontWeight: '600' },
+    logoImage: { width: 180, height: 180, borderRadius: 30 },
+    logoSub: { fontSize: 14, marginTop: 12, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase' },
     form: {
-        backgroundColor: '#b2b2b7ff',
-        borderRadius: 20,
-        borderWidth: 3,
-        borderColor: '#050505ff',
+        ...S.shadow,
+        borderRadius: 24,
+        borderWidth: 1,
         padding: 24,
-        // Card elevation/shadow for split background
-        shadowColor: '#3fb938ff',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 10,
-        shadowRadius: 20,
-        elevation: 10,
+
+
+
+
+
     },
-    label: { fontSize: 12, fontWeight: '600', color: '#000000ff', marginBottom: 8, letterSpacing: 0.5 },
+    label: { fontSize: 13, fontWeight: '700', marginBottom: 8, letterSpacing: 0.5 },
     input: {
-        backgroundColor: '#ffffff',
-        borderRadius: 10,
-        borderWidth: 1.5,
-        borderColor: '#000000ff',
+        ...S.shadow,
+        borderRadius: 12,
+        borderWidth: 1,
         padding: 14,
-        color: '#1c1c1e',
-        fontSize: 15,
+        fontSize: 16,
     },
     btn: {
-        marginTop: 20,
-        backgroundColor: '#7CC018',
+        ...S.shadow,
+        marginTop: 24,
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
+
+
+
+
+
     },
-    btnDisabled: { opacity: 0.6 },
-    btnText: { color: '#0f0f13', fontWeight: '800', fontSize: 16 },
-    hint: { textAlign: 'center', color: COLORS.textDim, fontSize: 12, marginTop: 32 },
+    btnDisabled: {
+        ...S.shadow, opacity: 0.6 },
+    btnText: { fontWeight: '800', fontSize: 16 },
+    hint: { textAlign: 'center', fontSize: 12, marginTop: 32, fontStyle: 'italic' },
 });

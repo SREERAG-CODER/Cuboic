@@ -35,8 +35,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -81,8 +83,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -122,8 +126,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -137,8 +143,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -152,8 +160,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -167,8 +177,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -182,8 +194,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -216,8 +230,10 @@ export declare class OrdersController {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;

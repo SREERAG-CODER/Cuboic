@@ -21,6 +21,9 @@ import { TablesModule } from './tables/tables.module';
 import { CustomersModule } from './customers/customers.module';
 import { PlatformFeesModule } from './platform-fees/platform-fees.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { OutletsModule } from './outlets/outlets.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { RecipesModule } from './recipes/recipes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -47,6 +50,9 @@ import { AnalyticsModule } from './analytics/analytics.module';
     CustomersModule,
     PlatformFeesModule,
     AnalyticsModule,
+    OutletsModule,
+    InventoryModule,
+    RecipesModule,
   ],
   providers: [
     {

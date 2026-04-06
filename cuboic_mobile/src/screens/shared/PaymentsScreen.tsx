@@ -6,13 +6,15 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { paymentsApi, platformFeesApi, type Payment, type PlatformFee, type PlatformFeeSummary } from '../../api/payments';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { StatusBadge } from '../../components/StatusBadge';
 import { KpiCard } from '../../components/KpiCard';
-import { COLORS, S } from '../../theme';
+import { S, FONT } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 
 export function PaymentsScreen() {
     const { user } = useAuth();
+    const { colors, isDark } = useTheme();
     const navigation = useNavigation();
     const restaurantId = user?.restaurantId ?? '';
     const isOwner = user?.role === 'Owner';
@@ -52,7 +54,7 @@ export function PaymentsScreen() {
         }
     }, [restaurantId, from, to, isOwner]);
 
-    useEffect(() => { load().finally(() => setLoading(false)); }, [restaurantId]);
+    useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
 
     const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
 
@@ -82,38 +84,38 @@ export function PaymentsScreen() {
     const paidFees = fees.filter(f => f.isPaid);
 
     if (loading) return (
-        <View style={S.screen}>
-            <ActivityIndicator style={{ marginTop: 80 }} color={COLORS.accent} size="large" />
+        <View style={[S.screen, { backgroundColor: colors.bg }]}>
+            <ActivityIndicator style={{ marginTop: 80 }} color={colors.accent} size="large" />
         </View>
     );
 
     const FeeCard = ({ item }: { item: PlatformFee }) => (
-        <View style={[styles.feeCard, item.isPaid && styles.feeCardPaid]}>
+        <View style={[styles.feeCard, { backgroundColor: colors.surface2, borderColor: colors.border }, item.isPaid && styles.feeCardPaid]}>
             <View style={styles.feeRow}>
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.feeOrderId}>
+                    <Text style={[styles.feeOrderId, { color: colors.text }]}>
                         Order #{item.orderId.slice(-6).toUpperCase()}
                     </Text>
-                    <Text style={styles.feeTime}>
+                    <Text style={[styles.feeTime, { color: colors.textDim }]}>
                         {new Date(item.createdAt).toLocaleString()}
                     </Text>
                     {item.order && (
-                        <Text style={styles.feeOrderTotal}>
+                        <Text style={[styles.feeOrderTotal, { color: colors.textMuted }]}>
                             Order total: ₹{item.order.total.toFixed(2)}
                         </Text>
                     )}
                 </View>
                 <View style={styles.feeRight}>
-                    <Text style={styles.feeAmount}>₹{item.amount.toFixed(0)}</Text>
+                    <Text style={[styles.feeAmount, { color: colors.amber }]}>₹{item.amount.toFixed(0)}</Text>
                     {item.isPaid ? (
-                        <View style={styles.paidBadge}>
-                            <Feather name="check-circle" size={12} color={COLORS.green} />
-                            <Text style={styles.paidBadgeText}>Paid</Text>
+                        <View style={[styles.paidBadge, { backgroundColor: colors.green + '22' }]}>
+                            <Feather name="check-circle" size={12} color={colors.green} />
+                            <Text style={[styles.paidBadgeText, { color: colors.green }]}>Paid</Text>
                         </View>
                     ) : (
                         user?.role === 'Admin' && (
                             <TouchableOpacity
-                                style={styles.markPaidBtn}
+                                style={[styles.markPaidBtn, { backgroundColor: colors.accent }]}
                                 onPress={() => handleMarkFeePaid(item.id)}
                                 disabled={payingFeeId === item.id}
                                 activeOpacity={0.8}
@@ -132,17 +134,17 @@ export function PaymentsScreen() {
 
     return (
         <FlatList
-            style={S.screen}
+            style={[S.screen, { backgroundColor: colors.bg }]}
             contentContainerStyle={styles.body}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
             ListHeaderComponent={
                 <View>
                     <View style={styles.header}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                                <Feather name="arrow-left" size={20} color={COLORS.text} />
+                            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: colors.surface2 }]}>
+                                <Feather name="arrow-left" size={20} color={colors.text} />
                             </TouchableOpacity>
-                            <Text style={styles.title}>Payments</Text>
+                            <Text style={[styles.title, { color: colors.text }]}>Payments</Text>
                         </View>
                     </View>
 
@@ -168,46 +170,46 @@ export function PaymentsScreen() {
 
                     {/* ── Amount Payable to Thambi (Owner only) ── */}
                     {isOwner && feeSummary && (
-                        <View style={styles.thambiSection}>
+                        <View style={[styles.thambiSection, { backgroundColor: colors.surface, borderColor: colors.amber }]}>
                             <View style={styles.thambiHeader}>
-                                <Feather name="alert-circle" size={16} color={COLORS.amber} />
-                                <Text style={styles.thambiTitle}>Amount Payable to Thambi</Text>
+                                <Feather name="alert-circle" size={16} color={colors.amber} />
+                                <Text style={[styles.thambiTitle, { color: colors.amber }]}>Amount Payable to Thambi</Text>
                             </View>
-                            <Text style={styles.thambiSubtitle}>
+                            <Text style={[styles.thambiSubtitle, { color: colors.textMuted }]}>
                                 ₹5 is owed for each order above ₹100
                             </Text>
 
                             <View style={styles.thambiKpiRow}>
-                                <View style={[styles.thambiKpi, styles.thambiKpiDue]}>
-                                    <Text style={styles.thambiKpiValue}>₹{feeSummary.totalOwed.toFixed(0)}</Text>
-                                    <Text style={styles.thambiKpiLabel}>Outstanding</Text>
-                                    <Text style={styles.thambiKpiSub}>{feeSummary.unpaidCount} order(s)</Text>
+                                <View style={[styles.thambiKpi, { backgroundColor: colors.surface2, borderColor: colors.border }, styles.thambiKpiDue]}>
+                                    <Text style={[styles.thambiKpiValue, { color: colors.amber }]}>₹{feeSummary.totalOwed.toFixed(0)}</Text>
+                                    <Text style={[styles.thambiKpiLabel, { color: colors.textMuted }]}>Outstanding</Text>
+                                    <Text style={[styles.thambiKpiSub, { color: colors.textDim }]}>{feeSummary.unpaidCount} order(s)</Text>
                                 </View>
-                                <View style={[styles.thambiKpi, styles.thambiKpiPaid]}>
-                                    <Text style={[styles.thambiKpiValue, { color: COLORS.green }]}>₹{feeSummary.totalPaid.toFixed(0)}</Text>
-                                    <Text style={styles.thambiKpiLabel}>Paid so far</Text>
-                                    <Text style={styles.thambiKpiSub}>{fees.length - feeSummary.unpaidCount} order(s)</Text>
+                                <View style={[styles.thambiKpi, { backgroundColor: colors.surface2, borderColor: colors.border }, styles.thambiKpiPaid]}>
+                                    <Text style={[styles.thambiKpiValue, { color: colors.green }]}>₹{feeSummary.totalPaid.toFixed(0)}</Text>
+                                    <Text style={[styles.thambiKpiLabel, { color: colors.textMuted }]}>Paid so far</Text>
+                                    <Text style={[styles.thambiKpiSub, { color: colors.textDim }]}>{fees.length - feeSummary.unpaidCount} order(s)</Text>
                                 </View>
                             </View>
 
                             {unpaidFees.length > 0 && (
                                 <>
-                                    <Text style={styles.feeListLabel}>PENDING FEES</Text>
+                                    <Text style={[styles.feeListLabel, { color: colors.textDim }]}>PENDING FEES</Text>
                                     {unpaidFees.map(f => <FeeCard key={f.id} item={f} />)}
                                 </>
                             )}
 
                             {paidFees.length > 0 && (
                                 <>
-                                    <Text style={[styles.feeListLabel, { marginTop: 12 }]}>PAID FEES</Text>
+                                    <Text style={[styles.feeListLabel, { color: colors.textDim, marginTop: 12 }]}>PAID FEES</Text>
                                     {paidFees.map(f => <FeeCard key={f.id} item={f} />)}
                                 </>
                             )}
 
                             {fees.length === 0 && (
                                 <View style={styles.feeEmpty}>
-                                    <Feather name="check-circle" size={20} color={COLORS.green} />
-                                    <Text style={styles.feeEmptyText}>No fees yet</Text>
+                                    <Feather name="check-circle" size={20} color={colors.green} />
+                                    <Text style={[styles.feeEmptyText, { color: colors.textMuted }]}>No fees yet</Text>
                                 </View>
                             )}
                         </View>
@@ -216,74 +218,74 @@ export function PaymentsScreen() {
                     {/* Date filter */}
                     <View style={styles.filterRow}>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.filterLabel}>From</Text>
+                            <Text style={[styles.filterLabel, { color: colors.textMuted }]}>From</Text>
                             <TextInput
-                                style={styles.filterInput}
+                                style={[styles.filterInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
                                 value={from}
                                 onChangeText={setFrom}
                                 placeholder="YYYY-MM-DD"
-                                placeholderTextColor={COLORS.textDim}
+                                placeholderTextColor={colors.textDim}
                             />
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.filterLabel}>To</Text>
+                            <Text style={[styles.filterLabel, { color: colors.textMuted }]}>To</Text>
                             <TextInput
-                                style={styles.filterInput}
+                                style={[styles.filterInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
                                 value={to}
                                 onChangeText={setTo}
                                 placeholder="YYYY-MM-DD"
-                                placeholderTextColor={COLORS.textDim}
+                                placeholderTextColor={colors.textDim}
                             />
                         </View>
                         <View style={{ gap: 8 }}>
-                            <TouchableOpacity style={styles.filterBtn} onPress={load} activeOpacity={0.8}>
+                            <TouchableOpacity style={[styles.filterBtn, { backgroundColor: colors.accent }]} onPress={load} activeOpacity={0.8}>
                                 <Text style={styles.filterBtnText}>Filter</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={styles.filterBtnReset}
+                                style={[styles.filterBtnReset, { backgroundColor: colors.surface2, borderColor: colors.border }]}
                                 onPress={() => { setFrom(''); setTo(''); }}
                                 activeOpacity={0.8}
                             >
-                                <Text style={styles.filterBtnResetText}>Reset</Text>
+                                <Text style={[styles.filterBtnResetText, { color: colors.textMuted }]}>Reset</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
 
                     {payments.length > 0 && (
-                        <View style={styles.filterSummary}>
-                            <Text style={styles.filterSummaryText}>
+                        <View style={[styles.filterSummary, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                            <Text style={[styles.filterSummaryText, { color: colors.textMuted }]}>
                                 {payments.length} payment(s) · Paid total:{' '}
-                                <Text style={{ color: COLORS.green, fontWeight: '700' }}>₹{totalFiltered.toFixed(2)}</Text>
+                                <Text style={{ color: colors.green, fontWeight: '700' }}>₹{totalFiltered.toFixed(2)}</Text>
                             </Text>
                         </View>
                     )}
 
-                    <Text style={styles.sectionTitle}>PAYMENT RECORDS</Text>
+                    <Text style={[styles.sectionTitle, { color: colors.textDim }]}>PAYMENT RECORDS</Text>
                 </View>
             }
             data={payments}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-                <View style={styles.payCard}>
+                <View style={[styles.payCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                     <View style={styles.payRow}>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.payId}>#{typeof item.orderId === 'string' ? item.orderId.slice(-6).toUpperCase() : '—'}</Text>
-                            <Text style={styles.payTime}>{new Date(item.createdAt).toLocaleString()}</Text>
+                            <Text style={[styles.payId, { color: colors.text }]}>#{typeof item.orderId === 'string' ? item.orderId.slice(-6).toUpperCase() : '—'}</Text>
+                            <Text style={[styles.payTime, { color: colors.textDim }]}>{new Date(item.createdAt).toLocaleString()}</Text>
                         </View>
                         <StatusBadge status={item.status} size="sm" />
                     </View>
                     <View style={styles.payDetails}>
-                        <Text style={styles.payMethod}>{item.method}</Text>
-                        <Text style={styles.payAmount}>₹{item.amount.toFixed(2)}</Text>
+                        <Text style={[styles.payMethod, { color: colors.textMuted }]}>{item.method}</Text>
+                        <Text style={[styles.payAmount, { color: colors.text }]}>₹{item.amount.toFixed(2)}</Text>
                     </View>
                     {item.transactionid && (
-                        <Text style={styles.payTxn}>TXN: {item.transactionid}</Text>
+                        <Text style={[styles.payTxn, { color: colors.textDim }]}>TXN: {item.transactionid}</Text>
                     )}
                 </View>
             )}
             ListEmptyComponent={
                 <View style={styles.empty}>
-                    <Text style={styles.emptyText}>No payments found</Text>
+                    <Text style={[styles.emptyText, { color: colors.textMuted }]}>No payments found</Text>
                 </View>
             }
         />
@@ -292,100 +294,107 @@ export function PaymentsScreen() {
 
 const styles = StyleSheet.create({
     body: { padding: 16, paddingBottom: 40, gap: 12 },
-    header: { paddingTop: 48, paddingBottom: 16 },
-    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.surface2 },
-    title: { fontSize: 26, fontWeight: '800', color: COLORS.text },
+    header: {
+        ...S.shadow, paddingTop: 48, paddingBottom: 16 },
+    backBtn: {
+        ...S.shadow, width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    title: { fontSize: 26, fontWeight: '800' },
     kpiRow: { flexDirection: 'row', gap: 12, marginBottom: 4 },
 
     // ── Thambi section ──────────────────────────────────────
     thambiSection: {
-        backgroundColor: COLORS.surface,
         borderRadius: 14,
         borderWidth: 1.5,
-        borderColor: COLORS.amber,
         padding: 16,
         gap: 10,
         marginBottom: 4,
     },
-    thambiHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    thambiTitle: { fontSize: 15, fontWeight: '800', color: COLORS.amber },
-    thambiSubtitle: { fontSize: 12, color: COLORS.textMuted, marginTop: -4 },
+    thambiHeader: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', gap: 8 },
+    thambiTitle: { fontSize: 15, fontWeight: '800' },
+    thambiSubtitle: { fontSize: 12, marginTop: -4 },
     thambiKpiRow: { flexDirection: 'row', gap: 10 },
     thambiKpi: {
         flex: 1, borderRadius: 10, padding: 12, gap: 2,
-        borderWidth: 1, borderColor: COLORS.border,
-        backgroundColor: COLORS.surface2,
+        borderWidth: 1,
     },
     thambiKpiDue: { borderColor: '#f59e0b33' },
     thambiKpiPaid: { borderColor: '#22c55e33' },
-    thambiKpiValue: { fontSize: 22, fontWeight: '800', color: COLORS.amber },
-    thambiKpiLabel: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600' },
-    thambiKpiSub: { fontSize: 10, color: COLORS.textDim },
+    thambiKpiValue: { fontSize: 22, fontWeight: '800' },
+    thambiKpiLabel: { fontSize: 11, fontWeight: '600' },
+    thambiKpiSub: { fontSize: 10 },
     feeListLabel: {
-        fontSize: 10, fontWeight: '700', color: COLORS.textDim,
+        fontSize: 10, fontWeight: '700',
         letterSpacing: 1.2, marginBottom: 4, marginTop: 4,
     },
     feeCard: {
-        backgroundColor: COLORS.surface2, borderRadius: 10,
-        borderWidth: 1, borderColor: COLORS.border, padding: 12,
+        ...S.shadow,
+        borderRadius: 10,
+        borderWidth: 1, padding: 12,
     },
-    feeCardPaid: { opacity: 0.55 },
+    feeCardPaid: {
+        ...S.shadow, opacity: 0.55 },
     feeRow: { flexDirection: 'row', alignItems: 'center' },
-    feeOrderId: { fontSize: 13, fontWeight: '700', color: COLORS.text },
-    feeTime: { fontSize: 11, color: COLORS.textDim, marginTop: 1 },
-    feeOrderTotal: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
+    feeOrderId: { fontSize: 13, fontWeight: '700' },
+    feeTime: { fontSize: 11, marginTop: 1 },
+    feeOrderTotal: { fontSize: 11, marginTop: 1 },
     feeRight: { alignItems: 'flex-end', gap: 6 },
-    feeAmount: { fontSize: 18, fontWeight: '800', color: COLORS.amber },
+    feeAmount: { fontSize: 18, fontWeight: '800' },
     markPaidBtn: {
-        backgroundColor: COLORS.accent, paddingHorizontal: 12,
+        ...S.shadow,
+        paddingHorizontal: 12,
         paddingVertical: 6, borderRadius: 7,
     },
     markPaidBtnText: { color: '#0f0f13', fontWeight: '700', fontSize: 12 },
     paidBadge: {
         flexDirection: 'row', alignItems: 'center', gap: 4,
-        backgroundColor: '#22c55e22', paddingHorizontal: 8,
+        paddingHorizontal: 8,
         paddingVertical: 4, borderRadius: 6,
     },
-    paidBadgeText: { fontSize: 11, color: COLORS.green, fontWeight: '700' },
+    paidBadgeText: { fontSize: 11, fontWeight: '700' },
     feeEmpty: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
         justifyContent: 'center', paddingVertical: 12,
     },
-    feeEmptyText: { fontSize: 13, color: COLORS.textMuted },
+    feeEmptyText: { fontSize: 13 },
 
     // ── Date filter ─────────────────────────────────────────
     filterRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-end', marginBottom: 4 },
-    filterLabel: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600', marginBottom: 6 },
+    filterLabel: { fontSize: 11, fontWeight: '600', marginBottom: 6 },
     filterInput: {
-        backgroundColor: COLORS.surface, borderRadius: 10, borderWidth: 1,
-        borderColor: COLORS.border, padding: 10, color: COLORS.text, fontSize: 13,
+        ...S.shadow,
+        borderRadius: 10, borderWidth: 1,
+        padding: 10, fontSize: 13,
     },
-    filterBtn: { backgroundColor: COLORS.accent, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 8, alignItems: 'center' },
+    filterBtn: {
+        ...S.shadow, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 8, alignItems: 'center' },
     filterBtnText: { color: '#0f0f13', fontWeight: '700', fontSize: 13 },
     filterBtnReset: {
-        backgroundColor: COLORS.surface2, paddingHorizontal: 14, paddingVertical: 9,
-        borderRadius: 8, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center',
+        ...S.shadow,
+        paddingHorizontal: 14, paddingVertical: 9,
+        borderRadius: 8, borderWidth: 1, alignItems: 'center',
     },
-    filterBtnResetText: { color: COLORS.textMuted, fontWeight: '600', fontSize: 13 },
+    filterBtnResetText: { fontWeight: '600', fontSize: 13 },
     filterSummary: {
-        backgroundColor: COLORS.surface, borderRadius: 10, padding: 12,
-        borderWidth: 1, borderColor: COLORS.border,
+        borderRadius: 10, padding: 12,
+        borderWidth: 1,
     },
-    filterSummaryText: { fontSize: 13, color: COLORS.textMuted },
-    sectionTitle: { fontSize: 11, fontWeight: '700', color: COLORS.textDim, letterSpacing: 1.2, marginBottom: 0 },
+    filterSummaryText: { fontSize: 13 },
+    sectionTitle: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, marginBottom: 0 },
 
     // ── Payment records ─────────────────────────────────────
     payCard: {
-        backgroundColor: COLORS.surface, borderRadius: 12,
-        borderWidth: 1, borderColor: COLORS.border, padding: 14, gap: 8,
+        ...S.shadow,
+        borderRadius: 12,
+        borderWidth: 1, padding: 14, gap: 8,
     },
     payRow: { flexDirection: 'row', alignItems: 'flex-start' },
-    payId: { fontSize: 13, fontWeight: '700', color: COLORS.text, fontVariant: ['tabular-nums'] },
-    payTime: { fontSize: 11, color: COLORS.textDim, marginTop: 2 },
+    payId: { fontSize: 13, fontWeight: '700', fontVariant: ['tabular-nums'] },
+    payTime: { fontSize: 11, marginTop: 2 },
     payDetails: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    payMethod: { fontSize: 13, color: COLORS.textMuted },
-    payAmount: { fontSize: 16, fontWeight: '700', color: COLORS.text },
-    payTxn: { fontSize: 11, color: COLORS.textDim },
+    payMethod: { fontSize: 13 },
+    payAmount: { fontSize: 16, fontWeight: '700' },
+    payTxn: { fontSize: 11 },
     empty: { alignItems: 'center', paddingTop: 60 },
-    emptyText: { color: COLORS.textMuted, fontSize: 14 },
+    emptyText: { fontSize: 14 },
 });

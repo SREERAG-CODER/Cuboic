@@ -12,6 +12,10 @@ datasource db {
 enum UserRole {
   Admin
   Owner
+  Manager
+  Cashier
+  Waiter
+  Kitchen
   Staff
 }
 
@@ -53,6 +57,14 @@ enum PaymentStatus {
   Failed
 }
 
+enum StockTransactionType {
+  StockIn
+  StockOut
+  Wastage
+  Spoilage
+  Correction
+}
+
 // ── Models ─────────────────────────────────────────────────────────────────
 
 model Restaurant {
@@ -72,6 +84,7 @@ model Restaurant {
   orders        Order[]
   deliveries    Delivery[]
   platformFees  PlatformFee[]
+  outlets       Outlet[]
 }
 
 model Table {
@@ -117,11 +130,13 @@ model MenuItem {
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
   category   Category   @relation(fields: [categoryId], references: [id])
+  recipe     Recipe?
 }
 
 model User {
   id            String   @id @default(cuid())
   restaurantId  String?
+  outletId      String?
   name          String
   user_id       String   @unique
   password_hash String
@@ -132,6 +147,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
+  outlet     Outlet?     @relation(fields: [outletId], references: [id])
 }
 
 model Customer {
@@ -149,9 +165,11 @@ model Customer {
 model Order {
   id                  String      @id @default(cuid())
   restaurantId        String
+  outletId            String?
   tableId             String
   customerId          String?
   customer_session_id String
+  orderType           String      @default("DineIn") // DineIn, Takeaway, Delivery
   items               Json
   subtotal            Float
   tax                 Float
@@ -163,6 +181,7 @@ model Order {
   updatedAt DateTime @updatedAt
 
   restaurant   Restaurant   @relation(fields: [restaurantId], references: [id])
+  outlet       Outlet?      @relation(fields: [outletId], references: [id])
   table        Table        @relation(fields: [tableId], references: [id])
   customer     Customer?    @relation(fields: [customerId], references: [id])
   payment      Payment?
@@ -244,4 +263,80 @@ model RobotTelemetry {
   createdAt DateTime @default(now())
 
   robot Robot @relation(fields: [robotId], references: [id])
+}
+
+// ── Phase 1 Inventory & Recipe Models ─────────────────────────────────────
+
+model Outlet {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         String
+  address      String?
+  is_active    Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant     Restaurant      @relation(fields: [restaurantId], references: [id])
+  inventoryItems InventoryItem[]
+  users          User[]
+  orders         Order[]
+}
+
+model InventoryItem {
+  id            String   @id @default(cuid())
+  outletId      String
+  name          String
+  unit          String   // kg, l, g, ml, pcs
+  category      String   @default("General") // Vegetables, Meat, Dairy, DryGoods
+  currentStock  Float    @default(0)
+  reservedStock Float    @default(0)
+  costPerUnit   Float    @default(0)
+  reorderLevel  Float    @default(10)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  outlet            Outlet             @relation(fields: [outletId], references: [id])
+  transactions      StockTransaction[]
+  recipeIngredients RecipeIngredient[]
+}
+
+model Recipe {
+  id           String  @id @default(cuid())
+  menuItemId   String  @unique
+  instructions String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  menuItem    MenuItem          @relation(fields: [menuItemId], references: [id])
+  ingredients RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id              String @id @default(cuid())
+  recipeId        String
+  inventoryItemId String
+  quantity        Float  // Amount of inventory item per 1 unit of menu item
+
+  recipe        Recipe        @relation(fields: [recipeId], references: [id])
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+
+  @@unique([recipeId, inventoryItemId])
+}
+
+model StockTransaction {
+  id              String               @id @default(cuid())
+  inventoryItemId String
+  outletId        String
+  type            StockTransactionType
+  quantity        Float
+  costPerUnit     Float?               // Recorded cost at time of transaction
+  referenceId     String?              // OrderID or supplier reference
+  notes           String?
+
+  createdAt DateTime @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
 }

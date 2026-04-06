@@ -12,6 +12,7 @@ export declare class UsersController {
         updatedAt: Date;
         restaurantId: string | null;
         user_id: string;
+        outletId: string | null;
         role: import("@prisma/client").$Enums.UserRole;
     }>;
     findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
@@ -38,6 +39,7 @@ export declare class UsersController {
         updatedAt: Date;
         restaurantId: string | null;
         user_id: string;
+        outletId: string | null;
         password_hash: string;
         role: import("@prisma/client").$Enums.UserRole;
     }>;

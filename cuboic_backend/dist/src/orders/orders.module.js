@@ -12,12 +12,13 @@ const orders_controller_1 = require("./orders.controller");
 const orders_service_1 = require("./orders.service");
 const events_module_1 = require("../events/events.module");
 const platform_fees_module_1 = require("../platform-fees/platform-fees.module");
+const inventory_module_1 = require("../inventory/inventory.module");
 let OrdersModule = class OrdersModule {
 };
 exports.OrdersModule = OrdersModule;
 exports.OrdersModule = OrdersModule = __decorate([
     (0, common_1.Module)({
-        imports: [events_module_1.EventsModule, platform_fees_module_1.PlatformFeesModule],
+        imports: [events_module_1.EventsModule, platform_fees_module_1.PlatformFeesModule, inventory_module_1.InventoryModule],
         controllers: [orders_controller_1.OrdersController],
         providers: [orders_service_1.OrdersService],
         exports: [orders_service_1.OrdersService],

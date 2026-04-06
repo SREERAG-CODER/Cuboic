@@ -30,6 +30,9 @@ const tables_module_1 = require("./tables/tables.module");
 const customers_module_1 = require("./customers/customers.module");
 const platform_fees_module_1 = require("./platform-fees/platform-fees.module");
 const analytics_module_1 = require("./analytics/analytics.module");
+const outlets_module_1 = require("./outlets/outlets.module");
+const inventory_module_1 = require("./inventory/inventory.module");
+const recipes_module_1 = require("./recipes/recipes.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -60,6 +63,9 @@ exports.AppModule = AppModule = __decorate([
             customers_module_1.CustomersModule,
             platform_fees_module_1.PlatformFeesModule,
             analytics_module_1.AnalyticsModule,
+            outlets_module_1.OutletsModule,
+            inventory_module_1.InventoryModule,
+            recipes_module_1.RecipesModule,
         ],
         providers: [
             {

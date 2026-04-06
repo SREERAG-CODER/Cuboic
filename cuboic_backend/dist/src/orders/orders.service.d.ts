@@ -3,12 +3,14 @@ import { EventsGateway } from '../events/events.gateway';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { PlatformFeesService } from '../platform-fees/platform-fees.service';
+import { InventoryService } from '../inventory/inventory.service';
 export declare class OrdersService {
     private prisma;
     private readonly eventsGateway;
     private readonly platformFeesService;
+    private readonly inventoryService;
     private readonly logger;
-    constructor(prisma: PrismaService, eventsGateway: EventsGateway, platformFeesService: PlatformFeesService);
+    constructor(prisma: PrismaService, eventsGateway: EventsGateway, platformFeesService: PlatformFeesService, inventoryService: InventoryService);
     create(dto: CreateOrderDto): Promise<{
         table: {
             id: string;
@@ -40,8 +42,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -81,8 +85,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -122,8 +128,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -142,8 +150,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -157,8 +167,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -172,8 +184,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -187,8 +201,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;
@@ -221,8 +237,10 @@ export declare class OrdersService {
         createdAt: Date;
         updatedAt: Date;
         restaurantId: string;
+        outletId: string | null;
         status: import("@prisma/client").$Enums.OrderStatus;
         customer_session_id: string;
+        orderType: string;
         items: import("@prisma/client/runtime/library").JsonValue;
         subtotal: number;
         tax: number;

@@ -6,6 +6,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { OrderStatus } from '@prisma/client';
 import { PlatformFeesService } from '../platform-fees/platform-fees.service';
+import { InventoryService } from '../inventory/inventory.service';
 
 @Injectable()
 export class OrdersService {
@@ -15,6 +16,7 @@ export class OrdersService {
         private prisma: PrismaService,
         private readonly eventsGateway: EventsGateway,
         private readonly platformFeesService: PlatformFeesService,
+        private readonly inventoryService: InventoryService,
     ) { }
 
     async create(dto: CreateOrderDto) {
@@ -64,6 +66,19 @@ export class OrdersService {
 
         // Auto-create platform fee if order total > ₹100
         await this.platformFeesService.createIfEligible(dto.restaurantId, order.id, total);
+
+        // Deduct inventory stock via Recipe Engine (only if outletId provided)
+        if (dto.outletId) {
+            try {
+                await this.inventoryService.deductForOrder(
+                    dto.outletId,
+                    order.id,
+                    dto.items.map((i) => ({ itemId: i.itemId, quantity: i.quantity })),
+                );
+            } catch (e) {
+                this.logger.warn(`Inventory deduction failed for order ${order.id}: ${e.message}`);
+            }
+        }
 
         return order;
     }

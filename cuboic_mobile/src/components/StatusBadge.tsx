@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, statusColor } from '../theme';
+import { useTheme } from '../context/ThemeContext';
+import { getStatusColor } from '../theme';
 
 interface StatusBadgeProps {
     status: string;
@@ -8,7 +9,8 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
-    const color = statusColor(status);
+    const { colors } = useTheme();
+    const color = getStatusColor(status, colors);
     const fontSize = size === 'sm' ? 11 : 12;
     const py = size === 'sm' ? 3 : 5;
     const px = size === 'sm' ? 8 : 10;
