@@ -365,24 +365,33 @@ export function MenuScreen() {
 
 const styles = StyleSheet.create({
     header: {
+        ...S.shadow,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         padding: 16, paddingTop: 48, borderBottomWidth: 1,
     },
     title: { fontSize: 26, fontWeight: '800' },
     sub: { fontSize: 13, marginTop: 2 },
-    addBtn: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 10 },
+    addBtn: {
+        ...S.shadow, paddingHorizontal: 16, paddingVertical: 9, borderRadius: 10 },
     addBtnText: { color: '#0f0f13', fontWeight: '700', fontSize: 14 },
-    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-    tabsContainer: { borderBottomWidth: 1 },
-    tabsContent: { paddingHorizontal: 10, paddingVertical: 20, flexDirection: 'row', alignItems: 'center' },
-    tab: { paddingHorizontal: 14, paddingVertical: 4, borderRadius: 99, borderWidth: 1, marginRight: 8, flexShrink: 0, height: 40, justifyContent: 'center' },
+    backBtn: {
+        ...S.shadow, width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    tabsContainer: {
+        ...S.shadow, borderBottomWidth: 1 },
+    tabsContent: {
+        ...S.shadow, paddingHorizontal: 10, paddingVertical: 20, flexDirection: 'row', alignItems: 'center' },
+    tab: {
+        ...S.shadow, paddingHorizontal: 14, paddingVertical: 4, borderRadius: 99, borderWidth: 1, marginRight: 8, flexShrink: 0, height: 40, justifyContent: 'center' },
     tabText: { fontSize: 13, fontWeight: '600' },
     list: { padding: 16, gap: 12, paddingBottom: 32 },
     card: {
+        ...S.shadow,
         borderRadius: 14, borderWidth: 1, padding: 14, gap: 12,
     },
-    cardUnavailable: { opacity: 0.6 },
-    cardMain: { flexDirection: 'row', alignItems: 'flex-start' },
+    cardUnavailable: {
+        ...S.shadow, opacity: 0.6 },
+    cardMain: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'flex-start' },
     thumb: { width: 56, height: 56, borderRadius: 10 },
     thumbPlaceholder: {
         width: 56, height: 56, borderRadius: 10,
@@ -391,22 +400,27 @@ const styles = StyleSheet.create({
     itemName: { fontSize: 15, fontWeight: '700' },
     itemDesc: { fontSize: 12, marginTop: 2 },
     itemCat: { fontSize: 11, marginTop: 4 },
-    cardRight: { alignItems: 'flex-end' },
+    cardRight: {
+        ...S.shadow, alignItems: 'flex-end' },
     price: { fontSize: 16, fontWeight: '800' },
-    cardFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, paddingTop: 10 },
+    cardFooter: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, paddingTop: 10 },
     availRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     dot: { width: 8, height: 8, borderRadius: 99 },
     availLabel: { fontSize: 13 },
-    editBtn: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 8, borderWidth: 1 },
+    editBtn: {
+        ...S.shadow, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 8, borderWidth: 1 },
     editBtnText: { fontWeight: '700', fontSize: 13 },
     empty: { textAlign: 'center', marginTop: 60, fontSize: 14 },
     // Modal
     modal: { padding: 20, paddingBottom: 48 },
-    modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingTop: 12 },
+    modalHeader: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingTop: 12 },
     modalTitle: { fontSize: 22, fontWeight: '800' },
     modalClose: { fontSize: 22, padding: 4 },
     fieldLabel: { fontSize: 12, fontWeight: '600', marginBottom: 8, marginTop: 16, letterSpacing: 0.5, textTransform: 'uppercase' },
     input: {
+        ...S.shadow,
         borderRadius: 10, borderWidth: 1,
         padding: 14, fontSize: 15,
     },
@@ -420,10 +434,12 @@ const styles = StyleSheet.create({
     availToggleHint: { fontSize: 13, flex: 1 },
     modalFooter: { flexDirection: 'row', gap: 12, marginTop: 32 },
     btnCancel: {
+        ...S.shadow,
         flex: 1, borderRadius: 12, padding: 16,
         alignItems: 'center', borderWidth: 1,
     },
     btnCancelText: { fontWeight: '700', fontSize: 15 },
-    btnSave: { flex: 1, borderRadius: 12, padding: 16, alignItems: 'center' },
+    btnSave: {
+        ...S.shadow, flex: 1, borderRadius: 12, padding: 16, alignItems: 'center' },
     btnSaveText: { color: '#0f0f13', fontWeight: '800', fontSize: 15 },
 });

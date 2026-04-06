@@ -506,6 +506,7 @@ export function OrdersScreen({ route }: any) {
 
 const styles = StyleSheet.create({
     header: {
+        ...S.shadow,
         padding: 16,
         paddingTop: 48,
         borderBottomWidth: 1,
@@ -515,6 +516,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     backBtn: {
+        ...S.shadow,
         width: 36,
         height: 36,
         borderRadius: 18,
@@ -529,6 +531,7 @@ const styles = StyleSheet.create({
     gridList: { padding: 16, paddingBottom: 32 },
     gridRow: { gap: 12, marginBottom: 12 },
     tableCard: {
+        ...S.shadow,
         flex: 1,
         borderRadius: 16,
         borderWidth: 1,
@@ -539,19 +542,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     tableDot: {
+        ...S.shadow,
         width: 10,
         height: 10,
         borderRadius: 5,
         marginBottom: 2,
     },
-    tableNum: { fontSize: 22, fontWeight: '800' },
-    tableOrderCount: { fontSize: 12, fontWeight: '600' },
-    tableIdle: { fontSize: 12, fontWeight: '500' },
+    tableNum: {
+        ...S.shadow, fontSize: 22, fontWeight: '800' },
+    tableOrderCount: {
+        ...S.shadow, fontSize: 12, fontWeight: '600' },
+    tableIdle: {
+        ...S.shadow, fontSize: 12, fontWeight: '500' },
 
     // filter tabs
-    tabsContainer: { borderBottomWidth: 1, maxHeight: 80 },
-    tabsContent: { paddingHorizontal: 10, paddingVertical: 20, flexDirection: 'row', alignItems: 'center' },
+    tabsContainer: {
+        ...S.shadow, borderBottomWidth: 1, maxHeight: 80 },
+    tabsContent: {
+        ...S.shadow, paddingHorizontal: 10, paddingVertical: 20, flexDirection: 'row', alignItems: 'center' },
     tab: {
+        ...S.shadow,
         paddingHorizontal: 14,
         paddingVertical: 4,
         borderRadius: 99,
@@ -565,14 +575,17 @@ const styles = StyleSheet.create({
     // order cards
     list: { padding: 16, gap: 12, paddingBottom: 32 },
     card: {
+        ...S.shadow,
         borderRadius: 14,
         borderWidth: 1,
         padding: 14,
         gap: 10,
     },
-    cardHeader: { flexDirection: 'row', alignItems: 'flex-start' },
+    cardHeader: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'flex-start' },
     cardTitle: { fontSize: 16, fontWeight: '700' },
-    cardTime: { fontSize: 12, marginTop: 2 },
+    cardTime: {
+        ...S.shadow, fontSize: 12, marginTop: 2 },
     itemsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
     chip: {
         borderRadius: 8,
@@ -589,16 +602,19 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     notesText: { fontSize: 13, flex: 1 },
-    cardFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 },
+    cardFooter: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 },
     total: { fontSize: 16, fontWeight: '700' },
     actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end', flex: 1 },
     btnAdvance: {
+        ...S.shadow,
         paddingHorizontal: 12,
         paddingVertical: 7,
         borderRadius: 8,
     },
     btnAdvanceText: { fontWeight: '700', fontSize: 13 },
     btnCancel: {
+        ...S.shadow,
         borderWidth: 1,
         paddingVertical: 7,
         borderRadius: 8,

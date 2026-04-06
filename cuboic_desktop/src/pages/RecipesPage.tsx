@@ -133,7 +133,7 @@ export default function RecipesPage() {
               onClick={() => setSelectedMenuId(item.id)}
               className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-all ${
                 selectedMenuId === item.id
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-accent text-white shadow-md'
                   : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
               }`}
             >
@@ -147,12 +147,12 @@ export default function RecipesPage() {
       <div className="w-2/3 flex flex-col bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl relative z-10">
         <div className="p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-900">
           <div>
-            <h2 className="text-2xl font-bold text-blue-400">{activeMenuItem?.name} Recipe</h2>
+            <h2 className="text-2xl font-bold text-accent">{activeMenuItem?.name} Recipe</h2>
             <p className="text-zinc-400 text-sm mt-1">These ingredients will automatically deduct from inventory when ordered.</p>
           </div>
           <button 
             onClick={handleSaveRecipe}
-            className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg shadow-lg flex items-center gap-2 transition-colors"
+            className="bg-accent hover:bg-accent active:bg-accent-dark text-white font-medium px-6 py-2.5 rounded-lg shadow-lg flex items-center gap-2 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
@@ -178,7 +178,7 @@ export default function RecipesPage() {
                       handleAddIngredient(e.target.value)
                       e.target.value = "" // reset
                     }}
-                    className="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+                    className="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
                   >
                     <option value="">+ Add Ingredient...</option>
                     {inventoryItems.map(inv => (
@@ -214,7 +214,7 @@ export default function RecipesPage() {
                                   step="0.001"
                                   value={ing.quantity}
                                   onChange={(e) => handleUpdateIngredient(ing.inventoryItemId, parseFloat(e.target.value))}
-                                  className="bg-zinc-900 border border-zinc-700 rounded-md px-3 py-1.5 w-24 text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+                                  className="bg-zinc-900 border border-zinc-700 rounded-md px-3 py-1.5 w-24 text-white outline-none focus:border-accent focus:ring-1 focus:ring-accent" 
                                 />
                                 <span className="text-zinc-500 text-sm font-medium">{ing.unit}</span>
                               </div>
@@ -241,7 +241,7 @@ export default function RecipesPage() {
               <section>
                 <h3 className="text-lg font-bold text-zinc-200 mb-4">Preparation Instructions (Optional)</h3>
                 <textarea
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-white placeholder:text-zinc-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-32"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-white placeholder:text-zinc-600 outline-none focus:border-accent focus:ring-1 focus:ring-accent resize-none h-32"
                   placeholder="e.g. Heat oil in pan. Add ingredients..."
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}

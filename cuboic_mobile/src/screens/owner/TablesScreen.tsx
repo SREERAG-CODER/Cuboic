@@ -128,19 +128,25 @@ export function TablesScreen() {
 
 const styles = StyleSheet.create({
     header: {
+        ...S.shadow,
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
         paddingTop: 48, paddingHorizontal: 16, paddingBottom: 16,
         borderBottomWidth: 1,
     },
     title: { fontSize: 24, fontWeight: '800' },
     sub: { fontSize: 13, marginTop: 2 },
-    addBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    addBtn: {
+        ...S.shadow, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+    backBtn: {
+        ...S.shadow, width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
     createArea: { padding: 16, borderBottomWidth: 1 },
     label: { fontSize: 12, fontWeight: '600', marginBottom: 8 },
-    input: { borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1, fontSize: 16 },
-    card: { borderRadius: 12, padding: 16, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    tableName: { fontSize: 16, fontWeight: '700' },
+    input: {
+        ...S.shadow, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1, fontSize: 16 },
+    card: {
+        ...S.shadow, borderRadius: 12, padding: 16, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    tableName: {
+        ...S.shadow, fontSize: 16, fontWeight: '700' },
     statusText: { fontSize: 13, marginTop: 4, fontWeight: '600' },
     empty: { textAlign: 'center', marginTop: 40 },
 });

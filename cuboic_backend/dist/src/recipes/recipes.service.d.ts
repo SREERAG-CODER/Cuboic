@@ -6,22 +6,22 @@ export declare class RecipesService {
     upsert(dto: UpsertRecipeDto): Promise<{
         ingredients: ({
             inventoryItem: {
-                category: string;
                 id: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
+                category: string;
                 outletId: string;
                 unit: string;
                 currentStock: number;
-                reservedStock: number;
                 costPerUnit: number;
                 reorderLevel: number;
+                reservedStock: number;
             };
         } & {
             id: string;
-            inventoryItemId: string;
             quantity: number;
+            inventoryItemId: string;
             recipeId: string;
         })[];
     } & {
@@ -34,22 +34,22 @@ export declare class RecipesService {
     findByMenuItem(menuItemId: string): Promise<{
         ingredients: ({
             inventoryItem: {
-                category: string;
                 id: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
+                category: string;
                 outletId: string;
                 unit: string;
                 currentStock: number;
-                reservedStock: number;
                 costPerUnit: number;
                 reorderLevel: number;
+                reservedStock: number;
             };
         } & {
             id: string;
-            inventoryItemId: string;
             quantity: number;
+            inventoryItemId: string;
             recipeId: string;
         })[];
     } & {
@@ -73,8 +73,8 @@ export declare class RecipesService {
             };
         } & {
             id: string;
-            inventoryItemId: string;
             quantity: number;
+            inventoryItemId: string;
             recipeId: string;
         })[];
     } & {

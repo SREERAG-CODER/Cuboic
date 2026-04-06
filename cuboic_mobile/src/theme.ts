@@ -1,13 +1,13 @@
 export const DARK_COLORS = {
-    bg: '#0f0f13',
-    surface: '#18181f',
-    surface2: '#222230',
+    bg: '#121212', // Matte black background
+    surface: '#1e1e1e', // Elevated matte surface
+    surface2: '#2c2c2c',
     border: '#3f6212', // Distinct dark green border
     accent: '#65a30d',
     accentDark: '#4d7c0f',
     text: '#ffffff',
-    textMuted: '#8b8aa0',
-    textDim: '#5a5974',
+    textMuted: '#a1a1aa',
+    textDim: '#71717a',
     green: '#22c55e',
     red: '#ef4444',
     blue: '#38bdf8',
@@ -16,8 +16,8 @@ export const DARK_COLORS = {
 };
 
 export const LIGHT_COLORS = {
-    bg: '#f8fafc',
-    surface: '#ffffff',
+    bg: '#eaedf2', // Light grey background
+    surface: '#ffffff', // White surface to pop over light grey
     surface2: '#f1f5f9',
     border: '#bbf7d0', // Distinct light green border
     accent: '#65a30d',      // Keeping the brand green
@@ -42,7 +42,21 @@ export const FONT = {
     heavy: { fontWeight: '800' as const },
 };
 
+const SHADOW = {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 8,
+};
+
 export const S = {
+    shadow: SHADOW,
+    textShadow: {
+        textShadowColor: 'rgba(0,0,0,0.15)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
+    },
     screen: {
         flex: 1 as const,
         backgroundColor: COLORS.bg,
@@ -50,10 +64,11 @@ export const S = {
     },
     card: {
         backgroundColor: COLORS.surface,
-        borderRadius: 12,
+        borderRadius: 14,
         borderWidth: 1,
         borderColor: COLORS.border,
         padding: 16,
+        ...SHADOW, // Makes the card hover
     },
     container: {
         flex: 1 as const,
@@ -77,6 +92,7 @@ export const S = {
         paddingHorizontal: 24,
         borderRadius: 12,
         alignItems: 'center' as const,
+        ...SHADOW, // Makes the button hover
     },
     btnPrimaryText: {
         color: '#0f0f13',

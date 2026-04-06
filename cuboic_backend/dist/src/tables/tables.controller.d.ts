@@ -7,20 +7,20 @@ export declare class TablesController {
         table_number: string;
     }): import("@prisma/client").Prisma.Prisma__TableClient<{
         id: string;
-        restaurantId: string;
-        table_number: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
+        table_number: string;
+        restaurantId: string;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     update(id: string, body: {
         is_active: boolean;
     }): import("@prisma/client").Prisma.Prisma__TableClient<{
         id: string;
-        restaurantId: string;
-        table_number: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
+        table_number: string;
+        restaurantId: string;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
 }

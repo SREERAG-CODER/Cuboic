@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client'
-import { API_BASE } from './apiClient'
+import { SOCKET_BASE } from './apiClient'
 
-const socket = io(API_BASE, {
+const socket = io(SOCKET_BASE, {
   autoConnect: false,
   reconnection: true,
 })

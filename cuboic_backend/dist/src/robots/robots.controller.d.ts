@@ -4,12 +4,12 @@ export declare class RobotsController {
     constructor(robotsService: RobotsService);
     findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;
@@ -20,12 +20,12 @@ export declare class RobotsController {
     }[]>;
     findOne(id: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;

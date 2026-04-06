@@ -43,13 +43,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(null)
         }
       } else {
-        // Dev fallback
-        setUser({
-          userId: 'dev-user',
-          role: 'Owner',
-          restaurantId: 'dev-restaurant',
-          outletId: 'dev-outlet'
-        })
+        // Dev fallback using localStorage for persistence
+        const token = localStorage.getItem('token')
+        const outletId = localStorage.getItem('outletId')
+        
+        if (token && outletId) {
+          const payloadBase64 = token.split('.')[1]
+          if (payloadBase64) {
+            const decoded = JSON.parse(atob(payloadBase64))
+            setUser({
+              userId: decoded.userId,
+              role: decoded.role as Role,
+              restaurantId: decoded.restaurantId,
+              outletId: outletId
+            })
+          }
+        } else {
+          setUser(null)
+        }
       }
     } catch (err) {
       console.error("Auth Decode Error", err)
@@ -68,19 +79,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await window.ipcRenderer.invoke('auth:store-token', token, outletId)
       await checkAuth()
     } else {
-      // Dev mode
-      setUser({
-        userId: 'dev-user',
-        role: 'Owner',
-        restaurantId: 'dev-restaurant',
-        outletId: outletId
-      })
+      // Dev mode: Store in localStorage
+      localStorage.setItem('token', token)
+      localStorage.setItem('outletId', outletId)
+      await checkAuth()
     }
   }
 
   const logout = async () => {
     if (window.ipcRenderer) {
       await window.ipcRenderer.invoke('auth:clear-token')
+    } else {
+      localStorage.removeItem('token')
+      localStorage.removeItem('outletId')
     }
     setUser(null)
   }

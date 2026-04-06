@@ -5,26 +5,30 @@ import { useAuth } from '../contexts/AuthContext'
 type OrderType = 'Dine-In' | 'Takeaway' | 'Delivery'
 type MenuItem = { id: string; name: string; price: number; categoryId: string; is_available: boolean }
 type Category = { id: string; name: string }
+type Table = { id: string; table_number: string; is_active: boolean }
 
 export default function POSPage() {
   const { user } = useAuth()
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [tables, setTables] = useState<Table[]>([])
   
   const [orderType, setOrderType] = useState<OrderType>('Dine-In')
-  const [tableNo, setTableNo] = useState('')
+  const [selectedTableId, setSelectedTableId] = useState('')
   const [activeCategoryId, setActiveCategoryId] = useState('All')
   const [cart, setCart] = useState<{item: MenuItem, qty: number}[]>([])
 
   const fetchData = async () => {
     if (!user?.restaurantId) return
     try {
-      const [menuRes, catsRes] = await Promise.all([
+      const [menuRes, catsRes, tablesRes] = await Promise.all([
         apiClient.get(`/menu?restaurantId=${user.restaurantId}`),
-        apiClient.get(`/categories?restaurantId=${user.restaurantId}`)
+        apiClient.get(`/categories?restaurantId=${user.restaurantId}`),
+        apiClient.get(`/restaurants/${user.restaurantId}/tables`)
       ])
       setMenuItems(menuRes.data)
       setCategories(catsRes.data)
+      setTables((tablesRes.data as Table[]).filter((t: Table) => t.is_active ?? true))
     } catch (e) {
       console.error("Failed to fetch POS data", e)
     }
@@ -65,14 +69,20 @@ export default function POSPage() {
 
   const handleCreateOrder = async () => {
     if (cart.length === 0) return alert("Cart is empty")
-    if (orderType === 'Dine-In' && !tableNo) return alert("Select a table number for Dine-In")
+    if (orderType === 'Dine-In' && !selectedTableId) return alert("Select a table for Dine-In")
     
     try {
+      // For Dine-In, use selected table UUID. For others, use first table as a dummy stand-in.
+      const tableId = orderType === 'Dine-In'
+        ? selectedTableId
+        : (tables[0]?.id ?? '')
+
       const payload = {
         restaurantId: user?.restaurantId,
         outletId: user?.outletId,
-        tableId: tableNo || null, // in realistic scenario, this is the table UUID
-        orderType: orderType,
+        tableId,
+        customerSessionId: `pos-${Date.now()}`,
+        orderType: orderType === 'Dine-In' ? 'DineIn' : orderType,
         items: cart.map(c => ({ itemId: c.item.id, quantity: c.qty }))
       }
 
@@ -87,7 +97,7 @@ export default function POSPage() {
 
       alert(`Order Created! ₹${total.toFixed(2)}\nKOT sent to printer.`)
       setCart([])
-      setTableNo('')
+      setSelectedTableId('')
     } catch (e: any) {
       console.error("Order completion failed", e)
       alert(e.response?.data?.message || "Order Failed")
@@ -109,7 +119,7 @@ export default function POSPage() {
                 onClick={() => setOrderType(type as OrderType)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   orderType === type 
-                    ? 'bg-blue-600 shadow-lg text-white' 
+                    ? 'bg-accent shadow-lg text-white' 
                     : 'text-zinc-400 hover:text-white'
                 }`}
               >
@@ -122,12 +132,12 @@ export default function POSPage() {
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-zinc-400">Table:</span>
               <select 
-                value={tableNo} 
-                onChange={(e) => setTableNo(e.target.value)}
-                className="bg-zinc-950 border border-zinc-800 text-white rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+                value={selectedTableId} 
+                onChange={(e) => setSelectedTableId(e.target.value)}
+                className="bg-zinc-950 border border-zinc-800 text-white rounded-lg px-3 py-2 text-sm outline-none focus:border-accent"
               >
                 <option value="">Select Table</option>
-                {[1,2,3,4,5,6].map(t => <option key={t} value={`T${t}`}>T{t}</option>)}
+                {tables.map(t => <option key={t.id} value={t.id}>{t.table_number}</option>)}
               </select>
             </div>
           )}
@@ -140,7 +150,7 @@ export default function POSPage() {
               onClick={() => setActiveCategoryId('All')}
               className={`w-full text-left px-4 py-4 text-xs font-semibold uppercase tracking-tighter transition-all border-l-4 ${
                 activeCategoryId === 'All' 
-                  ? 'border-blue-600 bg-blue-600/10 text-blue-600 dark:text-blue-400' 
+                  ? 'border-accent bg-accent/10 text-accent dark:text-accent' 
                   : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
               }`}
             >
@@ -152,7 +162,7 @@ export default function POSPage() {
                 onClick={() => setActiveCategoryId(cat.id)}
                 className={`w-full text-left px-4 py-4 text-xs font-semibold uppercase tracking-tighter transition-all border-l-4 ${
                   activeCategoryId === cat.id 
-                    ? 'border-blue-600 bg-blue-600/10 text-blue-600 dark:text-blue-400' 
+                    ? 'border-accent bg-accent/10 text-accent dark:text-accent' 
                     : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
                 }`}
               >
@@ -171,7 +181,7 @@ export default function POSPage() {
                   disabled={!item.is_available}
                   className={`relative flex flex-col items-start p-4 rounded-2xl border text-left transition-all ${
                     item.is_available 
-                      ? 'border-zinc-800 bg-zinc-900 hover:border-blue-500 hover:bg-zinc-800 cursor-pointer active:scale-95' 
+                      ? 'border-zinc-800 bg-zinc-900 hover:border-accent hover:bg-zinc-800 cursor-pointer active:scale-95' 
                       : 'border-zinc-900 bg-zinc-950/50 opacity-50 cursor-not-allowed'
                   }`}
                 >
@@ -179,7 +189,7 @@ export default function POSPage() {
                     {item.name}
                   </div>
                   <div className="mt-auto pt-4 flex items-center justify-between w-full">
-                    <span className="text-blue-400 font-medium">₹{item.price}</span>
+                    <span className="text-accent font-medium">₹{item.price}</span>
                     {!item.is_available && <span className="text-xs text-red-500 font-medium bg-red-500/10 px-2 py-1 rounded">Out of Stock</span>}
                   </div>
                 </button>
@@ -193,7 +203,7 @@ export default function POSPage() {
       <div className="w-96 bg-zinc-900 flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.5)] z-20 relative">
         <div className="p-4 border-b border-zinc-800 bg-zinc-900 shadow-sm z-10">
           <h2 className="text-lg font-bold">Current Order</h2>
-          <p className="text-xs text-zinc-400">{orderType} {tableNo ? `• ${tableNo}` : ''}</p>
+          <p className="text-xs text-zinc-400">{orderType} {selectedTableId ? `• ${tables.find(t => t.id === selectedTableId)?.table_number ?? ''}` : ''}</p>
         </div>
 
         {/* Cart Items */}
@@ -215,7 +225,7 @@ export default function POSPage() {
                 <div className="flex items-center gap-2 bg-zinc-900 rounded-lg p-1 border border-zinc-800">
                   <button onClick={() => updateQty(c.item.id, -1)} className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300">-</button>
                   <span className="w-4 text-center text-sm font-medium">{c.qty}</span>
-                  <button onClick={() => updateQty(c.item.id, 1)} className="w-7 h-7 flex items-center justify-center rounded bg-blue-600 hover:bg-blue-500 text-white">+</button>
+                  <button onClick={() => updateQty(c.item.id, 1)} className="w-7 h-7 flex items-center justify-center rounded bg-accent hover:bg-accent text-white">+</button>
                 </div>
                 <div className="w-16 text-right font-medium text-sm">
                   ₹{c.item.price * c.qty}
@@ -244,7 +254,7 @@ export default function POSPage() {
           
           <button 
             onClick={handleCreateOrder}
-            className="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all flex items-center justify-center gap-2"
+            className="w-full bg-accent hover:bg-accent active:bg-accent-dark text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(101,163,13,0.3)] transition-all flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />

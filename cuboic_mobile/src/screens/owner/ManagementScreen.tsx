@@ -53,23 +53,26 @@ export function ManagementScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
     body: { padding: 16, paddingTop: 60 },
-    header: { marginBottom: 32, paddingHorizontal: 4 },
+    header: {
+        ...S.shadow, marginBottom: 32, paddingHorizontal: 4 },
     title: { fontSize: 28, fontWeight: '800' },
     subtitle: { fontSize: 15, marginTop: 4 },
     grid: { gap: 12 },
     card: {
+        ...S.shadow,
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
         borderRadius: 20,
         borderWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 2,
+
+
+
+
+
     },
     iconContainer: {
+        ...S.shadow,
         width: 48,
         height: 48,
         borderRadius: 14,
@@ -77,7 +80,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginRight: 16,
     },
-    cardInfo: { flex: 1 },
+    cardInfo: {
+        ...S.shadow, flex: 1 },
     cardText: { fontSize: 17, fontWeight: '700' },
-    cardDesc: { fontSize: 13, marginTop: 2 },
+    cardDesc: {
+        ...S.shadow, fontSize: 13, marginTop: 2 },
 });

@@ -1,0 +1,21 @@
+﻿=== RESTAURANTS ===
+  [cmmg60qir0000c2lwao9t1z9m] "Food Guru" active=true
+  [clrzmockrest000000test000] "THE MOCK RESTAURANT" active=true
+  [cmn4bj2n40000c2m04hr9rjju] "Andhra Ruchulu" active=true
+
+--- Food Guru ---
+  Tables (14): T1(active=true), T10(active=true), T11(active=true), T12(active=true), T13(active=true), T2(active=true), T3(active=true), T4(active=true), T5(active=true), T6(active=true), T7(active=true), T8(active=true), T9(active=true), Takeaway(active=true)
+  Users (2):
+    user_id="staff01" name="Staff01" role=Staff active=true
+    user_id="owner01" name="Food Guru" role=Owner active=true
+
+--- THE MOCK RESTAURANT ---
+  Tables (4): T1(active=true), T2(active=true), T3(active=true), T4(active=true)
+  Users (0):
+
+--- Andhra Ruchulu ---
+  Tables (7): T1(active=true), T2(active=true), T3(active=true), T4(active=true), T5(active=true), T6(active=false), Takeaway(active=true)
+  Users (2):
+    user_id="ar_owner" name="AR Owner" role=Owner active=true
+    user_id="ar_staff01" name="AR Staff01" role=Staff active=true
+

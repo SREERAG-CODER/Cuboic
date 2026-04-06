@@ -6,40 +6,40 @@ export declare class UsersController {
     constructor(usersService: UsersService);
     create(dto: CreateUserDto): Promise<{
         id: string;
-        restaurantId: string | null;
+        name: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        outletId: string | null;
+        restaurantId: string | null;
         user_id: string;
+        outletId: string | null;
         role: import("@prisma/client").$Enums.UserRole;
     }>;
     findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
-        restaurantId: string | null;
+        name: string;
         is_active: boolean;
         createdAt: Date;
-        name: string;
+        restaurantId: string | null;
         user_id: string;
         role: import("@prisma/client").$Enums.UserRole;
     }[]>;
     update(id: string, dto: UpdateUserDto): Promise<{
         id: string;
-        is_active: boolean;
         name: string;
+        is_active: boolean;
         user_id: string;
         role: import("@prisma/client").$Enums.UserRole;
     }>;
     remove(id: string): Promise<{
         id: string;
-        restaurantId: string | null;
+        name: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        outletId: string | null;
+        restaurantId: string | null;
         user_id: string;
+        outletId: string | null;
         password_hash: string;
         role: import("@prisma/client").$Enums.UserRole;
     }>;

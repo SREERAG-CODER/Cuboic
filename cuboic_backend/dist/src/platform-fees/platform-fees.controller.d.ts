@@ -10,9 +10,9 @@ export declare class PlatformFeesController {
         };
     } & {
         id: string;
-        restaurantId: string;
         createdAt: Date;
         updatedAt: Date;
+        restaurantId: string;
         amount: number;
         isPaid: boolean;
         orderId: string;
@@ -24,9 +24,9 @@ export declare class PlatformFeesController {
     }>;
     markAsPaid(id: string): Promise<{
         id: string;
-        restaurantId: string;
         createdAt: Date;
         updatedAt: Date;
+        restaurantId: string;
         amount: number;
         isPaid: boolean;
         orderId: string;

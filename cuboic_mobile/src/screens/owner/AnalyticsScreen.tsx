@@ -253,15 +253,16 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: '800', marginBottom: 24 },
     grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 },
     card: {
+        ...S.shadow,
         borderRadius: 16,
         padding: 16,
         marginBottom: 16,
         borderWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+
+
+
+
+
     },
     cardTitle: { fontSize: 16, fontWeight: '700', marginBottom: 16 },
     chart: { marginVertical: 8, borderRadius: 16 },

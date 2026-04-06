@@ -210,29 +210,36 @@ export function StaffScreen() {
 
 const styles = StyleSheet.create({
     header: {
+        ...S.shadow,
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
         paddingTop: 48, paddingHorizontal: 16, paddingBottom: 16,
         borderBottomWidth: 1,
     },
     title: { fontSize: 24, fontWeight: '800' },
     sub: { fontSize: 13, marginTop: 2 },
-    addBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-    card: { borderRadius: 12, padding: 16, borderWidth: 1 },
+    addBtn: {
+        ...S.shadow, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+    backBtn: {
+        ...S.shadow, width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    card: {
+        ...S.shadow, borderRadius: 12, padding: 16, borderWidth: 1 },
     staffName: { fontSize: 16, fontWeight: '700' },
     staffSub: { fontSize: 13, marginTop: 4 },
     empty: { textAlign: 'center', marginTop: 40 },
     
     label: { fontSize: 12, fontWeight: '600', marginBottom: 4, marginTop: 8 },
     input: {
+        ...S.shadow,
         borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12,
         borderWidth: 1, fontSize: 16,
     },
     roleBtn: {
+        ...S.shadow,
         flex: 1, paddingVertical: 12, alignItems: 'center', borderRadius: 8,
         borderWidth: 1,
     },
     roleBtnText: { fontWeight: '600' },
-    deactivateBtn: { marginTop: 16, padding: 14, alignItems: 'center', borderRadius: 8, borderWidth: 1 },
+    deactivateBtn: {
+        ...S.shadow, marginTop: 16, padding: 14, alignItems: 'center', borderRadius: 8, borderWidth: 1 },
     deactivateText: { fontWeight: '700' }
 });

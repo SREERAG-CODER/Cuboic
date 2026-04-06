@@ -11,6 +11,7 @@ import { deliveriesApi, robotsApi } from '../../api/deliveries';
 import { useSocket } from '../../hooks/useSocket';
 import { KpiCard } from '../../components/KpiCard';
 import { useTheme } from '../../context/ThemeContext';
+import { S } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 
 export function DashboardScreen() {
@@ -181,6 +182,7 @@ export function DashboardScreen() {
 const styles = StyleSheet.create({
     body: { padding: 16, paddingBottom: 40 },
     header: {
+        ...S.shadow,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',

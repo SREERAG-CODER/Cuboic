@@ -1,6 +1,19 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  /* Match Cuboic Mobile Theme */
+  --color-zinc-950: #0f0f13; /* bg */
+  --color-zinc-900: #18181f; /* surface */
+  --color-zinc-850: #222230; /* surface2 */
+  --color-zinc-800: #2e2e3d; /* border */
+  --color-zinc-500: #5a5974; /* textDim */
+  --color-zinc-400: #8b8aa0; /* textMuted */
+  --color-zinc-50: #f0eff5;  /* text */
+  
+  --color-accent: #65a30d; /* accent */
+  --color-accent-dark: #4d7c0f; /* accentDark */
+}
 body {
   margin: 0;
   display: flex;
@@ -16,4 +29,31 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 fallback */
+  border-radius: 100px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #3f3f46; /* zinc-700 fallback */
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #65a30d !important; /* accent */
+  background-clip: content-box !important;
 }

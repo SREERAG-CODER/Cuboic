@@ -4,18 +4,18 @@ export declare class TablesService {
     constructor(prisma: PrismaService);
     create(restaurantId: string, table_number: string): import("@prisma/client").Prisma.Prisma__TableClient<{
         id: string;
-        restaurantId: string;
-        table_number: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
+        table_number: string;
+        restaurantId: string;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     updateStatus(id: string, is_active: boolean): import("@prisma/client").Prisma.Prisma__TableClient<{
         id: string;
-        restaurantId: string;
-        table_number: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
+        table_number: string;
+        restaurantId: string;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
 }

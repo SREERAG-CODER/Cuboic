@@ -103,34 +103,38 @@ const styles = StyleSheet.create({
     logoImage: { width: 180, height: 180, borderRadius: 30 },
     logoSub: { fontSize: 14, marginTop: 12, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase' },
     form: {
+        ...S.shadow,
         borderRadius: 24,
         borderWidth: 1,
         padding: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
-        elevation: 5,
+
+
+
+
+
     },
     label: { fontSize: 13, fontWeight: '700', marginBottom: 8, letterSpacing: 0.5 },
     input: {
+        ...S.shadow,
         borderRadius: 12,
         borderWidth: 1,
         padding: 14,
         fontSize: 16,
     },
     btn: {
+        ...S.shadow,
         marginTop: 24,
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
-        shadowColor: '#65a30d',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+
+
+
+
+
     },
-    btnDisabled: { opacity: 0.6 },
+    btnDisabled: {
+        ...S.shadow, opacity: 0.6 },
     btnText: { fontWeight: '800', fontSize: 16 },
     hint: { textAlign: 'center', fontSize: 12, marginTop: 32, fontStyle: 'italic' },
 });

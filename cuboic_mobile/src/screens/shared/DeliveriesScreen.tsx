@@ -301,24 +301,30 @@ export function DeliveriesScreen() {
 
 const styles = StyleSheet.create({
     header: {
+        ...S.shadow,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         padding: 16, paddingTop: 48, borderBottomWidth: 1,
     },
     title: { fontSize: 26, fontWeight: '800' },
-    newBtn: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 10 },
+    newBtn: {
+        ...S.shadow, paddingHorizontal: 16, paddingVertical: 9, borderRadius: 10 },
     newBtnText: { color: '#0f0f13', fontWeight: '700', fontSize: 14 },
     tabBar: {
+        ...S.shadow,
         flexDirection: 'row', borderBottomWidth: 1, padding: 12, gap: 8,
     },
     tabBtn: {
+        ...S.shadow,
         flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center',
     },
     tabBtnText: { fontWeight: '600', fontSize: 14 },
     list: { padding: 16, gap: 12, paddingBottom: 32 },
     delivCard: {
+        ...S.shadow,
         borderRadius: 14, borderWidth: 1, padding: 14, gap: 10,
     },
-    delivHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    delivHeader: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', gap: 10 },
     delivId: { flex: 1, fontSize: 13, fontWeight: '700', fontVariant: ['tabular-nums'] },
     delivTime: { fontSize: 11 },
     stop: {
@@ -326,13 +332,15 @@ const styles = StyleSheet.create({
         paddingTop: 10, borderTopWidth: 1,
     },
     stopText: { fontSize: 13, fontWeight: '500', marginBottom: 4 },
-    confirmBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8, gap: 4 },
+    confirmBtn: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8, gap: 4 },
     confirmBtnText: { color: '#000', fontWeight: '700', fontSize: 13 },
     empty: { alignItems: 'center', paddingTop: 80, gap: 12 },
     emptyText: { fontSize: 14 },
     // Modal
     modal: { padding: 20, paddingBottom: 48 },
-    modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingTop: 12 },
+    modalHeader: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingTop: 12 },
     modalTitle: { fontSize: 22, fontWeight: '800' },
     modalClose: { fontSize: 22 },
     fieldLabel: { fontSize: 12, fontWeight: '700', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 },
@@ -354,15 +362,18 @@ const styles = StyleSheet.create({
     orderOptionText: { fontSize: 13, fontWeight: '500' },
     cabinetsRow: { flexDirection: 'row', gap: 10 },
     cabBtn: {
+        ...S.shadow,
         paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10,
         borderWidth: 1,
     },
     cabBtnText: { fontWeight: '700', fontSize: 15 },
     addStopBtn: {
+        ...S.shadow,
         borderRadius: 12, padding: 14,
         alignItems: 'center', borderWidth: 1, marginBottom: 12,
     },
     addStopBtnText: { fontWeight: '700', fontSize: 14 },
-    dispatchBtn: { flexDirection: 'row', justifyContent: 'center', borderRadius: 12, padding: 16, alignItems: 'center' },
+    dispatchBtn: {
+        ...S.shadow, flexDirection: 'row', justifyContent: 'center', borderRadius: 12, padding: 16, alignItems: 'center' },
     dispatchBtnText: { color: '#0f0f13', fontWeight: '800', fontSize: 16 },
 });

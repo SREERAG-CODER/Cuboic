@@ -4,46 +4,46 @@ export declare class RestaurantsController {
     constructor(restaurantsService: RestaurantsService);
     getAll(): Promise<{
         id: string;
-        is_active: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
         logo_url: string | null;
-    }[]>;
-    getTables(id: string): Promise<{
-        id: string;
-        restaurantId: string;
-        table_number: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
+    }[]>;
+    getTables(id: string): Promise<{
+        id: string;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        table_number: string;
+        restaurantId: string;
     }[]>;
     getById(id: string): Promise<{
         tables: {
             id: string;
-            restaurantId: string;
-            table_number: string;
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
+            table_number: string;
+            restaurantId: string;
         }[];
     } & {
         id: string;
-        is_active: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
         logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     create(body: any): Promise<{
         id: string;
-        is_active: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
         logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

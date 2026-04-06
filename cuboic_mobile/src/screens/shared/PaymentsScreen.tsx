@@ -294,8 +294,10 @@ export function PaymentsScreen() {
 
 const styles = StyleSheet.create({
     body: { padding: 16, paddingBottom: 40, gap: 12 },
-    header: { paddingTop: 48, paddingBottom: 16 },
-    backBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    header: {
+        ...S.shadow, paddingTop: 48, paddingBottom: 16 },
+    backBtn: {
+        ...S.shadow, width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
     title: { fontSize: 26, fontWeight: '800' },
     kpiRow: { flexDirection: 'row', gap: 12, marginBottom: 4 },
 
@@ -307,7 +309,8 @@ const styles = StyleSheet.create({
         gap: 10,
         marginBottom: 4,
     },
-    thambiHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    thambiHeader: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', gap: 8 },
     thambiTitle: { fontSize: 15, fontWeight: '800' },
     thambiSubtitle: { fontSize: 12, marginTop: -4 },
     thambiKpiRow: { flexDirection: 'row', gap: 10 },
@@ -325,10 +328,12 @@ const styles = StyleSheet.create({
         letterSpacing: 1.2, marginBottom: 4, marginTop: 4,
     },
     feeCard: {
+        ...S.shadow,
         borderRadius: 10,
         borderWidth: 1, padding: 12,
     },
-    feeCardPaid: { opacity: 0.55 },
+    feeCardPaid: {
+        ...S.shadow, opacity: 0.55 },
     feeRow: { flexDirection: 'row', alignItems: 'center' },
     feeOrderId: { fontSize: 13, fontWeight: '700' },
     feeTime: { fontSize: 11, marginTop: 1 },
@@ -336,6 +341,7 @@ const styles = StyleSheet.create({
     feeRight: { alignItems: 'flex-end', gap: 6 },
     feeAmount: { fontSize: 18, fontWeight: '800' },
     markPaidBtn: {
+        ...S.shadow,
         paddingHorizontal: 12,
         paddingVertical: 6, borderRadius: 7,
     },
@@ -356,12 +362,15 @@ const styles = StyleSheet.create({
     filterRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-end', marginBottom: 4 },
     filterLabel: { fontSize: 11, fontWeight: '600', marginBottom: 6 },
     filterInput: {
+        ...S.shadow,
         borderRadius: 10, borderWidth: 1,
         padding: 10, fontSize: 13,
     },
-    filterBtn: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 8, alignItems: 'center' },
+    filterBtn: {
+        ...S.shadow, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 8, alignItems: 'center' },
     filterBtnText: { color: '#0f0f13', fontWeight: '700', fontSize: 13 },
     filterBtnReset: {
+        ...S.shadow,
         paddingHorizontal: 14, paddingVertical: 9,
         borderRadius: 8, borderWidth: 1, alignItems: 'center',
     },
@@ -375,6 +384,7 @@ const styles = StyleSheet.create({
 
     // ── Payment records ─────────────────────────────────────
     payCard: {
+        ...S.shadow,
         borderRadius: 12,
         borderWidth: 1, padding: 14, gap: 8,
     },

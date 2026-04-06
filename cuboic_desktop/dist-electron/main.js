@@ -236,6 +236,7 @@ electron.app.on("window-all-closed", () => {
 electron.app.on("activate", () => {
 	if (electron.BrowserWindow.getAllWindows().length === 0) createWindow();
 });
+electron.app.commandLine.appendSwitch("disable-http-cache");
 electron.app.whenReady().then(() => {
 	createWindow();
 	const authPath = (0, node_path.join)(electron.app.getPath("userData"), "auth.dat");

@@ -5,18 +5,18 @@ export declare class CustomersService {
     findByPhone(phone: string): Promise<{
         customer: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             phone: string;
         } | null;
         phone: string;
     }>;
     register(phone: string, name: string): Promise<{
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         phone: string;
     }>;
 }

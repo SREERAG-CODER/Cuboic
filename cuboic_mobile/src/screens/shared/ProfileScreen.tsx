@@ -126,6 +126,7 @@ export function ProfileScreen() {
 
 const styles = StyleSheet.create({
     header: {
+        ...S.shadow,
         paddingTop: 48,
         paddingHorizontal: 16,
         paddingBottom: 24,
@@ -135,6 +136,7 @@ const styles = StyleSheet.create({
     role: { fontSize: 13, marginTop: 2 },
     body: { padding: 16 },
     card: {
+        ...S.shadow,
         padding: 16,
         borderRadius: 16,
         borderWidth: 1,
@@ -150,6 +152,7 @@ const styles = StyleSheet.create({
     text: { fontSize: 14, marginBottom: 8 },
     label: { fontSize: 12, fontWeight: '600', marginBottom: 4, marginTop: 12 },
     input: {
+        ...S.shadow,
         borderRadius: 8,
         paddingHorizontal: 16,
         paddingVertical: 12,
@@ -157,6 +160,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     logoutBtn: {
+        ...S.shadow,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

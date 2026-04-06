@@ -4,9 +4,9 @@ export declare class PlatformFeesService {
     constructor(prisma: PrismaService);
     createIfEligible(restaurantId: string, orderId: string, orderTotal: number): Promise<{
         id: string;
-        restaurantId: string;
         createdAt: Date;
         updatedAt: Date;
+        restaurantId: string;
         amount: number;
         isPaid: boolean;
         orderId: string;
@@ -19,9 +19,9 @@ export declare class PlatformFeesService {
         };
     } & {
         id: string;
-        restaurantId: string;
         createdAt: Date;
         updatedAt: Date;
+        restaurantId: string;
         amount: number;
         isPaid: boolean;
         orderId: string;
@@ -33,9 +33,9 @@ export declare class PlatformFeesService {
     }>;
     markAsPaid(feeId: string): Promise<{
         id: string;
-        restaurantId: string;
         createdAt: Date;
         updatedAt: Date;
+        restaurantId: string;
         amount: number;
         isPaid: boolean;
         orderId: string;

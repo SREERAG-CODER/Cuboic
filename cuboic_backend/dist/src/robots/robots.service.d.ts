@@ -4,12 +4,12 @@ export declare class RobotsService {
     constructor(prisma: PrismaService);
     findAll(restaurantId: string): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;
@@ -20,12 +20,12 @@ export declare class RobotsService {
     }[]>;
     findOne(id: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;
@@ -36,12 +36,12 @@ export declare class RobotsService {
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findByIdWithSecret(robotId: string): Promise<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;
@@ -52,12 +52,12 @@ export declare class RobotsService {
     } | null>;
     markOnline(robotId: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;
@@ -68,12 +68,12 @@ export declare class RobotsService {
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     markOffline(robotId: string): import("@prisma/client").Prisma.Prisma__RobotClient<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;
@@ -84,12 +84,12 @@ export declare class RobotsService {
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     updateTelemetry(robotId: string, telemetry: any): import("@prisma/client").Prisma.Prisma__RobotClient<{
         id: string;
-        restaurantId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        status: import("@prisma/client").$Enums.RobotStatus;
+        restaurantId: string;
         secretKey: string;
+        status: import("@prisma/client").$Enums.RobotStatus;
         mode: import("@prisma/client").$Enums.RobotMode;
         currentDeliveryId: string | null;
         isOnline: boolean;

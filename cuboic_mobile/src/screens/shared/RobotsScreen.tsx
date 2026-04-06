@@ -145,12 +145,14 @@ export function RobotsScreen() {
 const styles = StyleSheet.create({
     body: { padding: 16, paddingBottom: 40 },
     header: {
+        ...S.shadow,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         paddingTop: 48, marginBottom: 20,
     },
     title: { fontSize: 26, fontWeight: '800' },
     sub: { fontSize: 13, marginTop: 2 },
     refreshBtn: {
+        ...S.shadow,
         paddingHorizontal: 14, paddingVertical: 8,
         borderRadius: 8, borderWidth: 1,
     },
@@ -159,17 +161,20 @@ const styles = StyleSheet.create({
     emptyText: { fontSize: 14 },
     grid: { gap: 14 },
     card: {
+        ...S.shadow,
         borderRadius: 16,
         borderWidth: 1, padding: 16, gap: 12,
     },
-    cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    cardHeader: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', gap: 12 },
     robotIcon: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
     robotName: { fontSize: 16, fontWeight: '700' },
     statusRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
     dot: { width: 7, height: 7, borderRadius: 99 },
     onlineText: { fontSize: 12 },
     batteryRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    batteryLabelContainer: { flexDirection: 'row', alignItems: 'center', gap: 6, width: 70 },
+    batteryLabelContainer: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', gap: 6, width: 70 },
     batteryLabel: { fontSize: 13 },
     batteryBar: {
         flex: 1, height: 6,
@@ -181,7 +186,8 @@ const styles = StyleSheet.create({
     cabinetsRow: { flexDirection: 'row', gap: 8 },
     cabBadge: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8 },
     cabBadgeText: { fontSize: 12, fontWeight: '700' },
-    locationContainer: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    locationContainer: {
+        ...S.shadow, flexDirection: 'row', alignItems: 'center', gap: 6 },
     location: { fontSize: 12 },
     hint: { textAlign: 'center', fontSize: 12, marginTop: 24 },
 });

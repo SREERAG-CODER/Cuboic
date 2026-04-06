@@ -60,6 +60,9 @@ app.on('activate', () => {
   }
 })
 
+// Silence harmless Chromium disk cache corruption warnings by disabling it
+app.commandLine.appendSwitch('disable-http-cache');
+
 app.whenReady().then(() => {
   createWindow()
 

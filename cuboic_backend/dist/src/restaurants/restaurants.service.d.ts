@@ -5,37 +5,37 @@ export declare class RestaurantsService {
     findById(id: string): import("@prisma/client").Prisma.Prisma__RestaurantClient<({
         tables: {
             id: string;
-            restaurantId: string;
-            table_number: string;
             is_active: boolean;
             createdAt: Date;
             updatedAt: Date;
+            table_number: string;
+            restaurantId: string;
         }[];
     } & {
         id: string;
-        is_active: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
         logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }) | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findTables(restaurantId: string): Promise<{
         id: string;
-        restaurantId: string;
-        table_number: string;
         is_active: boolean;
         createdAt: Date;
         updatedAt: Date;
+        table_number: string;
+        restaurantId: string;
     }[]>;
     findAll(): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
-        is_active: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
         logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
     create(data: {
         name: string;
@@ -43,11 +43,11 @@ export declare class RestaurantsService {
         logoUrl?: string;
     }): import("@prisma/client").Prisma.Prisma__RestaurantClient<{
         id: string;
-        is_active: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
         logo_url: string | null;
+        is_active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
 }
