@@ -17,8 +17,8 @@ function replaceInDir(dir) {
                 const preserveRenderUrl = content.includes('cuboic-884m.onrender.com');
 
                 let newContent = content
-                    .replace(/Cuboic/g, 'Thambi')
-                    .replace(/cuboic(?!_)/g, 'thambi') // avoid changing cuboic_backend folder references if any
+                    .replace(/Thambi/g, 'Thambi')
+                    .replace(/thambi(?!_)/g, 'thambi') // avoid changing thambi_backend folder references if any
                     .replace(/logo1\.png/g, 'pic1.png')
                     .replace(/logo\.png/g, 'pic1.png');
 
@@ -35,8 +35,8 @@ function replaceInDir(dir) {
     });
 }
 
-replaceInDir(path.join(__dirname, 'cuboic_customer'));
-replaceInDir(path.join(__dirname, 'cuboic_admin'));
-replaceInDir(path.join(__dirname, 'cuboic_mobile'));
-replaceInDir(path.join(__dirname, 'cuboic_backend'));
+replaceInDir(path.join(__dirname, 'thambi_customer'));
+replaceInDir(path.join(__dirname, 'thambi_admin'));
+replaceInDir(path.join(__dirname, 'thambi_mobile'));
+replaceInDir(path.join(__dirname, 'thambi_backend'));
 console.log('Rebranding complete!');

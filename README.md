@@ -1,4 +1,4 @@
-# 🤖 Cuboic — Autonomous Robot Food Delivery Platform
+# 🤖 Thambi — Autonomous Robot Food Delivery Platform
 
 > A full-stack restaurant management system where robots autonomously deliver food to tables. Customers browse the menu on their phone via a QR code, place orders, and a robot navigates to their table and delivers the food — no human serving required.
 
@@ -8,10 +8,10 @@
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     Cuboic Monorepo                      │
+│                     Thambi Monorepo                      │
 │                                                          │
 │  ┌────────────────┐   ┌────────────────┐                 │
-│  │ cuboic_customer│   │  cuboic_admin  │                 │
+│  │ thambi_customer│   │  thambi_admin  │                 │
 │  │  Vite + React  │   │  Vite + React  │                 │
 │  │  Port: 5173    │   │  Port: 5174    │                 │
 │  └───────┬────────┘   └───────┬────────┘                 │
@@ -19,7 +19,7 @@
 │          └─────────┬──────────┘                          │
 │                    ▼                                      │
 │          ┌──────────────────┐                            │
-│          │ cuboic_backend   │                            │
+│          │ thambi_backend   │                            │
 │          │  NestJS + Mongo  │                            │
 │          │  Port: 3000      │                            │
 │          └──────────────────┘                            │
@@ -30,21 +30,21 @@
 
 | Service | Stack | Port | Role |
 |---|---|---|---|
-| `cuboic_backend` | NestJS · Mongoose · Socket.IO · JWT | 3000 | REST API + real-time event bus |
-| `cuboic_customer` | Vite · React · TypeScript | 5173 | Customer-facing QR menu |
-| `cuboic_admin` | Vite · React · TypeScript | 5174 | Owner / Staff dashboard |
+| `thambi_backend` | NestJS · Mongoose · Socket.IO · JWT | 3000 | REST API + real-time event bus |
+| `thambi_customer` | Vite · React · TypeScript | 5173 | Customer-facing QR menu |
+| `thambi_admin` | Vite · React · TypeScript | 5174 | Owner / Staff dashboard |
 
 ---
 
 ## ✨ Features
 
-### Customer App (`cuboic_customer`)
+### Customer App (`thambi_customer`)
 - 📱 **QR Code access** — customers scan a table QR to open the menu, no login needed
 - 🌟 **Immersive menu** — hero banner with ambient glow, category pills, grouped item sections
 - 🛒 **Cart & checkout** — floating cart pill → bottom-sheet order summary → payment selection (Card / UPI / Cash)
 - 📦 **Live order tracking** — real-time status timeline (Confirmed → Preparing → Delivering → Delivered) via Socket.IO
 
-### Admin Dashboard (`cuboic_admin`)
+### Admin Dashboard (`thambi_admin`)
 - 🔐 **Role-based login** — Owner and Staff roles with JWT auth
 - 📊 **Live dashboard** — real-time KPIs: orders today, revenue, active deliveries, robots online
 - 🍽️ **Order management** — view and update order statuses with filter tabs
@@ -52,7 +52,7 @@
 - 🚀 **Delivery management** — create and monitor deliveries per robot
 - 💳 **Payments** — browse payment history with date + status filters
 
-### Backend (`cuboic_backend`)
+### Backend (`thambi_backend`)
 - RESTful API with JWT + role guards
 - MongoDB with Mongoose schemas
 - Socket.IO gateway for real-time events (`order:new`, `order:updated`, `delivery:updated`)
@@ -80,23 +80,23 @@
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/NikhilY492/Cuboic.git
-cd Cuboic
+git clone https://github.com/NikhilY492/Thambi.git
+cd Thambi
 ```
 
 ### 2. Backend
 
 ```bash
-cd cuboic_backend
+cd thambi_backend
 npm install
 ```
 
 Create the environment file:
 
 ```bash
-# cuboic_backend/.env
-MONGODB_URI=mongodb://localhost:27017/cuboic
-JWT_SECRET=cuboic-super-secret-key-change-in-prod
+# thambi_backend/.env
+MONGODB_URI=mongodb://localhost:27017/thambi
+JWT_SECRET=thambi-super-secret-key-change-in-prod
 PORT=3000
 ```
 
@@ -121,7 +121,7 @@ The API is now running at **http://localhost:3000**
 ### 3. Admin Dashboard
 
 ```bash
-cd ../cuboic_admin
+cd ../thambi_admin
 npm install
 npm run dev
 ```
@@ -140,7 +140,7 @@ Open **http://localhost:5174**
 ### 4. Customer App
 
 ```bash
-cd ../cuboic_customer
+cd ../thambi_customer
 npm install
 npm run dev
 ```
@@ -163,8 +163,8 @@ http://localhost:5173/?r=69a6e1d86b10ed9cd787524d&t=69a6e1d86b10ed9cd787524e
 ## 📂 Project Structure
 
 ```
-Cuboic/
-├── cuboic_backend/          # NestJS REST API + WebSocket gateway
+Thambi/
+├── thambi_backend/          # NestJS REST API + WebSocket gateway
 │   ├── src/
 │   │   ├── auth/            # JWT auth, guards, decorators
 │   │   ├── orders/          # Order CRUD + status updates
@@ -176,7 +176,7 @@ Cuboic/
 │   │   └── seed.ts          # Database seeder
 │   └── .env                 # Environment variables
 │
-├── cuboic_admin/            # Owner / Staff React dashboard
+├── thambi_admin/            # Owner / Staff React dashboard
 │   └── src/
 │       ├── pages/           # Dashboard, Orders, Robots, Deliveries, Payments
 │       ├── components/      # Sidebar, AppLayout, RobotCard, Toast ...
@@ -184,7 +184,7 @@ Cuboic/
 │       ├── hooks/           # useSocket (real-time)
 │       └── api/             # Axios API clients
 │
-└── cuboic_customer/         # Customer-facing React menu app
+└── thambi_customer/         # Customer-facing React menu app
     └── src/
         ├── pages/           # MenuPage, CheckoutPage, OrderTrackerPage
         ├── components/      # ItemCard, CartDrawer (bottom sheet), StatusTimeline
@@ -233,15 +233,15 @@ The `npm run seed` command creates the following users:
 
 ## 🧩 Environment Variables
 
-`cuboic_backend/.env`:
+`thambi_backend/.env`:
 
 ```env
-MONGODB_URI=mongodb://localhost:27017/cuboic
-JWT_SECRET=cuboic-super-secret-key-change-in-prod
+MONGODB_URI=mongodb://localhost:27017/thambi
+JWT_SECRET=thambi-super-secret-key-change-in-prod
 PORT=3000
 ```
 
-`cuboic_customer/.env` (optional — defaults to `http://localhost:3000`):
+`thambi_customer/.env` (optional — defaults to `http://localhost:3000`):
 
 ```env
 VITE_API_URL=http://localhost:3000

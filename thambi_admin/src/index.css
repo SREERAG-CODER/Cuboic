@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+:root {
+  /* Hi-Tech Light Theme (Laboratoy/Command Center White) */
+  --bg-primary: #f0f4f8;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e1e8ed;
+  --accent-primary: #00e5ff; /* Cyan Pulse */
+  --accent-secondary: #7000ff; /* Neural Purple */
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --border-color: #cbd5e0;
+  --border-glow: rgba(0, 229, 255, 0.2);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --font-main: 'Rajdhani', sans-serif;
+  --font-display: 'Orbitron', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --severity-info: #00e5ff;
+  --severity-warning: #ffb300;
+  --severity-critical: #ff0055;
+}
+
+[data-theme='dark'] {
+  /* Sci-Fi Dark Theme (Deep Space / Cyberpunk) */
+  --bg-primary: #050a0f;
+  --bg-secondary: #0d121b;
+  --bg-tertiary: #161d29;
+  --accent-primary: #00e5ff;
+  --accent-secondary: #7000ff;
+  --text-primary: #e2e8f0;
+  --text-secondary: #a0aec0;
+  --text-muted: #4a5568;
+  --border-color: #1e293b;
+  --border-glow: rgba(0, 229, 255, 0.4);
+  --glass-bg: rgba(13, 18, 27, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.05);
+
+  --severity-info: #00e5ff;
+  --severity-warning: #ffb300;
+  --severity-critical: #ff3366;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  letter-spacing: 0.02em;
+}
+
+/* Sci-fi "Grid" Background */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: 
+    radial-gradient(circle at 2px 2px, var(--border-color) 1px, transparent 0);
+  background-size: 40px 40px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: -1;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px; /* Hard, technical edges */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.tech-border {
+  position: relative;
+  border: 1px solid var(--border-color);
+}
+
+.tech-border::after {
+  content: "";
+  position: absolute;
+  top: -1px; right: -1px;
+  width: 10px; height: 10px;
+  border-top: 2px solid var(--accent-primary);
+  border-right: 2px solid var(--accent-primary);
+}
+
+.tech-border::before {
+  content: "";
+  position: absolute;
+  bottom: -1px; left: -1px;
+  width: 10px; height: 10px;
+  border-bottom: 2px solid var(--accent-primary);
+  border-left: 2px solid var(--accent-primary);
+}
+
+/* Buttons */
+button.tech-btn {
+  background: transparent;
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  padding: 8px 16px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 90% 100%, 0 100%);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+button.tech-btn:hover {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  box-shadow: 0 0 15px var(--border-glow);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+.scifi-glitch {
+  position: relative;
+}
+
+/* Animations */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scanline::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent-primary);
+  opacity: 0.1;
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
+}

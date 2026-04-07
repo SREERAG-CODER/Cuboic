@@ -278,7 +278,7 @@ export function ProfileScreen() {
                         </View>
                         <View style={styles.listItemText}>
                             <Text style={[styles.listItemTitle, { color: colors.text }]}>Email Support</Text>
-                            <Text style={[styles.listItemSub, { color: colors.textMuted }]}>support@cuboic.com</Text>
+                            <Text style={[styles.listItemSub, { color: colors.textMuted }]}>support@thambi.com</Text>
                         </View>
                         <Feather name="chevron-right" size={18} color={colors.textMuted} />
                     </TouchableOpacity>
